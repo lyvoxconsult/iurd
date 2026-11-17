@@ -22,6 +22,7 @@ Sistema web responsivo para gestão do rali da igreja IURD U Marizal.
 - **Semana de Pontuação**: Inicia na **segunda-feira (00:00:00)** e encerra no **domingo (23:59:59)**.
 - **Placar de Sábado**: No sábado, o placar principal exibe as nações com indicação explícita de que o resultado é **parcial**, pois os lançamentos realizados no domingo ainda somam na mesma semana.
 - **Acumulado**: Os pontos semanais se acumulam até o encerramento do rali.
+- **Encerramento**: Não existe data de término programada. O rali permanece ativo até o administrador clicar em **Encerrar Rali Ativo**. Criar ou reativar outro rali exige encerrar o atual primeiro.
 
 ### 3. Mecânica de Desafios
 - O administrador cria um desafio com título, descrição opcional e valor em pontos. Também pode registrar um novo desafio durante o lançamento.

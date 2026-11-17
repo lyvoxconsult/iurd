@@ -8,10 +8,12 @@ export async function activateRally(id: string) {
   return db.runTransaction(async tx => {
     const target = db.collection('rallies').doc(id);
     const pointer = db.collection('meta').doc('activeRally');
-    const [found, active] = await Promise.all([tx.get(target), tx.get(db.collection('rallies').where('isActive', '==', true)), tx.get(pointer)]);
+    const [found, active, activePointer] = await Promise.all([tx.get(target), tx.get(db.collection('rallies').where('isActive', '==', true)), tx.get(pointer)]);
     if (!found.exists) throw new Error('Rali não encontrado');
+    if (active.docs.some(doc => doc.id !== id) || (activePointer.exists && activePointer.data()!.rallyId && activePointer.data()!.rallyId !== id)) {
+      throw new Error('Encerre o rali ativo antes de ativar outro');
+    }
     const now = new Date();
-    active.docs.filter(doc => doc.id !== id).forEach(doc => tx.update(doc.ref, { isActive: false, updatedAt: now }));
     tx.update(target, { isActive: true, endDate: null, updatedAt: now });
     tx.set(pointer, { rallyId: id, updatedAt: now });
   });
@@ -35,14 +37,16 @@ export async function createRally(name: string, startDate: Date) {
   const db = firestore();
   return db.runTransaction(async tx => {
     const pointer = db.collection('meta').doc('activeRally');
-    const [active] = await Promise.all([
+    const [active, activePointer] = await Promise.all([
       tx.get(db.collection('rallies').where('isActive', '==', true)),
       tx.get(pointer),
     ]);
+    if (active.size > 0 || (activePointer.exists && activePointer.data()!.rallyId)) {
+      throw new Error('Encerre o rali ativo antes de criar outro');
+    }
     const now = new Date();
     const rally = db.collection('rallies').doc();
     const rallyData = { name, startDate, endDate: null, isActive: true, createdAt: now, updatedAt: now };
-    active.docs.forEach(doc => tx.update(doc.ref, { isActive: false, updatedAt: now }));
     tx.create(rally, rallyData);
     tx.set(pointer, { rallyId: rally.id, updatedAt: now });
     for (const [index, [nationName, color, tribes]] of [

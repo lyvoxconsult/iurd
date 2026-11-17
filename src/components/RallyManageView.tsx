@@ -53,6 +53,10 @@ export default function RallyManageView({
   // Handlers de Rali
   const handleCreateRally = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (activeRally) {
+      setErrorMsg('Encerre o rali ativo antes de iniciar outro');
+      return;
+    }
     if (!newRallyName.trim() || newRallyName.trim().length < 3) {
       setErrorMsg('O nome do rali deve ter no mínimo 3 caracteres');
       return;
@@ -73,7 +77,7 @@ export default function RallyManageView({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Erro ao criar novo rali');
 
-      setSuccessMsg('Novo rali iniciado com sucesso! O histórico do rali anterior foi preservado.');
+      setSuccessMsg('Novo rali iniciado com sucesso! O histórico anterior foi preservado.');
       setNewRallyName('');
       setNewStartDate('');
       setIsCreating(false);
@@ -86,6 +90,10 @@ export default function RallyManageView({
   };
 
   const handleActivateRally = async (rallyId: string) => {
+    if (activeRally) {
+      setErrorMsg('Encerre o rali ativo antes de ativar outro');
+      return;
+    }
     if (!confirm('Deseja ativar este rali? Ele passará a ser o rali corrente.')) return;
     setLoading(true);
     try {
@@ -221,12 +229,15 @@ export default function RallyManageView({
 
         <button
           onClick={() => setIsCreating(!isCreating)}
-          className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
+          disabled={!!activeRally}
+          className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <PlusCircle className="w-4 h-4" />
           <span>{isCreating ? 'Fechar Formulário' : 'Iniciar Novo Rali'}</span>
         </button>
       </div>
+
+      {activeRally && <p className="text-xs text-slate-400">O rali atual continua até você clicar em Encerrar Rali Ativo. Depois, poderá iniciar ou reativar outro.</p>}
 
       {errorMsg && (
         <div className="p-3.5 rounded-xl bg-red-950/50 border border-red-800 text-red-200 text-xs flex items-center space-x-2">
@@ -382,7 +393,7 @@ export default function RallyManageView({
       )}
 
       {/* Formulário para Novo Rali */}
-      {isCreating && (
+      {isCreating && !activeRally && (
         <div className="bg-dark-900 border border-amber-600/40 rounded-2xl p-6 shadow-2xl space-y-4 gold-glow">
           <div className="flex items-center space-x-2 pb-2 border-b border-dark-800">
             <Sparkles className="w-4 h-4 text-amber-500" />
@@ -390,7 +401,7 @@ export default function RallyManageView({
           </div>
 
           <p className="text-xs text-slate-300">
-            Ao criar um novo rali, o rali atual é arquivado no histórico com todas as suas pontuações e rankings intactos. As 2 nações e as 12 tribos padrão são inicializadas automaticamente para o novo ciclo.
+            O novo rali começa sem data de encerramento. Ele termina apenas quando você clicar em Encerrar Rali Ativo. As 2 nações e as 12 tribos padrão são criadas automaticamente.
           </p>
 
           <form onSubmit={handleCreateRally} className="space-y-3.5">
@@ -471,7 +482,7 @@ export default function RallyManageView({
                 </p>
               </div>
 
-              {!rally.isActive && (
+              {!rally.isActive && !activeRally && (
                 <button
                   onClick={() => handleActivateRally(rally.id)}
                   className="px-3 py-1.5 rounded-lg border border-dark-700 bg-dark-900 hover:bg-amber-500 hover:text-dark-950 text-slate-300 text-xs font-semibold transition-all flex items-center space-x-1"
