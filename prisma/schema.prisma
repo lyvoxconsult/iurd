@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Rally {
+  id          String              @id @default(cuid())
+  name        String
+  startDate   DateTime
+  endDate     DateTime?
+  isActive    Boolean             @default(true)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  nations     Nation[]
+  tribes      Tribe[]
+  people      Person[]
+  challenges  Challenge[]
+  scoreLaunches ScoreLaunch[]
+  leaderScores  LeaderScoreLaunch[]
+}
+
+model Nation {
+  id          String   @id @default(cuid())
+  rallyId     String
+  rally       Rally    @relation(fields: [rallyId], references: [id], onDelete: Cascade)
+  name        String
+  color       String   @default("#f59e0b")
+  orderIndex  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tribes      Tribe[]
+  people      Person[]
+}
+
+model Tribe {
+  id          String   @id @default(cuid())
+  rallyId     String
+  rally       Rally    @relation(fields: [rallyId], references: [id], onDelete: Cascade)
+  nationId    String
+  nation      Nation   @relation(fields: [nationId], references: [id], onDelete: Cascade)
+  name        String
+  code        String?
+  orderIndex  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  people      Person[]
+}
+
+model Person {
+  id          String   @id @default(cuid())
+  rallyId     String
+  rally       Rally    @relation(fields: [rallyId], references: [id], onDelete: Cascade)
+  name        String
+  nationId    String
+  nation      Nation   @relation(fields: [nationId], references: [id], onDelete: Cascade)
+  tribeId     String
+  tribe       Tribe    @relation(fields: [tribeId], references: [id], onDelete: Cascade)
+  category    String   // jovem, membro, obreiro, colaborador
+  role        String   // participante, lider_tribo, lider_nacao
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  scoreLaunches ScoreLaunch[]       @relation("PersonTargetLaunches")
+  leaderScores  LeaderScoreLaunch[] @relation("LeaderScoreLaunches")
+}
+
+model Challenge {
+  id            String        @id @default(cuid())
+  rallyId       String
+  rally         Rally         @relation(fields: [rallyId], references: [id], onDelete: Cascade)
+  title         String
+  description   String?
+  defaultPoints Int           @default(10)
+  active        Boolean       @default(true)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  scoreLaunches ScoreLaunch[]
+}
+
+model ScoreLaunch {
+  id                String    @id @default(cuid())
+  rallyId           String
+  rally             Rally     @relation(fields: [rallyId], references: [id], onDelete: Cascade)
+  challengeId       String
+  challenge         Challenge @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  
+  // Alvo selecionado
+  targetType        String    // nation, tribe, person
+  targetNationId    String?
+  targetTribeId     String?
+  targetPersonId    String?
+  targetPerson      Person?   @relation("PersonTargetLaunches", fields: [targetPersonId], references: [id], onDelete: SetNull)
+
+  // Snapshots imutáveis de quem pontua no momento do lançamento
+  snapshotNationId  String    // Nação que recebe os pontos
+  snapshotTribeId   String?   // Tribo que recebe os pontos (se alvo for tribo ou pessoa)
+
+  points            Int       // Valor aplicado uma vez
+  scoreDate         DateTime  // Data da pontuação no fuso America/Sao_Paulo
+  weekNumber        Int       // Semana calculada (Segunda a Domingo)
+  weekYear          Int       // Ano da semana
+  notes             String?
+  idempotencyKey    String?   @unique
+
+  // Trilha de integridade e auditoria
+  status            String    @default("ACTIVE") // ACTIVE, VOIDED
+  voidReason        String?
+  voidedAt          DateTime?
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+}
+
+model LeaderScoreLaunch {
+  id             String    @id @default(cuid())
+  rallyId        String
+  rally          Rally     @relation(fields: [rallyId], references: [id], onDelete: Cascade)
+  leaderId       String
+  leader         Person    @relation("LeaderScoreLaunches", fields: [leaderId], references: [id], onDelete: Cascade)
+  leaderRole     String    // lider_tribo, lider_nacao (snapshot da função no momento)
+
+  points         Int       // Valor positivo (> 0)
+  reason         String    // Motivo obrigatório
+  scoreDate      DateTime  // Data da pontuação no fuso America/Sao_Paulo
+  weekNumber     Int       // Semana calculada (Segunda a Domingo)
+  weekYear       Int       // Ano da semana
+  idempotencyKey String?   @unique
+
+  // Trilha de integridade e auditoria
+  status         String    @default("ACTIVE") // ACTIVE, VOIDED
+  voidReason     String?
+  voidedAt       DateTime?
+
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
