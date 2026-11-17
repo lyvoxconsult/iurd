@@ -30,6 +30,8 @@ export default function DashboardView({
   const currentWeekInfo = rankingsData?.currentWeekInfo;
   const isPartial = currentWeekInfo?.isPartial;
   const isSaturday = currentWeekInfo?.isSaturday;
+  const isSundayBefore16h = currentWeekInfo?.isSundayBefore16h;
+  const isSundayAfter16h = currentWeekInfo?.isSundayAfter16h;
 
   const weeklyNations = rankingsData?.nations || [];
   const totalNations = accumulatedRankingsData?.nations || [];
@@ -59,8 +61,8 @@ export default function DashboardView({
   return (
     <div className="space-y-6">
       
-      {/* Banner de Aviso de Semana Parcial / Sábado */}
-      {isPartial && (
+      {/* Banner de Aviso de Semana Parcial ou Placar Consolidado */}
+      {isPartial ? (
         <div className="bg-gradient-to-r from-amber-950/70 via-dark-900 to-amber-950/70 border border-amber-600/40 rounded-2xl p-4 shadow-xl flex items-center justify-between">
           <div className="flex items-center space-x-3.5">
             <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/40 flex-shrink-0 animate-pulse">
@@ -69,14 +71,18 @@ export default function DashboardView({
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-sm font-bold text-amber-300">
-                  {isSaturday ? 'SÁBADO: PLACAR SEMANAL PARCIAL' : 'SEMANA DE PONTUAÇÃO EM ANDAMENTO (PARCIAL)'}
+                  {isSaturday
+                    ? 'SÁBADO: PLACAR SEMANAL PARCIAL'
+                    : isSundayBefore16h
+                    ? 'DOMINGO: ENCONTRO EM ANDAMENTO (PLACAR PARCIAL)'
+                    : 'SEMANA DE PONTUAÇÃO EM ANDAMENTO (PARCIAL)'}
                 </span>
                 <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30">
                   America/Sao_Paulo
                 </span>
               </div>
               <p className="text-xs text-slate-300 mt-0.5">
-                A semana de pontuação vai de <strong>segunda-feira a domingo às 23:59</strong>. No sábado o placar é parcial e os lançamentos de domingo continuam somando nesta mesma semana.
+                A pontuação da semana é somada e finalizada às <strong>16:00 do domingo no final do encontro</strong>, momento em que o placar oficial é consolidado. Lançamentos realizados até domingo às 16h entram nesta semana.
               </p>
             </div>
           </div>
@@ -86,6 +92,34 @@ export default function DashboardView({
           >
             <PlusCircle className="w-4 h-4" />
             <span>Lançar Agora</span>
+          </button>
+        </div>
+      ) : (
+        <div className="bg-gradient-to-r from-emerald-950/80 via-dark-900 to-amber-950/60 border border-emerald-500/50 rounded-2xl p-4 shadow-xl flex items-center justify-between">
+          <div className="flex items-center space-x-3.5">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/40 flex-shrink-0">
+              <Trophy className="w-5 h-5 text-amber-400" />
+            </div>
+            <div>
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-bold text-emerald-300">
+                  🏆 PLACAR OFICIAL CONSOLIDADO • ENCONTRO CONCLUÍDO ÀS 16H
+                </span>
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">
+                  Fechado às 16:00
+                </span>
+              </div>
+              <p className="text-xs text-slate-300 mt-0.5">
+                A pontuação da semana foi somada e consolidada no término do encontro de domingo. Confira abaixo o resultado final das Nações, Tribos e Líderes!
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onOpenScoreModal}
+            className="hidden sm:flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-dark-800 hover:bg-dark-700 text-slate-200 border border-dark-700 text-xs font-semibold transition-all shadow-md flex-shrink-0 ml-4"
+          >
+            <PlusCircle className="w-4 h-4 text-amber-500" />
+            <span>Nova Pontuação</span>
           </button>
         </div>
       )}

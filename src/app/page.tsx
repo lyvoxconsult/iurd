@@ -114,6 +114,8 @@ export default function HomePage() {
         isPartialWeek={currentWeekInfo?.isPartial ?? true}
         isSaturday={currentWeekInfo?.isSaturday ?? false}
         weekFormatted={currentWeekInfo?.formattedRange || ''}
+        statusLabel={currentWeekInfo?.statusLabel || ''}
+        isSundayAfter16h={currentWeekInfo?.isSundayAfter16h ?? false}
       />
 
       {/* Conteúdo Principal */}

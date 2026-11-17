@@ -21,6 +21,8 @@ interface HeaderProps {
   isPartialWeek: boolean;
   isSaturday: boolean;
   weekFormatted: string;
+  statusLabel?: string;
+  isSundayAfter16h?: boolean;
 }
 
 export default function Header({
@@ -31,6 +33,8 @@ export default function Header({
   isPartialWeek,
   isSaturday,
   weekFormatted,
+  statusLabel,
+  isSundayAfter16h,
 }: HeaderProps) {
   const tabs = [
     { id: 'dashboard', label: 'Painel Principal', icon: Trophy },
@@ -64,9 +68,15 @@ export default function Header({
               <div className="flex items-center space-x-2 text-xs text-slate-400 mt-0.5">
                 <Calendar className="w-3.5 h-3.5 text-slate-400" />
                 <span>{weekFormatted || 'Semana em curso'}</span>
-                {isPartialWeek && (
-                  <span className="inline-flex items-center px-2 py-0.2 rounded text-[11px] font-medium bg-amber-950/80 text-amber-300 border border-amber-600/40 animate-pulse">
-                    {isSaturday ? 'Sábado: Parcial' : 'Semana Parcial'}
+                {isPartialWeek ? (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold bg-amber-950/80 text-amber-300 border border-amber-600/40 animate-pulse">
+                    {isSaturday
+                      ? 'Sábado: Parcial'
+                      : statusLabel || 'Parcial (Apuração Domingo 16h)'}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 shadow-sm shadow-emerald-500/20">
+                    🏆 Placar Consolidado (16h)
                   </span>
                 )}
               </div>
