@@ -2,7 +2,7 @@
 
 Sistema web responsivo para gestão do rali da igreja IURD U Marizal.
 
-> **Estado da hospedagem:** o projeto Firebase `iurd-u-marizal` e o Firestore `(default)` em `southamerica-east1` foram criados. As rotas da aplicação ainda usam Prisma/SQLite. Não publique esta versão na Vercel para registrar pontos: o SQLite local não é persistente nas funções da Vercel. A integração com Firestore e a migração verificada dos dados são etapas pendentes.
+> **Hospedagem:** a aplicação usa Firestore pelo Firebase Admin SDK no servidor e está preparada para a Vercel. As regras do Firestore bloqueiam acesso direto pelo cliente; as APIs exigem sessão administrativa.
 
 ---
 
@@ -54,8 +54,8 @@ Sistema web responsivo para gestão do rali da igreja IURD U Marizal.
 
 - **Framework**: [Next.js 15](https://nextjs.org/) (App Router, React 19, TypeScript).
 - **Estilização**: Tailwind CSS v3 com tema escuro premium e acentos dourados/âmbar (`#f59e0b`).
-- **Banco de Dados**: SQLite local persistido em arquivo (`prisma/dev.db`), gratuito, sem dependência de serviços em nuvem ou Docker.
-- **ORM & Migrações**: [Prisma ORM](https://www.prisma.io/) com migrações versionadas e tipagem ponta a ponta.
+- **Banco de Dados**: Firestore do projeto Firebase `iurd-u-marizal`; as rotas acessam o banco somente pelo Firebase Admin SDK.
+- **Dados legados**: Prisma/SQLite permanece apenas para importar o banco antigo com `scripts/migrate-sqlite-to-firestore.cjs`.
 - **Datas e Timezone**: `date-fns` e `date-fns-tz` operando no fuso `America/Sao_Paulo`.
 - **Validação de Schemas**: [Zod](https://zod.dev/) no client e nas APIs do servidor.
 - **Ícones**: [Lucide React](https://lucide.dev/).
@@ -74,28 +74,26 @@ npm install
 ```
 
 ### 3. Acesso administrativo
-Copie `.env.example` para `.env` e defina `ADMIN_PASSWORD` (ao menos 12 caracteres) e `SESSION_SECRET` (ao menos 32 caracteres aleatórios). O sistema bloqueia o acesso às APIs enquanto essas variáveis não estiverem configuradas. O arquivo `.env` não deve ser versionado nem compartilhado.
+Copie `.env.example` para `.env` e defina `ADMIN_PASSWORD` (ao menos 8 caracteres), `SESSION_SECRET` (ao menos 32 caracteres aleatórios) e as credenciais do Firebase Admin. Em desenvolvimento, `GOOGLE_APPLICATION_CREDENTIALS` pode apontar para um arquivo de credencial fora do repositório. O sistema bloqueia o acesso às APIs enquanto a autenticação não estiver configurada. O arquivo `.env` não deve ser versionado nem compartilhado.
 
-O SQLite atual é local. Para testar em um celular ou tablet, o dispositivo precisa alcançar o computador que executa a aplicação **por HTTPS** (inclusive na rede local), pois a senha e o cookie de sessão não devem trafegar por HTTP. Acesso por `localhost` serve apenas para desenvolvimento no próprio computador. A futura hospedagem na Vercel fornece HTTPS, mas depende da troca do banco antes do uso real.
+Para testar em celular ou tablet, use a URL HTTPS da Vercel. `localhost` serve apenas para desenvolvimento no próprio computador.
 
-### 4. Banco de Dados e Migrações
-O banco SQLite local é configurado via Prisma:
-```bash
-# Executa migrações existentes e sincroniza o schema
-npx prisma migrate dev
+### 4. Importação opcional de dados antigos
+O SQLite não é usado pela aplicação publicada. Se houver um banco legado a importar, faça backup e execute uma vez:
+```powershell
+$env:DATABASE_URL = "file:./dev.db"
+node scripts/migrate-sqlite-to-firestore.cjs
 ```
+O script preserva IDs e datas e ignora documentos que já existem no Firestore. Repetir a execução não deve duplicar registros.
 
-### 5. Carga de Dados Iniciais (Seed)
-Cria o rali inicial, 2 nações e 12 tribos quando ainda não existem. Não cria pessoas fictícias nem altera o nome de um rali já existente:
-```bash
-npm run prisma:seed
-```
+### 5. Dados iniciais
+Após importar o banco legado, o rali, as nações e as tribos já estão disponíveis. Para começar do zero em outro projeto Firebase, crie um rali pela interface; ele cria 2 nações e 12 tribos.
 
 ### 6. Executar os Testes Automatizados de Regras de Negócio
 ```bash
 npm run test:rules
 ```
-Execute testes que escrevem no banco somente com `DATABASE_URL` apontando para um banco de teste isolado.
+Os testes legados usam SQLite isolado e validam regras de pontuação; não substituem uma verificação de integração com Firestore.
 
 ### 7. Iniciar em Modo de Desenvolvimento
 ```bash
@@ -144,7 +142,8 @@ IURD/
 │   │   ├── HistoryView.tsx     # Auditoria e estorno de lançamentos
 │   │   └── RallyManageView.tsx # Gestão do rali e histórico de edições
 │   └── lib/
-│       ├── prisma.ts       # Singleton do Prisma Client
+│       ├── prisma.ts       # Adaptador de persistência Firestore
+│       ├── firestore-admin.ts # Inicialização Firebase Admin
 │       ├── scoring.ts      # Fórmulas de pontuação, fuso SP e empates
 │       └── validations.ts  # Schemas Zod de validação
 ├── scripts/
@@ -160,4 +159,4 @@ IURD/
 - Acesso administrativo obrigatório para consultas e alterações de dados.
 - Validação de entradas no servidor.
 - Estorno sem exclusão física garantindo rastreabilidade contábil total do rali.
-- `scripts/reset-for-production.js` apaga pontuações e desafios; permanece bloqueado por padrão e não faz parte da instalação ou atualização normal.
+- `scripts/reset-for-production.js` é legado de SQLite e não faz parte da instalação ou atualização da aplicação publicada.

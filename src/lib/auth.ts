@@ -2,7 +2,7 @@ export const SESSION_COOKIE = 'iurd_admin_session';
 const SESSION_SECONDS = 60 * 60 * 12;
 
 export function authConfigured() {
-  return !!process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD.length >= 12 &&
+  return !!process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD.length >= 8 &&
     !!process.env.SESSION_SECRET && process.env.SESSION_SECRET.length >= 32;
 }
 

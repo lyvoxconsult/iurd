@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { createTribe } from '@/lib/rally-store';
 
 export async function GET(req: Request) {
   try {
@@ -56,23 +57,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Nação não encontrada' }, { status: 404 });
     }
 
-    const tribe = await prisma.$transaction(async (tx) => {
-      const count = await tx.tribe.count({ where: { nationId: nation.id } });
-      if (count >= 6) return null;
-      const lastTribe = await tx.tribe.findFirst({
-        where: { nationId: nation.id }, orderBy: { orderIndex: 'desc' },
-      });
-      return tx.tribe.create({
-        data: {
-          rallyId: nation.rallyId,
-          nationId: nation.id,
-          name: name.trim(),
-          code: code?.trim() || null,
-          orderIndex: (lastTribe?.orderIndex || 0) + 1,
-        },
-        include: { nation: { select: { id: true, name: true, color: true } } },
-      });
-    });
+    const tribe = await createTribe(nation.id, name.trim(), code?.trim());
     if (!tribe) return NextResponse.json({ error: 'Cada nação pode ter no máximo seis tribos' }, { status: 409 });
 
     return NextResponse.json({ success: true, tribe });

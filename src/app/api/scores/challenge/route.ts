@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { scoreLaunchSchema } from '@/lib/validations';
 import { getWeekInfoForDate } from '@/lib/scoring';
+import { createNamedChallengeLaunch } from '@/lib/score-store';
 
 export async function POST(req: Request) {
   try {
@@ -46,22 +47,12 @@ export async function POST(req: Request) {
         },
       });
 
-      if (!challenge) {
-        challenge = await prisma.challenge.create({
-          data: {
-            rallyId: activeRally.id,
-            title: validated.challengeTitle.trim(),
-            defaultPoints: validated.points,
-            active: true,
-          },
-        });
-      }
     }
 
-    if (!challenge) {
+    if (!challenge && (validated.challengeId || !validated.challengeTitle)) {
       return NextResponse.json({ error: 'Desafio não especificado ou não encontrado' }, { status: 404 });
     }
-    if (challenge.defaultPoints !== validated.points) {
+    if (challenge && challenge.defaultPoints !== validated.points) {
       return NextResponse.json({ error: `Este desafio vale ${challenge.defaultPoints} pontos` }, { status: 400 });
     }
 
@@ -111,10 +102,8 @@ export async function POST(req: Request) {
     const dateToUse = validated.scoreDate ? new Date(validated.scoreDate) : new Date();
     const weekInfo = getWeekInfoForDate(dateToUse);
 
-    const scoreLaunch = await prisma.scoreLaunch.create({
-      data: {
+    const launchData = {
         rallyId: activeRally.id,
-        challengeId: challenge.id,
         targetType: validated.targetType,
         targetNationId,
         targetTribeId,
@@ -128,10 +117,12 @@ export async function POST(req: Request) {
         notes: validated.notes || null,
         idempotencyKey: validated.idempotencyKey || null,
         status: 'ACTIVE',
-      },
-    });
+    };
+    const scoreLaunch = challenge
+      ? await prisma.scoreLaunch.create({ data: { ...launchData, challengeId: challenge.id } })
+      : await createNamedChallengeLaunch(activeRally.id, validated.challengeTitle!.trim(), validated.points, launchData);
 
-    return NextResponse.json({ success: true, scoreLaunch });
+    return NextResponse.json({ success: true, scoreLaunch, duplicateIgnored: !!scoreLaunch.duplicateIgnored });
   } catch (error: any) {
     console.error('Erro ao lançar pontuação de desafio:', error);
     return NextResponse.json(
