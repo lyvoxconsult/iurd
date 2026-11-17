@@ -1,6 +1,6 @@
-# IURD U Marizal • Sistema de Gestão e Pontuação do Rali
+# IURD Umarizal • Sistema de Gestão e Pontuação do Rali
 
-Sistema web responsivo para gestão do Rali da Igreja (IURD U Marizal), substituindo o controle em papel por uma plataforma auditável, resiliente e em tempo real.
+Sistema web responsivo para gestão do Rali da Igreja (IURD Umarizal), substituindo o controle em papel por uma plataforma auditável, resiliente e em tempo real.
 
 ---
 
@@ -21,8 +21,8 @@ Sistema web responsivo para gestão do Rali da Igreja (IURD U Marizal), substitu
 - **Placar de Sábado**: No sábado, o placar principal exibe as nações com indicação explícita de que o resultado é **parcial**, pois os lançamentos realizados no domingo ainda somam na mesma semana.
 - **Acumulado**: Os pontos semanais se acumulam até o encerramento do rali.
 
-### 3. Mecânica de Desafios
-- Cada desafio possui título, descrição e valor positivo de pontos (> 0).
+### 3. Mecânica de Desafios (Sem Desafios Pré-setados)
+- **Digitação Livre**: O sistema **não** impõe desafios pré-setados engessados; o operador escreve diretamente qual foi o desafio no momento do lançamento, informando a pontuação.
 - Cada lançamento tem exatamente **um alvo**: Nação, Tribo ou Pessoa.
 - O valor do desafio é aplicado **uma única vez** por lançamento (nunca multiplicado por integrantes).
 - **Alvo Nação**: Soma **somente à nação**.

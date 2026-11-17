@@ -99,7 +99,7 @@ export default function DashboardView({
               <span>Placar Geral das Nações</span>
             </h2>
             <p className="text-xs text-slate-400">
-              Disputa oficial entre as 2 grandes nações do Rali U Marizal
+              Disputa oficial entre as 2 grandes nações do Rali Umarizal
             </p>
           </div>
           <button

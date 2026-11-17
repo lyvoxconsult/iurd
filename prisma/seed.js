@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('--- Iniciando Seed do Sistema IURD U Marizal ---');
+  console.log('--- Iniciando Seed do Sistema IURD Umarizal ---');
 
   // Verifica se já existe um rali
   let rally = await prisma.rally.findFirst({
@@ -12,12 +12,18 @@ async function main() {
   if (!rally) {
     rally = await prisma.rally.create({
       data: {
-        name: 'Rali U Marizal 2026',
+        name: 'Rali Umarizal 2026',
         startDate: new Date('2026-11-01T00:00:00-03:00'),
         isActive: true,
       },
     });
     console.log(`Rali criado: ${rally.name} (${rally.id})`);
+  } else {
+    // Atualizar nome para Umarizal caso estivesse anterior
+    rally = await prisma.rally.update({
+      where: { id: rally.id },
+      data: { name: 'Rali Umarizal 2026' },
+    });
   }
 
   // 1. Criar as 2 Nações
@@ -107,51 +113,8 @@ async function main() {
     allTribes.push(tribe);
   }
 
-  // 3. Desafios Padrão
-  const defaultChallenges = [
-    {
-      title: 'Presença no Culto Geral',
-      description: 'Pontuação por participação e mobilização no culto principal',
-      defaultPoints: 10,
-    },
-    {
-      title: 'Evangelização e Ação Social',
-      description: 'Missão de evangelismo nos bairros ou ação de solidariedade',
-      defaultPoints: 20,
-    },
-    {
-      title: 'Novo Convidado Presente',
-      description: 'Cada convidado que participou da reunião pelo rali',
-      defaultPoints: 30,
-    },
-    {
-      title: 'Jejum e Oração em Grupo',
-      description: 'Cumprimento da escala de clamor e intercessão',
-      defaultPoints: 15,
-    },
-    {
-      title: 'Desafio Bíblico da Semana',
-      description: 'Leitura dos capítulos e resposta correta às perguntas do rali',
-      defaultPoints: 25,
-    },
-  ];
-
-  for (const c of defaultChallenges) {
-    const exists = await prisma.challenge.findFirst({
-      where: { rallyId: rally.id, title: c.title },
-    });
-    if (!exists) {
-      await prisma.challenge.create({
-        data: {
-          rallyId: rally.id,
-          title: c.title,
-          description: c.description,
-          defaultPoints: c.defaultPoints,
-        },
-      });
-      console.log(`Desafio criado: ${c.title} (${c.defaultPoints} pts)`);
-    }
-  }
+  // 3. Sem desafios pré-setados: Desafios são digitados dinamicamente no momento do lançamento pelo usuário!
+  console.log('Sem desafios pré-setados: serão definidos no momento do lançamento.');
 
   // 4. Cadastrar Líderes e Pessoas Iniciais para demonstração e testes
   const leaoTribe = allTribes.find((t) => t.name === 'Tribo Leão');

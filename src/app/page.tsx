@@ -84,11 +84,19 @@ export default function HomePage() {
     loadData();
   }, [loadData]);
 
+  const [modalInitialTitle, setModalInitialTitle] = useState('');
+  const [modalInitialLeaderId, setModalInitialLeaderId] = useState('');
+
   const handleLaunchChallengeFromView = (challengeId: string) => {
+    const ch = challenges.find((c) => c.id === challengeId);
+    setModalInitialTitle(ch?.title || '');
+    setModalInitialLeaderId('');
     setIsScoreModalOpen(true);
   };
 
   const handleScoreModalForLeader = (leaderId: string) => {
+    setModalInitialTitle('');
+    setModalInitialLeaderId(leaderId);
     setIsScoreModalOpen(true);
   };
 
@@ -102,7 +110,7 @@ export default function HomePage() {
         currentTab={currentTab}
         setCurrentTab={setCurrentTab}
         onOpenScoreModal={() => setIsScoreModalOpen(true)}
-        rallyName={activeRally?.name || 'Rali U Marizal'}
+        rallyName={activeRally?.name || 'Rali Umarizal'}
         isPartialWeek={currentWeekInfo?.isPartial ?? true}
         isSaturday={currentWeekInfo?.isSaturday ?? false}
         weekFormatted={currentWeekInfo?.formattedRange || ''}
@@ -113,7 +121,7 @@ export default function HomePage() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-3">
             <div className="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
-            <p className="text-xs text-slate-400 font-medium">Carregando sistema IURD U Marizal...</p>
+            <p className="text-xs text-slate-400 font-medium">Carregando sistema IURD Umarizal...</p>
           </div>
         ) : (
           <>
@@ -183,18 +191,24 @@ export default function HomePage() {
       {/* Modal de Lançamento de Pontos */}
       <ScoreModal
         isOpen={isScoreModalOpen}
-        onClose={() => setIsScoreModalOpen(false)}
+        onClose={() => {
+          setIsScoreModalOpen(false);
+          setModalInitialTitle('');
+          setModalInitialLeaderId('');
+        }}
         onSuccess={loadData}
         challenges={challenges}
         nations={nations}
         tribes={tribes}
         people={people}
+        initialChallengeTitle={modalInitialTitle}
+        initialLeaderId={modalInitialLeaderId}
       />
 
       {/* Rodapé Oficial */}
       <footer className="bg-dark-900 border-t border-dark-800 py-6 text-center text-xs text-slate-500">
         <p>
-          Sistema Oficial de Pontuação do Rali • <strong>IURD U Marizal</strong>
+          Sistema Oficial de Pontuação do Rali • <strong>IURD Umarizal</strong>
         </p>
         <p className="mt-1 text-[11px] text-slate-600">
           Operação no fuso horário America/Sao_Paulo • Semanas de Segunda a Domingo

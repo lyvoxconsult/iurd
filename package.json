@@ -1,5 +1,5 @@
 {
-  "name": "iurd-u-marizal",
+  "name": "iurd-umarizal",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -10,7 +10,7 @@
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "node prisma/seed.js",
-    "test:rules": "node scripts/test-rules.js"
+    "test:rules": "npx tsx scripts/test-rules.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.4.1",

@@ -18,22 +18,28 @@ export const challengeSchema = z.object({
   defaultPoints: z.coerce.number().int().positive('Os pontos devem ser um número inteiro positivo'),
 });
 
-export const scoreLaunchSchema = z.object({
-  challengeId: z.string().min(1, 'Desafio é obrigatório'),
-  targetType: TargetTypeEnum,
-  targetId: z.string().min(1, 'Alvo da pontuação é obrigatório'),
-  points: z.coerce.number().int().positive('Os pontos devem ser um número inteiro positivo'),
-  scoreDate: z.string().optional(),
-  notes: z.string().trim().optional(),
-  idempotencyKey: z.string().optional(),
-});
+export const scoreLaunchSchema = z
+  .object({
+    challengeId: z.string().nullable().optional(),
+    challengeTitle: z.string().trim().min(2, 'Informe o nome do desafio').nullable().optional(),
+    targetType: TargetTypeEnum,
+    targetId: z.string().min(1, 'Alvo da pontuação é obrigatório'),
+    points: z.coerce.number().int().positive('Os pontos devem ser um número inteiro positivo'),
+    scoreDate: z.string().nullable().optional(),
+    notes: z.string().trim().nullable().optional(),
+    idempotencyKey: z.string().nullable().optional(),
+  })
+  .refine((data) => !!data.challengeId || !!data.challengeTitle, {
+    message: 'Escreva o nome do desafio',
+    path: ['challengeTitle'],
+  });
 
 export const leaderScoreLaunchSchema = z.object({
   leaderId: z.string().min(1, 'Líder é obrigatório'),
   points: z.coerce.number().int().positive('A quantidade de pontos deve ser um número inteiro positivo'),
   reason: z.string().trim().min(3, 'O motivo do lançamento é obrigatório (mínimo 3 caracteres)'),
-  scoreDate: z.string().optional(),
-  idempotencyKey: z.string().optional(),
+  scoreDate: z.string().nullable().optional(),
+  idempotencyKey: z.string().nullable().optional(),
 });
 
 export const voidScoreSchema = z.object({

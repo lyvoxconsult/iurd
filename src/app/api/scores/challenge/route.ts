@@ -26,11 +26,36 @@ export async function POST(req: Request) {
       }
     }
 
-    const challenge = await prisma.challenge.findUnique({
-      where: { id: validated.challengeId },
-    });
+    let challenge: any = null;
+    if (validated.challengeId) {
+      challenge = await prisma.challenge.findUnique({
+        where: { id: validated.challengeId },
+      });
+    } else if (validated.challengeTitle) {
+      // Procura se já foi lançado com esse mesmo nome ou cria dinamicamente
+      challenge = await prisma.challenge.findFirst({
+        where: {
+          rallyId: activeRally.id,
+          title: {
+            equals: validated.challengeTitle.trim(),
+          },
+        },
+      });
+
+      if (!challenge) {
+        challenge = await prisma.challenge.create({
+          data: {
+            rallyId: activeRally.id,
+            title: validated.challengeTitle.trim(),
+            defaultPoints: validated.points,
+            active: true,
+          },
+        });
+      }
+    }
+
     if (!challenge) {
-      return NextResponse.json({ error: 'Desafio não encontrado' }, { status: 404 });
+      return NextResponse.json({ error: 'Desafio não especificado ou não encontrado' }, { status: 404 });
     }
 
     let snapshotNationId: string;

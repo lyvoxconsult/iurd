@@ -55,7 +55,7 @@ export default function Header({
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-xl font-black tracking-wider text-slate-100 uppercase">
-                  IURD <span className="text-amber-500">U MARIZAL</span>
+                  IURD <span className="text-amber-500">UMARIZAL</span>
                 </span>
                 <span className="hidden sm:inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">
                   {rallyName || 'Rali 2026'}

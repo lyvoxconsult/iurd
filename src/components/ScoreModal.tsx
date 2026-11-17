@@ -11,6 +11,8 @@ interface ScoreModalProps {
   nations: any[];
   tribes: any[];
   people: any[];
+  initialChallengeTitle?: string;
+  initialLeaderId?: string;
 }
 
 export default function ScoreModal({
@@ -21,6 +23,8 @@ export default function ScoreModal({
   nations,
   tribes,
   people,
+  initialChallengeTitle = '',
+  initialLeaderId = '',
 }: ScoreModalProps) {
   const [modalTab, setModalTab] = useState<'challenge' | 'leader'>('challenge');
   const [loading, setLoading] = useState(false);
@@ -28,7 +32,7 @@ export default function ScoreModal({
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   // Challenge Form State
-  const [selectedChallengeId, setSelectedChallengeId] = useState('');
+  const [challengeTitle, setChallengeTitle] = useState('');
   const [targetType, setTargetType] = useState<'nation' | 'tribe' | 'person'>('nation');
   const [targetId, setTargetId] = useState('');
   const [points, setPoints] = useState<number | ''>(10);
@@ -53,26 +57,21 @@ export default function ScoreModal({
       setLeaderScoreDate(localIso);
       setErrorMsg(null);
       setSuccessMsg(null);
+      setChallengeTitle(initialChallengeTitle || '');
+      setPoints(10);
 
-      if (challenges.length > 0 && !selectedChallengeId) {
-        setSelectedChallengeId(challenges[0].id);
-        setPoints(challenges[0].defaultPoints || 10);
+      if (initialLeaderId) {
+        setSelectedLeaderId(initialLeaderId);
+        setModalTab('leader');
+      } else {
+        setModalTab('challenge');
       }
 
       if (nations.length > 0 && !targetId) {
         setTargetId(nations[0].id);
       }
     }
-  }, [isOpen, challenges, nations]);
-
-  // Update points when challenge changes
-  const handleChallengeChange = (cId: string) => {
-    setSelectedChallengeId(cId);
-    const found = challenges.find((c) => c.id === cId);
-    if (found) {
-      setPoints(found.defaultPoints);
-    }
-  };
+  }, [isOpen, initialChallengeTitle, initialLeaderId, nations]);
 
   // Switch target type and default target ID
   const handleTargetTypeChange = (type: 'nation' | 'tribe' | 'person') => {
@@ -97,8 +96,8 @@ export default function ScoreModal({
     setErrorMsg(null);
     setSuccessMsg(null);
 
-    if (!selectedChallengeId) {
-      setErrorMsg('Selecione um desafio');
+    if (!challengeTitle.trim() || challengeTitle.trim().length < 2) {
+      setErrorMsg('Escreva qual foi o desafio');
       return;
     }
     if (!targetId) {
@@ -117,7 +116,7 @@ export default function ScoreModal({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          challengeId: selectedChallengeId,
+          challengeTitle: challengeTitle.trim(),
           targetType,
           targetId,
           points: Number(points),
@@ -133,6 +132,7 @@ export default function ScoreModal({
       }
 
       setSuccessMsg('Pontuação lançada com sucesso no placar!');
+      setChallengeTitle('');
       setNotes('');
       setTimeout(() => {
         onSuccess();
@@ -210,7 +210,7 @@ export default function ScoreModal({
             </div>
             <div>
               <h2 className="text-lg font-bold text-slate-100">Lançar Pontuação</h2>
-              <p className="text-xs text-slate-400">Rali IURD U Marizal • Registro Oficial</p>
+              <p className="text-xs text-slate-400">Rali IURD Umarizal • Registro Oficial</p>
             </div>
           </div>
           <button
@@ -273,23 +273,26 @@ export default function ScoreModal({
         {modalTab === 'challenge' && (
           <form onSubmit={handleSubmitChallenge} className="mt-4 space-y-4">
             
-            {/* Escolher Desafio */}
+            {/* Escrever o Desafio Dinamicamente */}
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Desafio <span className="text-amber-500">*</span>
+                Qual foi o desafio? <span className="text-amber-500">*</span>
               </label>
-              <select
-                value={selectedChallengeId}
-                onChange={(e) => handleChallengeChange(e.target.value)}
-                className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+              <input
+                type="text"
+                list="past-challenges"
+                placeholder="Escreva qual foi o desafio realizado..."
+                value={challengeTitle}
+                onChange={(e) => setChallengeTitle(e.target.value)}
+                className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
                 required
-              >
+                autoFocus
+              />
+              <datalist id="past-challenges">
                 {challenges.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.title} ({c.defaultPoints} pts)
-                  </option>
+                  <option key={c.id} value={c.title} />
                 ))}
-              </select>
+              </datalist>
             </div>
 
             {/* Tipo de Alvo: Nação / Tribo / Pessoa */}
