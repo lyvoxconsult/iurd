@@ -22,6 +22,11 @@ export async function GET(req: Request) {
       include: {
         tribes: {
           orderBy: { orderIndex: 'asc' },
+          include: {
+            _count: {
+              select: { people: true },
+            },
+          },
         },
       },
     });
@@ -30,5 +35,29 @@ export async function GET(req: Request) {
   } catch (error) {
     console.error('Erro ao buscar nações:', error);
     return NextResponse.json({ error: 'Erro ao buscar nações' }, { status: 500 });
+  }
+}
+
+export async function PUT(req: Request) {
+  try {
+    const body = await req.json();
+    const { id, name, color } = body;
+
+    if (!id || !name || !name.trim()) {
+      return NextResponse.json({ error: 'ID e nome da nação são obrigatórios' }, { status: 400 });
+    }
+
+    const updated = await prisma.nation.update({
+      where: { id },
+      data: {
+        name: name.trim(),
+        ...(color ? { color } : {}),
+      },
+    });
+
+    return NextResponse.json({ success: true, nation: updated });
+  } catch (error: any) {
+    console.error('Erro ao atualizar nação:', error);
+    return NextResponse.json({ error: error.message || 'Erro ao atualizar nação' }, { status: 400 });
   }
 }

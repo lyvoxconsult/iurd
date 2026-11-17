@@ -7,24 +7,34 @@ import {
   Calendar, 
   CheckCircle2, 
   AlertCircle, 
-  Play, 
   Square, 
   RotateCcw,
-  ShieldAlert,
-  Sparkles
+  Sparkles,
+  Edit2,
+  Trash2,
+  Plus,
+  Shield,
+  X,
+  Users,
+  Flag
 } from 'lucide-react';
 
 interface RallyManageViewProps {
   activeRally: any;
   allRallies: any[];
+  nations: any[];
+  tribes: any[];
   onRefresh: () => void;
 }
 
 export default function RallyManageView({
   activeRally,
   allRallies,
+  nations,
+  tribes,
   onRefresh,
 }: RallyManageViewProps) {
+  // Rali Form
   const [isCreating, setIsCreating] = useState(false);
   const [newRallyName, setNewRallyName] = useState('');
   const [newStartDate, setNewStartDate] = useState('');
@@ -32,6 +42,19 @@ export default function RallyManageView({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
+  // Modal: Editar Nação
+  const [editingNation, setEditingNation] = useState<any | null>(null);
+  const [nationName, setNationName] = useState('');
+  const [nationColor, setNationColor] = useState('');
+
+  // Modal: Criar / Editar Tribo
+  const [editingTribe, setEditingTribe] = useState<any | null>(null);
+  const [isAddingTribe, setIsAddingTribe] = useState(false);
+  const [selectedNationForTribe, setSelectedNationForTribe] = useState('');
+  const [tribeName, setTribeName] = useState('');
+  const [tribeCode, setTribeCode] = useState('');
+
+  // Handlers de Rali
   const handleCreateRally = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newRallyName.trim() || newRallyName.trim().length < 3) {
@@ -52,9 +75,7 @@ export default function RallyManageView({
       });
 
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Erro ao criar novo rali');
-      }
+      if (!res.ok) throw new Error(data.error || 'Erro ao criar novo rali');
 
       setSuccessMsg('Novo rali iniciado com sucesso! O histórico do rali anterior foi preservado.');
       setNewRallyName('');
@@ -75,10 +96,7 @@ export default function RallyManageView({
       const res = await fetch('/api/rally', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'activate',
-          rallyId,
-        }),
+        body: JSON.stringify({ action: 'activate', rallyId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
@@ -97,16 +115,142 @@ export default function RallyManageView({
       const res = await fetch('/api/rally', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'close',
-          rallyId,
-        }),
+        body: JSON.stringify({ action: 'close', rallyId }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       onRefresh();
     } catch (err: any) {
       alert(err.message || 'Erro ao encerrar rali');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handlers de Nação
+  const handleOpenEditNation = (nation: any) => {
+    setEditingNation(nation);
+    setNationName(nation.name);
+    setNationColor(nation.color || '#f59e0b');
+    setErrorMsg(null);
+    setSuccessMsg(null);
+  };
+
+  const handleSaveNation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nationName.trim() || nationName.trim().length < 2) {
+      setErrorMsg('Informe um nome válido para a nação');
+      return;
+    }
+
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      const res = await fetch('/api/nations', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingNation.id,
+          name: nationName.trim(),
+          color: nationColor,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      setSuccessMsg('Nação atualizada com sucesso!');
+      setEditingNation(null);
+      onRefresh();
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Erro ao atualizar nação');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handlers de Tribo
+  const handleOpenAddTribe = (nationId: string) => {
+    setSelectedNationForTribe(nationId);
+    setTribeName('');
+    setTribeCode('');
+    setIsAddingTribe(true);
+    setErrorMsg(null);
+    setSuccessMsg(null);
+  };
+
+  const handleOpenEditTribe = (tribe: any) => {
+    setEditingTribe(tribe);
+    setTribeName(tribe.name);
+    setTribeCode(tribe.code || '');
+    setErrorMsg(null);
+    setSuccessMsg(null);
+  };
+
+  const handleSaveTribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!tribeName.trim() || tribeName.trim().length < 2) {
+      setErrorMsg('Informe um nome válido para a tribo');
+      return;
+    }
+
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      if (editingTribe) {
+        // Atualizar
+        const res = await fetch('/api/tribes', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: editingTribe.id,
+            name: tribeName.trim(),
+            code: tribeCode.trim() || undefined,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        setSuccessMsg('Tribo atualizada com sucesso!');
+        setEditingTribe(null);
+      } else {
+        // Criar
+        const res = await fetch('/api/tribes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            nationId: selectedNationForTribe,
+            name: tribeName.trim(),
+            code: tribeCode.trim() || undefined,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        setSuccessMsg('Tribo adicionada com sucesso!');
+        setIsAddingTribe(false);
+      }
+      onRefresh();
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Erro ao salvar tribo');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteTribe = async (tribe: any) => {
+    if (!confirm(`Deseja realmente remover a "${tribe.name}"?`)) return;
+
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      const res = await fetch(`/api/tribes?id=${tribe.id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      setSuccessMsg(`Tribo "${tribe.name}" removida com sucesso!`);
+      onRefresh();
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Erro ao excluir tribo');
     } finally {
       setLoading(false);
     }
@@ -120,10 +264,10 @@ export default function RallyManageView({
         <div>
           <h2 className="text-lg font-black text-slate-100 flex items-center space-x-2">
             <Settings className="w-5 h-5 text-amber-500" />
-            <span>Gestão e Ciclo de Vida do Rali</span>
+            <span>Gestão e Estrutura do Rali</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            Definição de início, encerramento e preservação de histórico entre edições
+            Configuração de Nações, Tribos, início, encerramento e múltiplos ciclos de rali
           </p>
         </div>
 
@@ -146,6 +290,161 @@ export default function RallyManageView({
         <div className="p-3.5 rounded-xl bg-emerald-950/50 border border-emerald-800 text-emerald-200 text-xs flex items-center space-x-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
           <span>{successMsg}</span>
+        </div>
+      )}
+
+      {/* SEÇÃO: ESTRUTURA DO RALI (NAÇÕES E TRIBOS) */}
+      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-xl space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-dark-800 gap-2">
+          <div>
+            <h3 className="text-base font-bold text-slate-100 flex items-center space-x-2">
+              <Flag className="w-5 h-5 text-amber-500" />
+              <span>Nações e Tribos do Rali</span>
+            </h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Altere os nomes das nações e tribos, adicione novas tribos ou remova tribos com segurança
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {nations.map((nation) => {
+            const nationTribes = tribes.filter((t) => t.nationId === nation.id);
+            const isJuda = nation.name.includes('Judá');
+
+            return (
+              <div
+                key={nation.id}
+                className="bg-dark-950/80 border border-dark-800 rounded-2xl p-5 shadow-lg flex flex-col justify-between"
+              >
+                <div>
+                  {/* Cabeçalho da Nação */}
+                  <div className="flex items-center justify-between pb-3 border-b border-dark-800 mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className="w-4 h-4 rounded-full flex-shrink-0 shadow-sm"
+                        style={{ backgroundColor: nation.color || '#f59e0b' }}
+                      />
+                      <div>
+                        <h4 className="text-base font-black text-slate-100">{nation.name}</h4>
+                        <span className="text-[11px] text-slate-400">
+                          {nationTribes.length} tribo(s) vinculada(s)
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => handleOpenEditNation(nation)}
+                      className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg border border-dark-700 bg-dark-900 hover:bg-dark-800 text-slate-300 text-xs font-semibold transition-all hover:text-amber-400"
+                      title="Editar Nome da Nação"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                      <span>Renomear</span>
+                    </button>
+                  </div>
+
+                  {/* Lista de Tribos da Nação */}
+                  <div className="space-y-2 mb-4">
+                    {nationTribes.length === 0 ? (
+                      <p className="text-xs text-slate-500 py-4 text-center">
+                        Nenhuma tribo cadastrada nesta nação.
+                      </p>
+                    ) : (
+                      nationTribes.map((tribe) => (
+                        <div
+                          key={tribe.id}
+                          className="flex items-center justify-between p-2.5 rounded-xl bg-dark-900 border border-dark-800 hover:border-dark-700 transition-colors"
+                        >
+                          <div className="flex items-center space-x-2">
+                            <span className="w-2 h-2 rounded-full bg-amber-500/60" />
+                            <span className="text-xs font-bold text-slate-200">{tribe.name}</span>
+                            {tribe.code && (
+                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-dark-950 border border-dark-700 text-slate-400 uppercase font-mono">
+                                {tribe.code}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center space-x-1">
+                            <button
+                              onClick={() => handleOpenEditTribe(tribe)}
+                              className="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-dark-950 rounded-lg transition-colors"
+                              title="Editar nome da tribo"
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTribe(tribe)}
+                              className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-950/30 rounded-lg transition-colors"
+                              title="Remover tribo"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Botão Adicionar Tribo para esta Nação */}
+                <button
+                  onClick={() => handleOpenAddTribe(nation.id)}
+                  className="w-full py-2.5 rounded-xl border border-dashed border-dark-700 hover:border-amber-500 text-slate-300 hover:text-amber-400 text-xs font-bold flex items-center justify-center space-x-2 transition-all bg-dark-900/50 hover:bg-dark-900"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Adicionar Tribo em {nation.name}</span>
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Rali Ativo Atual */}
+      {activeRally && (
+        <div className="bg-gradient-to-br from-amber-950/30 via-dark-900 to-dark-950 border border-amber-600/50 rounded-2xl p-6 shadow-xl space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-dark-950 uppercase tracking-wider inline-block mb-1.5">
+                Rali Ativo em Andamento
+              </span>
+              <h3 className="text-xl font-black text-slate-100">{activeRally.name}</h3>
+              <p className="text-xs text-slate-400 mt-1 flex items-center space-x-2">
+                <Calendar className="w-3.5 h-3.5 text-amber-500" />
+                <span>
+                  Início: {new Date(activeRally.startDate).toLocaleDateString('pt-BR')}
+                </span>
+              </p>
+            </div>
+
+            <button
+              onClick={() => handleCloseRally(activeRally.id)}
+              className="px-3.5 py-2 rounded-xl border border-red-800 bg-red-950/40 hover:bg-red-900/60 text-red-200 text-xs font-bold transition-all flex items-center space-x-1.5"
+            >
+              <Square className="w-3.5 h-3.5" />
+              <span>Encerrar Rali Ativo</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-dark-800">
+            <div className="p-3 bg-dark-950/80 rounded-xl border border-dark-800">
+              <span className="text-[11px] text-slate-400 block font-medium">Nações</span>
+              <span className="text-lg font-black text-amber-400">{nations.length}</span>
+            </div>
+            <div className="p-3 bg-dark-950/80 rounded-xl border border-dark-800">
+              <span className="text-[11px] text-slate-400 block font-medium">Tribos</span>
+              <span className="text-lg font-black text-amber-400">{tribes.length}</span>
+            </div>
+            <div className="p-3 bg-dark-950/80 rounded-xl border border-dark-800">
+              <span className="text-[11px] text-slate-400 block font-medium">Integrantes</span>
+              <span className="text-lg font-black text-amber-400">{activeRally._count?.people || 0}</span>
+            </div>
+            <div className="p-3 bg-dark-950/80 rounded-xl border border-dark-800">
+              <span className="text-[11px] text-slate-400 block font-medium">Lançamentos</span>
+              <span className="text-lg font-black text-amber-400">{activeRally._count?.scoreLaunches || 0}</span>
+            </div>
+          </div>
         </div>
       )}
 
@@ -210,53 +509,6 @@ export default function RallyManageView({
         </div>
       )}
 
-      {/* Rali Ativo Atual */}
-      {activeRally && (
-        <div className="bg-gradient-to-br from-amber-950/30 via-dark-900 to-dark-950 border border-amber-600/50 rounded-2xl p-6 shadow-xl space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-dark-950 uppercase tracking-wider inline-block mb-1.5">
-                Rali Ativo em Andamento
-              </span>
-              <h3 className="text-xl font-black text-slate-100">{activeRally.name}</h3>
-              <p className="text-xs text-slate-400 mt-1 flex items-center space-x-2">
-                <Calendar className="w-3.5 h-3.5 text-amber-500" />
-                <span>
-                  Início: {new Date(activeRally.startDate).toLocaleDateString('pt-BR')}
-                </span>
-              </p>
-            </div>
-
-            <button
-              onClick={() => handleCloseRally(activeRally.id)}
-              className="px-3.5 py-2 rounded-xl border border-red-800 bg-red-950/40 hover:bg-red-900/60 text-red-200 text-xs font-bold transition-all flex items-center space-x-1.5"
-            >
-              <Square className="w-3.5 h-3.5" />
-              <span>Encerrar Rali Ativo</span>
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-dark-800">
-            <div className="p-3 bg-dark-950/80 rounded-xl border border-dark-800">
-              <span className="text-[11px] text-slate-400 block font-medium">Nações</span>
-              <span className="text-lg font-black text-amber-400">{activeRally._count?.nations || 2}</span>
-            </div>
-            <div className="p-3 bg-dark-950/80 rounded-xl border border-dark-800">
-              <span className="text-[11px] text-slate-400 block font-medium">Tribos</span>
-              <span className="text-lg font-black text-amber-400">{activeRally._count?.tribes || 12}</span>
-            </div>
-            <div className="p-3 bg-dark-950/80 rounded-xl border border-dark-800">
-              <span className="text-[11px] text-slate-400 block font-medium">Integrantes</span>
-              <span className="text-lg font-black text-amber-400">{activeRally._count?.people || 0}</span>
-            </div>
-            <div className="p-3 bg-dark-950/80 rounded-xl border border-dark-800">
-              <span className="text-[11px] text-slate-400 block font-medium">Lançamentos</span>
-              <span className="text-lg font-black text-amber-400">{activeRally._count?.scoreLaunches || 0}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Histórico de Todos os Ralis */}
       <div className="bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-xl space-y-4">
         <h3 className="text-sm font-bold text-slate-200">Ralis Cadastrados no Sistema</h3>
@@ -299,6 +551,152 @@ export default function RallyManageView({
           ))}
         </div>
       </div>
+
+      {/* MODAL: EDITAR NAÇÃO */}
+      {editingNation && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-sm bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl p-6 my-8">
+            <div className="flex items-center justify-between pb-4 border-b border-dark-800">
+              <div className="flex items-center space-x-2">
+                <Flag className="w-5 h-5 text-amber-500" />
+                <h3 className="text-base font-bold text-slate-100">Editar Nação</h3>
+              </div>
+              <button
+                onClick={() => setEditingNation(null)}
+                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveNation} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Nome da Nação <span className="text-amber-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={nationName}
+                  onChange={(e) => setNationName(e.target.value)}
+                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Cor de Destaque
+                </label>
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="color"
+                    value={nationColor}
+                    onChange={(e) => setNationColor(e.target.value)}
+                    className="w-10 h-10 rounded-lg cursor-pointer bg-dark-950 border border-dark-700"
+                  />
+                  <input
+                    type="text"
+                    value={nationColor}
+                    onChange={(e) => setNationColor(e.target.value)}
+                    className="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setEditingNation(null)}
+                  className="px-3.5 py-2 rounded-xl border border-dark-700 text-slate-300 hover:bg-dark-800 text-xs font-semibold"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                >
+                  {loading ? 'Salvando...' : 'Salvar Alterações'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: CRIAR / EDITAR TRIBO */}
+      {(isAddingTribe || editingTribe) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
+          <div className="relative w-full max-w-sm bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl p-6 my-8">
+            <div className="flex items-center justify-between pb-4 border-b border-dark-800">
+              <div className="flex items-center space-x-2">
+                <Shield className="w-5 h-5 text-amber-500" />
+                <h3 className="text-base font-bold text-slate-100">
+                  {editingTribe ? 'Editar Tribo' : 'Nova Tribo'}
+                </h3>
+              </div>
+              <button
+                onClick={() => {
+                  setEditingTribe(null);
+                  setIsAddingTribe(false);
+                }}
+                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveTribe} className="mt-4 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Nome da Tribo <span className="text-amber-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: Tribo Leão, Tribo Guerreiros..."
+                  value={tribeName}
+                  onChange={(e) => setTribeName(e.target.value)}
+                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Código da Tribo (opcional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Ex: LEAO, GUERR..."
+                  value={tribeCode}
+                  onChange={(e) => setTribeCode(e.target.value)}
+                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500 uppercase font-mono"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingTribe(null);
+                    setIsAddingTribe(false);
+                  }}
+                  className="px-3.5 py-2 rounded-xl border border-dark-700 text-slate-300 hover:bg-dark-800 text-xs font-semibold"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                >
+                  {loading ? 'Salvando...' : editingTribe ? 'Salvar Tribo' : 'Adicionar Tribo'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
     </div>
   );

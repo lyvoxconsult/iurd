@@ -181,6 +181,8 @@ export default function HomePage() {
               <RallyManageView
                 activeRally={activeRally}
                 allRallies={allRallies}
+                nations={nations}
+                tribes={tribes}
                 onRefresh={loadData}
               />
             )}

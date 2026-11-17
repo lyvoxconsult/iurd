@@ -62,7 +62,7 @@ model Person {
   nation      Nation   @relation(fields: [nationId], references: [id], onDelete: Cascade)
   tribeId     String
   tribe       Tribe    @relation(fields: [tribeId], references: [id], onDelete: Cascade)
-  category    String   // jovem, membro, obreiro, colaborador
+  category    String   // jovem, obreiro, colaborador
   role        String   // participante, lider_tribo, lider_nacao
   active      Boolean  @default(true)
   createdAt   DateTime @default(now())

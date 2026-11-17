@@ -44,7 +44,7 @@ export default function PeopleView({
   const [formName, setFormName] = useState('');
   const [formNationId, setFormNationId] = useState('');
   const [formTribeId, setFormTribeId] = useState('');
-  const [formCategory, setFormCategory] = useState<'jovem' | 'membro' | 'obreiro' | 'colaborador'>('jovem');
+  const [formCategory, setFormCategory] = useState<'jovem' | 'obreiro' | 'colaborador'>('jovem');
   const [formRole, setFormRole] = useState<'participante' | 'lider_tribo' | 'lider_nacao'>('participante');
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -253,7 +253,6 @@ export default function PeopleView({
             >
               <option value="">Todas as Categorias</option>
               <option value="jovem">Jovem</option>
-              <option value="membro">Membro</option>
               <option value="obreiro">Obreiro</option>
               <option value="colaborador">Colaborador</option>
             </select>
@@ -494,7 +493,6 @@ export default function PeopleView({
                   required
                 >
                   <option value="jovem">Jovem</option>
-                  <option value="membro">Membro</option>
                   <option value="obreiro">Obreiro</option>
                   <option value="colaborador">Colaborador</option>
                 </select>

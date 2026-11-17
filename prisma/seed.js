@@ -160,7 +160,7 @@ async function main() {
       name: 'Ana Carolina',
       nationId: benjamim.id,
       tribeId: aguiaTribe.id,
-      category: 'membro',
+      category: 'jovem',
       role: 'participante',
     },
   ];

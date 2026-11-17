@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const CategoryEnum = z.enum(['jovem', 'membro', 'obreiro', 'colaborador']);
+export const CategoryEnum = z.enum(['jovem', 'obreiro', 'colaborador']);
 export const RoleEnum = z.enum(['participante', 'lider_tribo', 'lider_nacao']);
 export const TargetTypeEnum = z.enum(['nation', 'tribe', 'person']);
 
