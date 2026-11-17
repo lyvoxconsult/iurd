@@ -279,7 +279,7 @@ export default function HistoryView({
 
                     {item.notes && !isVoided && (
                       <p className="text-[11px] text-slate-400 italic mt-0.5">
-                        Obs: "{item.notes}"
+                        Obs: &quot;{item.notes}&quot;
                       </p>
                     )}
 
@@ -330,8 +330,8 @@ export default function HistoryView({
 
       {/* MODAL DE CONFIRMAÇÃO DE ESTORNO */}
       {voidModalItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-md bg-dark-900 border border-red-900/80 rounded-2xl shadow-2xl p-6 my-8">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto sm:p-4">
+          <div role="dialog" aria-modal="true" aria-label="Estornar pontuação" className="relative w-full min-h-dvh sm:min-h-0 sm:max-w-md max-h-dvh overflow-y-auto bg-dark-900 border border-red-900/80 rounded-none sm:rounded-2xl shadow-2xl p-4 sm:p-6 sm:my-8">
             <div className="flex items-center justify-between pb-4 border-b border-dark-800">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-xl bg-red-950 text-red-400 flex items-center justify-center border border-red-800">

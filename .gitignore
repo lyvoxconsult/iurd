@@ -27,3 +27,7 @@ Thumbs.db
 
 # Tool caches
 graphify-out/
+backups/
+.playwright-mcp/
+tsconfig.tsbuildinfo
+*.db.bak

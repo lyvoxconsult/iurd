@@ -1,4 +1,10 @@
-﻿const http = require('http');
+const http = require('http');
+
+// Teste legado: grava pontuações no servidor da porta 3000. Não executar no banco real.
+if (process.env.IURD_ALLOW_LEGACY_HTTP_TEST !== 'ISOLATED_TEST_SERVER_ONLY') {
+  console.error('Teste HTTP legado bloqueado: ele grava dados. Use apenas um servidor e banco isolados.');
+  process.exit(1);
+}
 
 async function request(url, options = {}) {
   return new Promise((resolve, reject) => {

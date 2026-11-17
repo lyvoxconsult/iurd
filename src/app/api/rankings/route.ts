@@ -189,6 +189,8 @@ export async function GET(req: Request) {
       targetWeek: {
         weekNumber: targetWeekNumber,
         weekYear: targetWeekYear,
+        isPartial: targetWeekYear > currentWeekInfo.weekYear ||
+          (targetWeekYear === currentWeekInfo.weekYear && targetWeekNumber >= currentWeekInfo.weekNumber),
       },
       currentWeekInfo,
       availableWeeks,

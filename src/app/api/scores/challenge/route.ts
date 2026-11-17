@@ -19,6 +19,9 @@ export async function POST(req: Request) {
         where: { idempotencyKey: validated.idempotencyKey },
       });
       if (existing) {
+        if (existing.rallyId !== activeRally.id) {
+          return NextResponse.json({ error: 'Chave de lançamento pertence a outro rali' }, { status: 409 });
+        }
         return NextResponse.json(
           { success: true, scoreLaunch: existing, duplicateIgnored: true },
           { status: 200 }
@@ -28,14 +31,15 @@ export async function POST(req: Request) {
 
     let challenge: any = null;
     if (validated.challengeId) {
-      challenge = await prisma.challenge.findUnique({
-        where: { id: validated.challengeId },
+      challenge = await prisma.challenge.findFirst({
+        where: { id: validated.challengeId, rallyId: activeRally.id, active: true },
       });
     } else if (validated.challengeTitle) {
       // Procura se já foi lançado com esse mesmo nome ou cria dinamicamente
       challenge = await prisma.challenge.findFirst({
         where: {
           rallyId: activeRally.id,
+          active: true,
           title: {
             equals: validated.challengeTitle.trim(),
           },
@@ -57,6 +61,9 @@ export async function POST(req: Request) {
     if (!challenge) {
       return NextResponse.json({ error: 'Desafio não especificado ou não encontrado' }, { status: 404 });
     }
+    if (challenge.defaultPoints !== validated.points) {
+      return NextResponse.json({ error: `Este desafio vale ${challenge.defaultPoints} pontos` }, { status: 400 });
+    }
 
     let snapshotNationId: string;
     let snapshotTribeId: string | null = null;
@@ -65,8 +72,8 @@ export async function POST(req: Request) {
     let targetPersonId: string | null = null;
 
     if (validated.targetType === 'nation') {
-      const nation = await prisma.nation.findUnique({
-        where: { id: validated.targetId },
+      const nation = await prisma.nation.findFirst({
+        where: { id: validated.targetId, rallyId: activeRally.id },
       });
       if (!nation) {
         return NextResponse.json({ error: 'Nação alvo não encontrada' }, { status: 404 });
@@ -75,8 +82,8 @@ export async function POST(req: Request) {
       snapshotTribeId = null; // Alvo nação: pontua SOMENTE a nação, nenhuma tribo
       targetNationId = nation.id;
     } else if (validated.targetType === 'tribe') {
-      const tribe = await prisma.tribe.findUnique({
-        where: { id: validated.targetId },
+      const tribe = await prisma.tribe.findFirst({
+        where: { id: validated.targetId, rallyId: activeRally.id },
       });
       if (!tribe) {
         return NextResponse.json({ error: 'Tribo alvo não encontrada' }, { status: 404 });
@@ -85,8 +92,8 @@ export async function POST(req: Request) {
       snapshotTribeId = tribe.id;       // Pontua a tribo
       targetTribeId = tribe.id;
     } else if (validated.targetType === 'person') {
-      const person = await prisma.person.findUnique({
-        where: { id: validated.targetId },
+      const person = await prisma.person.findFirst({
+        where: { id: validated.targetId, rallyId: activeRally.id, active: true },
       });
       if (!person) {
         return NextResponse.json({ error: 'Pessoa alvo não encontrada' }, { status: 404 });

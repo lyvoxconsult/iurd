@@ -1,13 +1,14 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+// Evita que a execução acidental apague todo o histórico de pontuação.
+if (process.env.IURD_CONFIRM_DESTRUCTIVE_RESET !== 'DELETE_ALL_SCORES_AND_CHALLENGES') {
+  console.error('Reset destrutivo bloqueado. Faça backup do banco e confirme explicitamente a operação.');
+  process.exit(1);
+}
+
 async function reset() {
   console.log('--- Preparando banco limpo para produção ---');
-
-  // Atualizar nome de qualquer rali para Rali Umarizal 2026
-  await prisma.rally.updateMany({
-    data: { name: 'Rali Umarizal 2026' },
-  });
 
   // Limpar pontuações de teste anteriores
   await prisma.scoreLaunch.deleteMany({});
@@ -19,7 +20,7 @@ async function reset() {
 
   console.log('Desafios pré-setados removidos. Placares zerados.');
   console.log('Estrutura de 2 Nações e 12 Tribos preservada.');
-  console.log('Rali Umarizal 2026 pronto para uso!');
+  console.log('Rali pronto para uso.');
 }
 
 reset()

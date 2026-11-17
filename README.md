@@ -1,6 +1,8 @@
-# IURD Umarizal • Sistema de Gestão e Pontuação do Rali
+# IURD U Marizal • Sistema de Gestão e Pontuação do Rali
 
-Sistema web responsivo para gestão do Rali da Igreja (IURD Umarizal), substituindo o controle em papel por uma plataforma auditável, resiliente e em tempo real.
+Sistema web responsivo para gestão do rali da igreja IURD U Marizal.
+
+> **Estado da hospedagem:** o projeto Firebase `iurd-u-marizal` e o Firestore `(default)` em `southamerica-east1` foram criados. As rotas da aplicação ainda usam Prisma/SQLite. Não publique esta versão na Vercel para registrar pontos: o SQLite local não é persistente nas funções da Vercel. A integração com Firestore e a migração verificada dos dados são etapas pendentes.
 
 ---
 
@@ -21,8 +23,9 @@ Sistema web responsivo para gestão do Rali da Igreja (IURD Umarizal), substitui
 - **Placar de Sábado**: No sábado, o placar principal exibe as nações com indicação explícita de que o resultado é **parcial**, pois os lançamentos realizados no domingo ainda somam na mesma semana.
 - **Acumulado**: Os pontos semanais se acumulam até o encerramento do rali.
 
-### 3. Mecânica de Desafios (Sem Desafios Pré-setados)
-- **Digitação Livre**: O sistema **não** impõe desafios pré-setados engessados; o operador escreve diretamente qual foi o desafio no momento do lançamento, informando a pontuação.
+### 3. Mecânica de Desafios
+- O administrador cria um desafio com título, descrição opcional e valor em pontos. Também pode registrar um novo desafio durante o lançamento.
+- Cada lançamento de um desafio cadastrado usa o valor definido para esse desafio.
 - Cada lançamento tem exatamente **um alvo**: Nação, Tribo ou Pessoa.
 - O valor do desafio é aplicado **uma única vez** por lançamento (nunca multiplicado por integrantes).
 - **Alvo Nação**: Soma **somente à nação**.
@@ -70,32 +73,37 @@ Sistema web responsivo para gestão do Rali da Igreja (IURD Umarizal), substitui
 npm install
 ```
 
-### 3. Banco de Dados e Migrações
+### 3. Acesso administrativo
+Copie `.env.example` para `.env` e defina `ADMIN_PASSWORD` (ao menos 12 caracteres) e `SESSION_SECRET` (ao menos 32 caracteres aleatórios). O sistema bloqueia o acesso às APIs enquanto essas variáveis não estiverem configuradas. O arquivo `.env` não deve ser versionado nem compartilhado.
+
+O SQLite atual é local. Para testar em um celular ou tablet, o dispositivo precisa alcançar o computador que executa a aplicação **por HTTPS** (inclusive na rede local), pois a senha e o cookie de sessão não devem trafegar por HTTP. Acesso por `localhost` serve apenas para desenvolvimento no próprio computador. A futura hospedagem na Vercel fornece HTTPS, mas depende da troca do banco antes do uso real.
+
+### 4. Banco de Dados e Migrações
 O banco SQLite local é configurado via Prisma:
 ```bash
 # Executa migrações existentes e sincroniza o schema
 npx prisma migrate dev
 ```
 
-### 4. Carga de Dados Iniciais (Seed)
-Popula o rali ativo, as 2 nações, 12 tribos, 5 desafios oficiais e liderança inicial:
+### 5. Carga de Dados Iniciais (Seed)
+Cria o rali inicial, 2 nações e 12 tribos quando ainda não existem. Não cria pessoas fictícias nem altera o nome de um rali já existente:
 ```bash
 npm run prisma:seed
 ```
 
-### 5. Executar os Testes Automatizados de Regras de Negócio
+### 6. Executar os Testes Automatizados de Regras de Negócio
 ```bash
 npm run test:rules
 ```
-Executa a bateria de 20 testes cobrindo todas as fórmulas de pontuação, vínculos, empates, timezone e estorno auditado.
+Execute testes que escrevem no banco somente com `DATABASE_URL` apontando para um banco de teste isolado.
 
-### 6. Iniciar em Modo de Desenvolvimento
+### 7. Iniciar em Modo de Desenvolvimento
 ```bash
 npm run dev
 ```
 Acesse `http://localhost:3000` no seu navegador.
 
-### 7. Build e Execução em Produção
+### 8. Build e Execução em Produção
 ```bash
 npm run build
 npm start
@@ -149,5 +157,7 @@ IURD/
 
 ## 🔒 Auditoria e Segurança
 - Nenhuma chave ou segredo exposto no repositório (`.env` devidamente no `.gitignore`).
-- Validação dupla (cliente e servidor) em todos os endpoints com Zod.
+- Acesso administrativo obrigatório para consultas e alterações de dados.
+- Validação de entradas no servidor.
 - Estorno sem exclusão física garantindo rastreabilidade contábil total do rali.
+- `scripts/reset-for-production.js` apaga pontuações e desafios; permanece bloqueado por padrão e não faz parte da instalação ou atualização normal.

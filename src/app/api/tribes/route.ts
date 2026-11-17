@@ -12,9 +12,10 @@ export async function GET(req: Request) {
       const active = await prisma.rally.findFirst({ where: { isActive: true } });
       rallyId = active?.id;
     }
+    if (!rallyId) return NextResponse.json({ tribes: [] });
 
     const where: any = {};
-    if (rallyId) where.rallyId = rallyId;
+    where.rallyId = rallyId;
     if (nationId) where.nationId = nationId;
 
     const tribes = await prisma.tribe.findMany({
@@ -46,32 +47,33 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Nação e nome da tribo são obrigatórios' }, { status: 400 });
     }
 
-    const nation = await prisma.nation.findUnique({
-      where: { id: nationId },
+    const activeRally = await prisma.rally.findFirst({ where: { isActive: true } });
+    if (!activeRally) return NextResponse.json({ error: 'Nenhum rali ativo encontrado' }, { status: 400 });
+    const nation = await prisma.nation.findFirst({
+      where: { id: nationId, rallyId: activeRally.id },
     });
     if (!nation) {
       return NextResponse.json({ error: 'Nação não encontrada' }, { status: 404 });
     }
 
-    // Calcular o próximo orderIndex
-    const lastTribe = await prisma.tribe.findFirst({
-      where: { nationId },
-      orderBy: { orderIndex: 'desc' },
+    const tribe = await prisma.$transaction(async (tx) => {
+      const count = await tx.tribe.count({ where: { nationId: nation.id } });
+      if (count >= 6) return null;
+      const lastTribe = await tx.tribe.findFirst({
+        where: { nationId: nation.id }, orderBy: { orderIndex: 'desc' },
+      });
+      return tx.tribe.create({
+        data: {
+          rallyId: nation.rallyId,
+          nationId: nation.id,
+          name: name.trim(),
+          code: code?.trim() || null,
+          orderIndex: (lastTribe?.orderIndex || 0) + 1,
+        },
+        include: { nation: { select: { id: true, name: true, color: true } } },
+      });
     });
-    const nextOrder = (lastTribe?.orderIndex || 0) + 1;
-
-    const tribe = await prisma.tribe.create({
-      data: {
-        rallyId: nation.rallyId,
-        nationId: nation.id,
-        name: name.trim(),
-        code: code?.trim() || null,
-        orderIndex: nextOrder,
-      },
-      include: {
-        nation: { select: { id: true, name: true, color: true } },
-      },
-    });
+    if (!tribe) return NextResponse.json({ error: 'Cada nação pode ter no máximo seis tribos' }, { status: 409 });
 
     return NextResponse.json({ success: true, tribe });
   } catch (error: any) {
@@ -88,7 +90,10 @@ export async function PUT(req: Request) {
     if (!id || !name || !name.trim()) {
       return NextResponse.json({ error: 'ID e nome da tribo são obrigatórios' }, { status: 400 });
     }
-
+    const activeRally = await prisma.rally.findFirst({ where: { isActive: true } });
+    if (!activeRally || !await prisma.tribe.findFirst({ where: { id, rallyId: activeRally.id } })) {
+      return NextResponse.json({ error: 'Tribo não encontrada no rali ativo' }, { status: 404 });
+    }
     const updated = await prisma.tribe.update({
       where: { id },
       data: {
@@ -114,6 +119,15 @@ export async function DELETE(req: Request) {
 
     if (!id) {
       return NextResponse.json({ error: 'ID da tribo é obrigatório' }, { status: 400 });
+    }
+    const activeRally = await prisma.rally.findFirst({ where: { isActive: true } });
+    if (!activeRally || !await prisma.tribe.findFirst({ where: { id, rallyId: activeRally.id } })) {
+      return NextResponse.json({ error: 'Tribo não encontrada no rali ativo' }, { status: 404 });
+    }
+    const target = await prisma.tribe.findUnique({ where: { id } });
+    const tribeCount = await prisma.tribe.count({ where: { nationId: target!.nationId } });
+    if (tribeCount <= 6) {
+      return NextResponse.json({ error: 'Cada nação deve manter seis tribos; renomeie a tribo em vez de excluí-la' }, { status: 409 });
     }
 
     // 1. Checar se existem pessoas cadastradas na tribo

@@ -11,8 +11,6 @@ import {
   RotateCcw,
   Sparkles,
   Edit2,
-  Trash2,
-  Plus,
   Shield,
   X,
   Users,
@@ -47,10 +45,8 @@ export default function RallyManageView({
   const [nationName, setNationName] = useState('');
   const [nationColor, setNationColor] = useState('');
 
-  // Modal: Criar / Editar Tribo
+  // Modal: Editar Tribo
   const [editingTribe, setEditingTribe] = useState<any | null>(null);
-  const [isAddingTribe, setIsAddingTribe] = useState(false);
-  const [selectedNationForTribe, setSelectedNationForTribe] = useState('');
   const [tribeName, setTribeName] = useState('');
   const [tribeCode, setTribeCode] = useState('');
 
@@ -169,15 +165,6 @@ export default function RallyManageView({
   };
 
   // Handlers de Tribo
-  const handleOpenAddTribe = (nationId: string) => {
-    setSelectedNationForTribe(nationId);
-    setTribeName('');
-    setTribeCode('');
-    setIsAddingTribe(true);
-    setErrorMsg(null);
-    setSuccessMsg(null);
-  };
-
   const handleOpenEditTribe = (tribe: any) => {
     setEditingTribe(tribe);
     setTribeName(tribe.name);
@@ -196,61 +183,22 @@ export default function RallyManageView({
     setLoading(true);
     setErrorMsg(null);
     try {
-      if (editingTribe) {
-        // Atualizar
-        const res = await fetch('/api/tribes', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: editingTribe.id,
-            name: tribeName.trim(),
-            code: tribeCode.trim() || undefined,
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        setSuccessMsg('Tribo atualizada com sucesso!');
-        setEditingTribe(null);
-      } else {
-        // Criar
-        const res = await fetch('/api/tribes', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            nationId: selectedNationForTribe,
-            name: tribeName.trim(),
-            code: tribeCode.trim() || undefined,
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error);
-        setSuccessMsg('Tribo adicionada com sucesso!');
-        setIsAddingTribe(false);
-      }
-      onRefresh();
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Erro ao salvar tribo');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDeleteTribe = async (tribe: any) => {
-    if (!confirm(`Deseja realmente remover a "${tribe.name}"?`)) return;
-
-    setLoading(true);
-    setErrorMsg(null);
-    try {
-      const res = await fetch(`/api/tribes?id=${tribe.id}`, {
-        method: 'DELETE',
+      const res = await fetch('/api/tribes', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: editingTribe.id,
+          name: tribeName.trim(),
+          code: tribeCode.trim() || undefined,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-
-      setSuccessMsg(`Tribo "${tribe.name}" removida com sucesso!`);
+      setSuccessMsg('Tribo atualizada com sucesso!');
+      setEditingTribe(null);
       onRefresh();
     } catch (err: any) {
-      setErrorMsg(err.message || 'Erro ao excluir tribo');
+      setErrorMsg(err.message || 'Erro ao salvar tribo');
     } finally {
       setLoading(false);
     }
@@ -302,7 +250,7 @@ export default function RallyManageView({
               <span>Nações e Tribos do Rali</span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Altere os nomes das nações e tribos, adicione novas tribos ou remova tribos com segurança
+              Duas nações com seis tribos cada. Você pode atualizar os nomes sem alterar a estrutura.
             </p>
           </div>
         </div>
@@ -319,7 +267,7 @@ export default function RallyManageView({
               >
                 <div>
                   {/* Cabeçalho da Nação */}
-                  <div className="flex items-center justify-between pb-3 border-b border-dark-800 mb-4">
+                    <div className="flex items-center justify-between gap-2 pb-3 border-b border-dark-800 mb-4">
                     <div className="flex items-center space-x-3">
                       <div
                         className="w-4 h-4 rounded-full flex-shrink-0 shadow-sm"
@@ -335,7 +283,7 @@ export default function RallyManageView({
 
                     <button
                       onClick={() => handleOpenEditNation(nation)}
-                      className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg border border-dark-700 bg-dark-900 hover:bg-dark-800 text-slate-300 text-xs font-semibold transition-all hover:text-amber-400"
+                      className="min-h-11 flex items-center space-x-1 px-2.5 py-1.5 rounded-lg border border-dark-700 bg-dark-900 hover:bg-dark-800 text-slate-300 text-xs font-semibold transition-all hover:text-amber-400"
                       title="Editar Nome da Nação"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
@@ -368,17 +316,10 @@ export default function RallyManageView({
                           <div className="flex items-center space-x-1">
                             <button
                               onClick={() => handleOpenEditTribe(tribe)}
-                              className="p-1.5 text-slate-400 hover:text-amber-400 hover:bg-dark-950 rounded-lg transition-colors"
-                              title="Editar nome da tribo"
+                              className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-amber-400 hover:bg-dark-950 rounded-lg transition-colors"
+                              aria-label={`Editar ${tribe.name}`}
                             >
                               <Edit2 className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteTribe(tribe)}
-                              className="p-1.5 text-slate-400 hover:text-red-400 hover:bg-red-950/30 rounded-lg transition-colors"
-                              title="Remover tribo"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
                           </div>
                         </div>
@@ -387,14 +328,6 @@ export default function RallyManageView({
                   </div>
                 </div>
 
-                {/* Botão Adicionar Tribo para esta Nação */}
-                <button
-                  onClick={() => handleOpenAddTribe(nation.id)}
-                  className="w-full py-2.5 rounded-xl border border-dashed border-dark-700 hover:border-amber-500 text-slate-300 hover:text-amber-400 text-xs font-bold flex items-center justify-center space-x-2 transition-all bg-dark-900/50 hover:bg-dark-900"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Adicionar Tribo em {nation.name}</span>
-                </button>
               </div>
             );
           })}
@@ -468,7 +401,7 @@ export default function RallyManageView({
                 </label>
                 <input
                   type="text"
-                  placeholder="Ex: Rali Umarizal 2026 - Edição Inverno"
+                  placeholder="Ex: Rali U Marizal 2026"
                   value={newRallyName}
                   onChange={(e) => setNewRallyName(e.target.value)}
                   className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
@@ -554,8 +487,8 @@ export default function RallyManageView({
 
       {/* MODAL: EDITAR NAÇÃO */}
       {editingNation && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-sm bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl p-6 my-8">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto sm:p-4">
+          <div role="dialog" aria-modal="true" aria-label="Editar nação" className="relative w-full min-h-dvh sm:min-h-0 sm:max-w-sm max-h-dvh overflow-y-auto bg-dark-900 border border-dark-700 rounded-none sm:rounded-2xl shadow-2xl p-4 sm:p-6 sm:my-8">
             <div className="flex items-center justify-between pb-4 border-b border-dark-800">
               <div className="flex items-center space-x-2">
                 <Flag className="w-5 h-5 text-amber-500" />
@@ -563,7 +496,8 @@ export default function RallyManageView({
               </div>
               <button
                 onClick={() => setEditingNation(null)}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                aria-label="Fechar edição da nação"
+                className="min-h-11 min-w-11 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -625,22 +559,22 @@ export default function RallyManageView({
       )}
 
       {/* MODAL: CRIAR / EDITAR TRIBO */}
-      {(isAddingTribe || editingTribe) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-sm bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl p-6 my-8">
+      {editingTribe && (
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto sm:p-4">
+          <div role="dialog" aria-modal="true" aria-label="Editar tribo" className="relative w-full min-h-dvh sm:min-h-0 sm:max-w-sm max-h-dvh overflow-y-auto bg-dark-900 border border-dark-700 rounded-none sm:rounded-2xl shadow-2xl p-4 sm:p-6 sm:my-8">
             <div className="flex items-center justify-between pb-4 border-b border-dark-800">
               <div className="flex items-center space-x-2">
                 <Shield className="w-5 h-5 text-amber-500" />
                 <h3 className="text-base font-bold text-slate-100">
-                  {editingTribe ? 'Editar Tribo' : 'Nova Tribo'}
+                  Editar Tribo
                 </h3>
               </div>
               <button
                 onClick={() => {
                   setEditingTribe(null);
-                  setIsAddingTribe(false);
                 }}
-                className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                aria-label="Fechar edição da tribo"
+                className="min-h-11 min-w-11 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -679,7 +613,6 @@ export default function RallyManageView({
                   type="button"
                   onClick={() => {
                     setEditingTribe(null);
-                    setIsAddingTribe(false);
                   }}
                   className="px-3.5 py-2 rounded-xl border border-dark-700 text-slate-300 hover:bg-dark-800 text-xs font-semibold"
                 >
@@ -690,7 +623,7 @@ export default function RallyManageView({
                   disabled={loading}
                   className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50"
                 >
-                  {loading ? 'Salvando...' : editingTribe ? 'Salvar Tribo' : 'Adicionar Tribo'}
+                  {loading ? 'Salvando...' : 'Salvar Tribo'}
                 </button>
               </div>
             </form>

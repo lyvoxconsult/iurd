@@ -91,7 +91,7 @@ export default function ChallengesView({
 
         <button
           onClick={() => setIsCreating(!isCreating)}
-          className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
+          className="min-h-11 flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
         >
           <Plus className="w-4 h-4" />
           <span>{isCreating ? 'Fechar Formulário' : 'Criar Novo Desafio'}</span>
@@ -213,7 +213,7 @@ export default function ChallengesView({
                 </span>
                 <button
                   onClick={() => onLaunchChallenge(challenge.id)}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-dark-950 hover:bg-amber-500 hover:text-dark-950 text-amber-400 border border-amber-500/30 text-xs font-bold transition-all"
+                  className="min-h-11 flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-dark-950 hover:bg-amber-500 hover:text-dark-950 text-amber-400 border border-amber-500/30 text-sm font-bold transition-all"
                 >
                   <span>Pontuar</span>
                   <ArrowRight className="w-3.5 h-3.5" />

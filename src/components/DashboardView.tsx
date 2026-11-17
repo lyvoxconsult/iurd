@@ -30,8 +30,6 @@ export default function DashboardView({
   const currentWeekInfo = rankingsData?.currentWeekInfo;
   const isPartial = currentWeekInfo?.isPartial;
   const isSaturday = currentWeekInfo?.isSaturday;
-  const isSundayBefore16h = currentWeekInfo?.isSundayBefore16h;
-  const isSundayAfter16h = currentWeekInfo?.isSundayAfter16h;
 
   const weeklyNations = rankingsData?.nations || [];
   const totalNations = accumulatedRankingsData?.nations || [];
@@ -61,84 +59,36 @@ export default function DashboardView({
   return (
     <div className="space-y-6">
       
-      {/* Banner de Aviso de Semana Parcial ou Placar Consolidado */}
-      {isPartial ? (
-        <div className="bg-gradient-to-r from-amber-950/70 via-dark-900 to-amber-950/70 border border-amber-600/40 rounded-2xl p-4 shadow-xl flex items-center justify-between">
-          <div className="flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/40 flex-shrink-0 animate-pulse">
-              <AlertTriangle className="w-5 h-5 text-amber-400" />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-bold text-amber-300">
-                  {isSaturday
-                    ? 'SÁBADO: PLACAR SEMANAL PARCIAL'
-                    : isSundayBefore16h
-                    ? 'DOMINGO: ENCONTRO EM ANDAMENTO (PLACAR PARCIAL)'
-                    : 'SEMANA DE PONTUAÇÃO EM ANDAMENTO (PARCIAL)'}
-                </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/30">
-                  America/Sao_Paulo
-                </span>
-              </div>
-              <p className="text-xs text-slate-300 mt-0.5">
-                A pontuação da semana é somada e finalizada às <strong>16:00 do domingo no final do encontro</strong>, momento em que o placar oficial é consolidado. Lançamentos realizados até domingo às 16h entram nesta semana.
-              </p>
-            </div>
+      <div className={`rounded-2xl border p-4 sm:p-5 shadow-xl flex flex-col sm:flex-row sm:items-center gap-3 ${isPartial ? 'bg-amber-950/40 border-amber-600/40' : 'bg-emerald-950/40 border-emerald-600/40'}`}>
+        <div className="flex min-w-0 items-start gap-3">
+          <div className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center ${isPartial ? 'bg-amber-500/20 text-amber-400' : 'bg-emerald-500/20 text-emerald-400'}`}>
+            {isPartial ? <AlertTriangle className="w-5 h-5" /> : <Trophy className="w-5 h-5" />}
           </div>
-          <button
-            onClick={onOpenScoreModal}
-            className="hidden sm:flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 text-xs font-bold transition-all shadow-md flex-shrink-0 ml-4"
-          >
-            <PlusCircle className="w-4 h-4" />
-            <span>Lançar Agora</span>
-          </button>
-        </div>
-      ) : (
-        <div className="bg-gradient-to-r from-emerald-950/80 via-dark-900 to-amber-950/60 border border-emerald-500/50 rounded-2xl p-4 shadow-xl flex items-center justify-between">
-          <div className="flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/40 flex-shrink-0">
-              <Trophy className="w-5 h-5 text-amber-400" />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-sm font-bold text-emerald-300">
-                  🏆 PLACAR OFICIAL CONSOLIDADO • ENCONTRO CONCLUÍDO ÀS 16H
-                </span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">
-                  Fechado às 16:00
-                </span>
-              </div>
-              <p className="text-xs text-slate-300 mt-0.5">
-                A pontuação da semana foi somada e consolidada no término do encontro de domingo. Confira abaixo o resultado final das Nações, Tribos e Líderes!
-              </p>
-            </div>
+          <div>
+            <p className={`text-sm sm:text-base font-bold ${isPartial ? 'text-amber-300' : 'text-emerald-300'}`}>
+              {isPartial ? (isSaturday ? 'Sábado: placar semanal parcial' : 'Semana em andamento') : 'Semana encerrada'}
+            </p>
+            <p className="mt-1 text-sm text-slate-300">A semana vai de segunda a domingo. Pontos lançados até o fim do domingo entram no mesmo resultado.</p>
           </div>
-          <button
-            onClick={onOpenScoreModal}
-            className="hidden sm:flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-dark-800 hover:bg-dark-700 text-slate-200 border border-dark-700 text-xs font-semibold transition-all shadow-md flex-shrink-0 ml-4"
-          >
-            <PlusCircle className="w-4 h-4 text-amber-500" />
-            <span>Nova Pontuação</span>
-          </button>
         </div>
-      )}
+        <button onClick={onOpenScoreModal} className="min-h-11 sm:ml-auto shrink-0 rounded-xl bg-amber-500 px-4 text-sm font-bold text-dark-950">Lançar pontos</button>
+      </div>
 
       {/* PLACAR PRINCIPAL DAS 2 NAÇÕES */}
       <div>
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
           <div>
             <h2 className="text-lg font-black text-slate-100 flex items-center space-x-2">
               <Trophy className="w-5 h-5 text-amber-500" />
               <span>Placar Geral das Nações</span>
             </h2>
             <p className="text-xs text-slate-400">
-              Disputa oficial entre as 2 grandes nações do Rali Umarizal
+              Disputa entre as duas nações do IURD U Marizal
             </p>
           </div>
           <button
             onClick={() => onNavigateToTab('rankings')}
-            className="text-xs font-semibold text-amber-400 hover:text-amber-300 flex items-center space-x-1"
+            className="min-h-11 text-sm font-semibold text-amber-400 hover:text-amber-300 flex items-center space-x-1"
           >
             <span>Ver Rankings Detalhados</span>
             <ChevronRight className="w-4 h-4" />

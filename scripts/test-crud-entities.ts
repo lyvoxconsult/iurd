@@ -13,12 +13,12 @@ async function runEntityTests() {
   console.log('jovem válido:', jovem.success);
   console.log('obreiro válido:', obreiro.success);
   console.log('colaborador válido:', colaborador.success);
-  console.log('membro rejeitado (esperado false):', membro.success);
+  console.log('membro válido:', membro.success);
 
-  if (!jovem.success || !obreiro.success || !colaborador.success || membro.success) {
-    throw new Error('Falha na validação de categorias: membro ainda está sendo aceito ou outras categorias falharam.');
+  if (!jovem.success || !obreiro.success || !colaborador.success || !membro.success) {
+    throw new Error('Falha na validação das quatro categorias de integrantes.');
   }
-  console.log('✅ SUCESSO: Membro removido com êxito! Apenas jovem, obreiro e colaborador são aceitos.\n');
+  console.log('✅ SUCESSO: Jovem, membro, obreiro e colaborador são aceitos.\n');
 
   console.log('=== TESTE 2: CRUD DE NAÇÕES E TRIBOS ===');
   const rally = await prisma.rally.findFirst({ where: { isActive: true } });

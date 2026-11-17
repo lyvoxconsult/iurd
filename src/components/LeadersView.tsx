@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 import { 
   Crown, 
   Award, 
@@ -65,7 +66,7 @@ export default function LeadersView({
       if (res.ok) {
         // Filtrar apenas lançamentos deste líder
         const filtered = (data.history || []).filter(
-          (h: any) => h.type === 'leader' && h.targetName === leaders.find((l) => l.id === leaderId)?.name
+          (h: any) => h.type === 'leader' && h.targetId === leaderId
         );
         setLeaderHistory(filtered);
       }
@@ -80,10 +81,7 @@ export default function LeadersView({
     setQuickLaunchLeader(leader);
     setPoints(50);
     setReason('');
-    const now = new Date();
-    const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-      .toISOString()
-      .slice(0, 16);
+    const localIso = formatInTimeZone(new Date(), 'America/Sao_Paulo', "yyyy-MM-dd'T'HH:mm");
     setScoreDate(localIso);
     setLaunchError(null);
     setLaunchSuccess(null);
@@ -110,7 +108,7 @@ export default function LeadersView({
           leaderId: quickLaunchLeader.id,
           points: Number(points),
           reason: reason.trim(),
-          scoreDate: scoreDate ? new Date(scoreDate).toISOString() : new Date().toISOString(),
+          scoreDate: scoreDate ? fromZonedTime(scoreDate, 'America/Sao_Paulo').toISOString() : new Date().toISOString(),
           idempotencyKey: `quick-ld-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
         }),
       });
@@ -329,8 +327,8 @@ export default function LeadersView({
 
       {/* MODAL DE LANÇAMENTO RÁPIDO PARA LÍDER */}
       {quickLaunchLeader && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-md bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl p-6 my-8">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto sm:p-4">
+          <div role="dialog" aria-modal="true" aria-label="Pontuar líder" className="relative w-full min-h-dvh sm:min-h-0 sm:max-w-md max-h-dvh overflow-y-auto bg-dark-900 border border-dark-700 rounded-none sm:rounded-2xl shadow-2xl p-4 sm:p-6 sm:my-8">
             <div className="flex items-center justify-between pb-4 border-b border-dark-800">
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
@@ -419,7 +417,7 @@ export default function LeadersView({
                 <button
                   type="submit"
                   disabled={launchLoading}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
+                  className="w-full min-h-12 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
                 >
                   {launchLoading ? 'Registrando...' : 'Confirmar Pontos do Líder'}
                 </button>

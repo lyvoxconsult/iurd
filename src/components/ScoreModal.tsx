@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { formatInTimeZone, fromZonedTime } from 'date-fns-tz';
 import { X, Award, Flame, Crown, CheckCircle2, AlertCircle, Info } from 'lucide-react';
 
 interface ScoreModalProps {
@@ -12,6 +13,7 @@ interface ScoreModalProps {
   tribes: any[];
   people: any[];
   initialChallengeTitle?: string;
+  initialChallengeId?: string;
   initialLeaderId?: string;
 }
 
@@ -24,12 +26,17 @@ export default function ScoreModal({
   tribes,
   people,
   initialChallengeTitle = '',
+  initialChallengeId = '',
   initialLeaderId = '',
 }: ScoreModalProps) {
   const [modalTab, setModalTab] = useState<'challenge' | 'leader'>('challenge');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   // Challenge Form State
   const [challengeTitle, setChallengeTitle] = useState('');
@@ -48,17 +55,13 @@ export default function ScoreModal({
   // Set default dates on open
   useEffect(() => {
     if (isOpen) {
-      const now = new Date();
-      // Format YYYY-MM-DDTHH:mm
-      const localIso = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-        .toISOString()
-        .slice(0, 16);
+      const localIso = formatInTimeZone(new Date(), 'America/Sao_Paulo', "yyyy-MM-dd'T'HH:mm");
       setScoreDate(localIso);
       setLeaderScoreDate(localIso);
       setErrorMsg(null);
       setSuccessMsg(null);
       setChallengeTitle(initialChallengeTitle || '');
-      setPoints(10);
+      setPoints(challenges.find((challenge) => challenge.id === initialChallengeId)?.defaultPoints ?? 10);
 
       if (initialLeaderId) {
         setSelectedLeaderId(initialLeaderId);
@@ -71,7 +74,37 @@ export default function ScoreModal({
         setTargetId(nations[0].id);
       }
     }
-  }, [isOpen, initialChallengeTitle, initialLeaderId, nations]);
+  }, [isOpen, initialChallengeTitle, initialChallengeId, initialLeaderId, nations, challenges]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    previousFocusRef.current = document.activeElement as HTMLElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const focusFrame = requestAnimationFrame(() => dialogRef.current?.focus());
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onCloseRef.current();
+      if (event.key !== 'Tab' || !dialogRef.current) return;
+      const focusable = [...dialogRef.current.querySelectorAll<HTMLElement>('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled])')]
+        .filter((item) => item.offsetParent !== null);
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      cancelAnimationFrame(focusFrame);
+      document.body.style.overflow = previousOverflow;
+      previousFocusRef.current?.focus();
+    };
+  }, [isOpen]);
+
+  const selectedChallenge = initialChallengeId
+    ? challenges.find((challenge) => challenge.id === initialChallengeId)
+    : undefined;
 
   // Switch target type and default target ID
   const handleTargetTypeChange = (type: 'nation' | 'tribe' | 'person') => {
@@ -116,11 +149,11 @@ export default function ScoreModal({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          challengeTitle: challengeTitle.trim(),
+          ...(selectedChallenge ? { challengeId: selectedChallenge.id } : { challengeTitle: challengeTitle.trim() }),
           targetType,
           targetId,
-          points: Number(points),
-          scoreDate: scoreDate ? new Date(scoreDate).toISOString() : new Date().toISOString(),
+          points: selectedChallenge ? selectedChallenge.defaultPoints : Number(points),
+          scoreDate: scoreDate ? fromZonedTime(scoreDate, 'America/Sao_Paulo').toISOString() : new Date().toISOString(),
           notes: notes || undefined,
           idempotencyKey,
         }),
@@ -173,7 +206,7 @@ export default function ScoreModal({
           leaderId: selectedLeaderId,
           points: Number(leaderPoints),
           reason: leaderReason.trim(),
-          scoreDate: leaderScoreDate ? new Date(leaderScoreDate).toISOString() : new Date().toISOString(),
+          scoreDate: leaderScoreDate ? fromZonedTime(leaderScoreDate, 'America/Sao_Paulo').toISOString() : new Date().toISOString(),
           idempotencyKey,
         }),
       });
@@ -199,8 +232,8 @@ export default function ScoreModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl p-6 my-8">
+    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto sm:p-4">
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="score-dialog-title" tabIndex={-1} className="relative w-full min-h-dvh sm:min-h-0 sm:max-w-lg max-h-dvh overflow-y-auto bg-dark-900 border border-dark-700 rounded-none sm:rounded-2xl shadow-2xl p-4 pb-8 sm:p-6 sm:my-8 focus:outline-none">
         
         {/* Cabeçalho do Modal */}
         <div className="flex items-center justify-between pb-4 border-b border-dark-800">
@@ -209,13 +242,14 @@ export default function ScoreModal({
               {modalTab === 'challenge' ? <Flame className="w-5 h-5" /> : <Crown className="w-5 h-5" />}
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-100">Lançar Pontuação</h2>
-              <p className="text-xs text-slate-400">Rali IURD Umarizal • Registro Oficial</p>
+              <h2 id="score-dialog-title" className="text-lg font-bold text-slate-100">Lançar Pontuação</h2>
+              <p className="text-xs text-slate-400">IURD U Marizal • Registro de pontos</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800 transition-colors"
+            aria-label="Fechar lançamento"
+            className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-dark-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -229,7 +263,7 @@ export default function ScoreModal({
               setModalTab('challenge');
               setErrorMsg(null);
             }}
-            className={`py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center space-x-2 transition-all ${
+            className={`min-h-11 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center space-x-1 sm:space-x-2 transition-all ${
               modalTab === 'challenge'
                 ? 'bg-amber-500 text-dark-950 shadow-md'
                 : 'text-slate-400 hover:text-slate-200'
@@ -244,7 +278,7 @@ export default function ScoreModal({
               setModalTab('leader');
               setErrorMsg(null);
             }}
-            className={`py-2 px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center space-x-2 transition-all ${
+            className={`min-h-11 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center space-x-1 sm:space-x-2 transition-all ${
               modalTab === 'leader'
                 ? 'bg-amber-500 text-dark-950 shadow-md'
                 : 'text-slate-400 hover:text-slate-200'
@@ -275,24 +309,20 @@ export default function ScoreModal({
             
             {/* Escrever o Desafio Dinamicamente */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label htmlFor="challenge-title" className="block text-sm font-semibold text-slate-300 mb-1">
                 Qual foi o desafio? <span className="text-amber-500">*</span>
               </label>
               <input
+                id="challenge-title"
                 type="text"
-                list="past-challenges"
                 placeholder="Escreva qual foi o desafio realizado..."
                 value={challengeTitle}
                 onChange={(e) => setChallengeTitle(e.target.value)}
-                className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                readOnly={!!selectedChallenge}
+                className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-base text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
                 required
                 autoFocus
               />
-              <datalist id="past-challenges">
-                {challenges.map((c) => (
-                  <option key={c.id} value={c.title} />
-                ))}
-              </datalist>
             </div>
 
             {/* Tipo de Alvo: Nação / Tribo / Pessoa */}
@@ -309,6 +339,7 @@ export default function ScoreModal({
                   <button
                     key={t.id}
                     type="button"
+                    aria-pressed={targetType === t.id}
                     onClick={() => handleTargetTypeChange(t.id as any)}
                     className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
                       targetType === t.id
@@ -324,7 +355,7 @@ export default function ScoreModal({
 
             {/* Selecionar Alvo Específico */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label htmlFor="score-target" className="block text-xs font-semibold text-slate-300 mb-1">
                 {targetType === 'nation'
                   ? 'Selecione a Nação'
                   : targetType === 'tribe'
@@ -335,6 +366,7 @@ export default function ScoreModal({
 
               {targetType === 'nation' && (
                 <select
+                  id="score-target"
                   value={targetId}
                   onChange={(e) => setTargetId(e.target.value)}
                   className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
@@ -350,6 +382,7 @@ export default function ScoreModal({
 
               {targetType === 'tribe' && (
                 <select
+                  id="score-target"
                   value={targetId}
                   onChange={(e) => setTargetId(e.target.value)}
                   className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
@@ -365,6 +398,7 @@ export default function ScoreModal({
 
               {targetType === 'person' && (
                 <select
+                  id="score-target"
                   value={targetId}
                   onChange={(e) => setTargetId(e.target.value)}
                   className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
@@ -402,30 +436,34 @@ export default function ScoreModal({
             </div>
 
             {/* Pontos e Data */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label htmlFor="challenge-points" className="block text-sm font-semibold text-slate-300 mb-1">
                   Pontos <span className="text-amber-500">*</span>
                 </label>
                 <input
+                  id="challenge-points"
                   type="number"
                   min="1"
-                  value={points}
+                  value={selectedChallenge?.defaultPoints ?? points}
                   onChange={(e) => setPoints(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                  disabled={!!selectedChallenge}
+                  className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base text-slate-100 focus:outline-none focus:border-amber-500 disabled:opacity-70"
                   required
                 />
+                {selectedChallenge && <p className="mt-1 text-xs text-slate-400">Valor definido neste desafio.</p>}
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label htmlFor="challenge-date" className="block text-sm font-semibold text-slate-300 mb-1">
                   Data e Hora <span className="text-amber-500">*</span>
                 </label>
                 <input
+                  id="challenge-date"
                   type="datetime-local"
                   value={scoreDate}
                   onChange={(e) => setScoreDate(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                  className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base text-slate-100 focus:outline-none focus:border-amber-500"
                   required
                 />
               </div>
@@ -433,10 +471,11 @@ export default function ScoreModal({
 
             {/* Observações */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label htmlFor="challenge-notes" className="block text-xs font-semibold text-slate-300 mb-1">
                 Observações / Justificativa (opcional)
               </label>
               <input
+                id="challenge-notes"
                 type="text"
                 placeholder="Ex: Culto das 19h com mobilização máxima"
                 value={notes}
@@ -464,10 +503,11 @@ export default function ScoreModal({
             
             {/* Escolher Líder */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label htmlFor="leader-target" className="block text-xs font-semibold text-slate-300 mb-1">
                 Selecione o Líder <span className="text-amber-500">*</span>
               </label>
               <select
+                id="leader-target"
                 value={selectedLeaderId}
                 onChange={(e) => setSelectedLeaderId(e.target.value)}
                 className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
@@ -492,12 +532,13 @@ export default function ScoreModal({
             </div>
 
             {/* Pontos e Data */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label htmlFor="leader-points" className="block text-xs font-semibold text-slate-300 mb-1">
                   Pontos do Líder <span className="text-amber-500">*</span>
                 </label>
                 <input
+                  id="leader-points"
                   type="number"
                   min="1"
                   value={leaderPoints}
@@ -508,10 +549,11 @@ export default function ScoreModal({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label htmlFor="leader-date" className="block text-xs font-semibold text-slate-300 mb-1">
                   Data e Hora <span className="text-amber-500">*</span>
                 </label>
                 <input
+                  id="leader-date"
                   type="datetime-local"
                   value={leaderScoreDate}
                   onChange={(e) => setLeaderScoreDate(e.target.value)}
@@ -523,10 +565,11 @@ export default function ScoreModal({
 
             {/* Motivo OBRIGATÓRIO */}
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1">
+              <label htmlFor="leader-reason" className="block text-xs font-semibold text-slate-300 mb-1">
                 Motivo do Lançamento <span className="text-amber-500">*</span>
               </label>
               <input
+                id="leader-reason"
                 type="text"
                 placeholder="Ex: Líder mais engajado na evangelização"
                 value={leaderReason}

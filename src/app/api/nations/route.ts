@@ -46,6 +46,10 @@ export async function PUT(req: Request) {
     if (!id || !name || !name.trim()) {
       return NextResponse.json({ error: 'ID e nome da nação são obrigatórios' }, { status: 400 });
     }
+    const activeRally = await prisma.rally.findFirst({ where: { isActive: true } });
+    if (!activeRally || !await prisma.nation.findFirst({ where: { id, rallyId: activeRally.id } })) {
+      return NextResponse.json({ error: 'Nação não encontrada no rali ativo' }, { status: 404 });
+    }
 
     const updated = await prisma.nation.update({
       where: { id },

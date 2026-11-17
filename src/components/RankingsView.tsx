@@ -55,13 +55,13 @@ export default function RankingsView({
     <div className="space-y-6">
       
       {/* Barra de Filtro de Período e Semanas */}
-      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-3 sm:p-4 shadow-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
         
         {/* Alternador de Período (Semanal vs Acumulado) */}
         <div className="flex items-center space-x-2 bg-dark-950 p-1 rounded-xl border border-dark-800 w-full sm:w-auto">
           <button
             onClick={() => setPeriod('week')}
-            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 transition-all ${
+            className={`min-h-11 flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center space-x-1.5 transition-all ${
               period === 'week'
                 ? 'bg-amber-500 text-dark-950 shadow-md'
                 : 'text-slate-400 hover:text-white'
@@ -72,7 +72,7 @@ export default function RankingsView({
           </button>
           <button
             onClick={() => setPeriod('total')}
-            className={`flex-1 sm:flex-none px-4 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center space-x-2 transition-all ${
+            className={`min-h-11 flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center space-x-1.5 transition-all ${
               period === 'total'
                 ? 'bg-amber-500 text-dark-950 shadow-md'
                 : 'text-slate-400 hover:text-white'
@@ -85,18 +85,19 @@ export default function RankingsView({
 
         {/* Seletor de Semanas (quando em visão semanal) */}
         {period === 'week' && availableWeeks.length > 0 && (
-          <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
             <span className="text-xs font-semibold text-slate-400 flex items-center space-x-1">
               <Filter className="w-3.5 h-3.5 text-amber-500" />
               <span>Semana:</span>
             </span>
             <select
-              value={selectedWeek ? `${selectedWeek.weekYear}-${selectedWeek.weekNumber}` : ''}
+              aria-label="Semana do ranking"
+              value={selectedWeek ? `${selectedWeek.weekYear}-${selectedWeek.weekNumber}` : `${rankingsData?.targetWeek?.weekYear}-${rankingsData?.targetWeek?.weekNumber}`}
               onChange={(e) => {
                 const [year, num] = e.target.value.split('-').map(Number);
                 setSelectedWeek({ weekYear: year, weekNumber: num });
               }}
-              className="bg-dark-950 border border-dark-700 text-slate-200 text-xs rounded-xl px-3 py-2 font-medium focus:outline-none focus:border-amber-500"
+              className="min-h-11 flex-1 sm:flex-none bg-dark-950 border border-dark-700 text-slate-200 text-sm rounded-xl px-3 py-2 font-medium focus:outline-none focus:border-amber-500"
             >
               {availableWeeks.map((w: any) => (
                 <option key={`${w.weekYear}-${w.weekNumber}`} value={`${w.weekYear}-${w.weekNumber}`}>
@@ -123,7 +124,8 @@ export default function RankingsView({
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all ${
+              aria-pressed={isActive}
+              className={`min-h-14 p-3 sm:p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all ${
                 isActive
                   ? 'bg-dark-900 border-amber-500 shadow-lg gold-glow text-amber-400'
                   : 'bg-dark-900/60 border-dark-800 text-slate-400 hover:border-dark-700 hover:text-slate-200'
@@ -145,15 +147,16 @@ export default function RankingsView({
       </div>
 
       {/* LISTA DO RANKING SELECIONADO */}
-      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-xl space-y-4">
+      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-3 sm:p-6 shadow-xl space-y-4">
         
         <div className="flex items-center justify-between pb-3 border-b border-dark-800">
           <div>
-            <h3 className="text-base font-bold text-slate-100 flex items-center space-x-2">
+            <h3 className="text-base font-bold text-slate-100 flex flex-wrap items-center gap-2">
               <span>Classificação Oficial</span>
               <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-dark-950 border border-dark-700 text-slate-300">
-                {period === 'week' ? 'Semana Atual' : 'Geral Acumulado'}
+                {period === 'week' ? `Semana ${rankingsData?.targetWeek?.weekNumber ?? ''} (${rankingsData?.targetWeek?.weekYear ?? ''})` : 'Geral Acumulado'}
               </span>
+              {period === 'week' && typeof rankingsData?.targetWeek?.isPartial === 'boolean' && <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${rankingsData.targetWeek.isPartial ? 'bg-amber-950 text-amber-300' : 'bg-emerald-950 text-emerald-300'}`}>{rankingsData.targetWeek.isPartial ? 'Parcial' : 'Encerrada'}</span>}
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
               Empates mantêm a mesma posição com transparência total.

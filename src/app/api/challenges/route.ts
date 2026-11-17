@@ -12,6 +12,7 @@ export async function GET(req: Request) {
       const active = await prisma.rally.findFirst({ where: { isActive: true } });
       rallyId = active?.id;
     }
+    if (!rallyId) return NextResponse.json({ challenges: [] });
 
     const challenges = await prisma.challenge.findMany({
       where: {

@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('--- Iniciando Seed do Sistema IURD Umarizal ---');
+  console.log('--- Iniciando Seed do Sistema IURD U Marizal ---');
 
   // Verifica se já existe um rali
   let rally = await prisma.rally.findFirst({
@@ -12,18 +12,12 @@ async function main() {
   if (!rally) {
     rally = await prisma.rally.create({
       data: {
-        name: 'Rali Umarizal 2026',
-        startDate: new Date('2026-11-01T00:00:00-03:00'),
+        name: 'Rali IURD U Marizal',
+        startDate: new Date(),
         isActive: true,
       },
     });
     console.log(`Rali criado: ${rally.name} (${rally.id})`);
-  } else {
-    // Atualizar nome para Umarizal caso estivesse anterior
-    rally = await prisma.rally.update({
-      where: { id: rally.id },
-      data: { name: 'Rali Umarizal 2026' },
-    });
   }
 
   // 1. Criar as 2 Nações
@@ -73,8 +67,6 @@ async function main() {
     { name: 'Tribo Redenção', code: 'REDEN', orderIndex: 6 },
   ];
 
-  const allTribes = [];
-
   for (const t of judaTribes) {
     let tribe = await prisma.tribe.findFirst({
       where: { rallyId: rally.id, nationId: juda.id, name: t.name },
@@ -91,7 +83,6 @@ async function main() {
       });
       console.log(`Tribo criada em Judá: ${tribe.name}`);
     }
-    allTribes.push(tribe);
   }
 
   for (const t of benjamimTribes) {
@@ -110,79 +101,10 @@ async function main() {
       });
       console.log(`Tribo criada em Benjamim: ${tribe.name}`);
     }
-    allTribes.push(tribe);
   }
 
   // 3. Sem desafios pré-setados: Desafios são digitados dinamicamente no momento do lançamento pelo usuário!
   console.log('Sem desafios pré-setados: serão definidos no momento do lançamento.');
-
-  // 4. Cadastrar Líderes e Pessoas Iniciais para demonstração e testes
-  const leaoTribe = allTribes.find((t) => t.name === 'Tribo Leão');
-  const aguiaTribe = allTribes.find((t) => t.name === 'Tribo Águia');
-
-  const initialPeople = [
-    {
-      name: 'Pastor Marcos Silva',
-      nationId: juda.id,
-      tribeId: leaoTribe.id,
-      category: 'obreiro',
-      role: 'lider_nacao',
-    },
-    {
-      name: 'Pastor Daniel Souza',
-      nationId: benjamim.id,
-      tribeId: aguiaTribe.id,
-      category: 'obreiro',
-      role: 'lider_nacao',
-    },
-    {
-      name: 'Lucas Ferreira',
-      nationId: juda.id,
-      tribeId: leaoTribe.id,
-      category: 'jovem',
-      role: 'lider_tribo',
-    },
-    {
-      name: 'Gabriel Santos',
-      nationId: benjamim.id,
-      tribeId: aguiaTribe.id,
-      category: 'jovem',
-      role: 'lider_tribo',
-    },
-    {
-      name: 'Matheus Oliveira',
-      nationId: juda.id,
-      tribeId: leaoTribe.id,
-      category: 'jovem',
-      role: 'participante',
-    },
-    {
-      name: 'Ana Carolina',
-      nationId: benjamim.id,
-      tribeId: aguiaTribe.id,
-      category: 'jovem',
-      role: 'participante',
-    },
-  ];
-
-  for (const p of initialPeople) {
-    const exists = await prisma.person.findFirst({
-      where: { rallyId: rally.id, name: p.name },
-    });
-    if (!exists) {
-      await prisma.person.create({
-        data: {
-          rallyId: rally.id,
-          name: p.name,
-          nationId: p.nationId,
-          tribeId: p.tribeId,
-          category: p.category,
-          role: p.role,
-        },
-      });
-      console.log(`Pessoa cadastrada: ${p.name} (${p.role})`);
-    }
-  }
 
   console.log('--- Seed Concluído com Sucesso! ---');
 }

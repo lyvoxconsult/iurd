@@ -15,14 +15,10 @@ export async function GET(req: Request) {
       const active = await prisma.rally.findFirst({ where: { isActive: true } });
       rallyId = active?.id;
     }
+    if (!rallyId) return NextResponse.json({ history: [], totalCount: 0 });
 
-    const challengeWhere: any = {};
-    const leaderWhere: any = {};
-
-    if (rallyId) {
-      challengeWhere.rallyId = rallyId;
-      leaderWhere.rallyId = rallyId;
-    }
+    const challengeWhere: any = { rallyId };
+    const leaderWhere: any = { rallyId };
 
     if (status !== 'all') {
       challengeWhere.status = status;
@@ -128,6 +124,7 @@ export async function GET(req: Request) {
         type: 'leader',
         title: `Pontuação Manual de Líder: ${item.reason}`,
         targetType: 'leader',
+        targetId: item.leader.id,
         targetName: item.leader.name,
         beneficiaryNation: item.leader.nation.name,
         beneficiaryTribe: item.leader.tribe.name,

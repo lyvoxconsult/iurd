@@ -18,9 +18,10 @@ export async function GET(req: Request) {
       const active = await prisma.rally.findFirst({ where: { isActive: true } });
       rallyId = active?.id;
     }
+    if (!rallyId) return NextResponse.json({ people: [] });
 
     const where: any = {};
-    if (rallyId) where.rallyId = rallyId;
+    where.rallyId = rallyId;
     if (nationId) where.nationId = nationId;
     if (tribeId) where.tribeId = tribeId;
     if (category) where.category = category;
@@ -57,8 +58,8 @@ export async function POST(req: Request) {
     }
 
     // Regra Crítica: A tribo selecionada DEVE pertencer à nação indicada
-    const tribe = await prisma.tribe.findUnique({
-      where: { id: validated.tribeId },
+    const tribe = await prisma.tribe.findFirst({
+      where: { id: validated.tribeId, rallyId: activeRally.id },
     });
 
     if (!tribe) {
@@ -108,10 +109,14 @@ export async function PUT(req: Request) {
     }
 
     const validated = personSchema.parse(data);
+    const activeRally = await prisma.rally.findFirst({ where: { isActive: true } });
+    if (!activeRally) return NextResponse.json({ error: 'Nenhum rali ativo encontrado' }, { status: 400 });
+    const person = await prisma.person.findFirst({ where: { id, rallyId: activeRally.id } });
+    if (!person) return NextResponse.json({ error: 'Integrante não encontrado no rali ativo' }, { status: 404 });
 
     // Validação estrita do vínculo tribo e nação
-    const tribe = await prisma.tribe.findUnique({
-      where: { id: validated.tribeId },
+    const tribe = await prisma.tribe.findFirst({
+      where: { id: validated.tribeId, rallyId: activeRally.id },
     });
 
     if (!tribe) {

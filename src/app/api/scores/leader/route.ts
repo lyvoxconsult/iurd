@@ -19,6 +19,9 @@ export async function POST(req: Request) {
         where: { idempotencyKey: validated.idempotencyKey },
       });
       if (existing) {
+        if (existing.rallyId !== activeRally.id) {
+          return NextResponse.json({ error: 'Chave de lançamento pertence a outro rali' }, { status: 409 });
+        }
         return NextResponse.json(
           { success: true, leaderScoreLaunch: existing, duplicateIgnored: true },
           { status: 200 }
@@ -26,8 +29,8 @@ export async function POST(req: Request) {
       }
     }
 
-    const leader = await prisma.person.findUnique({
-      where: { id: validated.leaderId },
+    const leader = await prisma.person.findFirst({
+      where: { id: validated.leaderId, rallyId: activeRally.id, active: true },
       include: {
         nation: { select: { name: true } },
         tribe: { select: { name: true } },

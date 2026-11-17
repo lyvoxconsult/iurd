@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'IURD Umarizal • Sistema do Rali',
-  description: 'Sistema oficial de pontuação, rankings, desafios e gestão do Rali - IURD Umarizal',
+  title: 'IURD U Marizal • Sistema do Rali',
+  description: 'Sistema de pontuação, rankings, desafios e gestão do rali da IURD U Marizal',
 };
 
 export default function RootLayout({

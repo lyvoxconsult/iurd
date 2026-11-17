@@ -259,37 +259,35 @@ async function runTests() {
   assert(ranking[3].rank === 3, 'Competidor D está em 3º lugar (empate mantido)');
   assert(ranking[4].rank === 5, 'Competidor E está em 5º lugar');
 
-  console.log('\n--- Teste 6: Fuso Horário e Fechamento no Domingo às 16h (Fim do Encontro) ---');
+  console.log('\n--- Teste 6: Fuso Horário e Semana Completa de Segunda a Domingo ---');
   // Sábado, 21 de Novembro de 2026
   const saturdayDate = new Date('2026-11-21T18:00:00-03:00');
   const saturdayInfo = getWeekInfoForDate(saturdayDate);
   assert(saturdayInfo.isSaturday === true, 'Data de sábado identificada corretamente');
-  assert(saturdayInfo.isPartial === true, 'Sábado identificado como resultado semanal parcial');
+  assert(getWeekInfoForDate(new Date('2020-01-04T18:00:00-03:00')).isPartial === false,
+    'Semana histórica não aparece como parcial');
 
-  // Domingo, 22 de Novembro de 2026 às 11:00 (durante o encontro)
+  // Domingo, 22 de Novembro de 2026 às 11:00
   const sundayMeetingDate = new Date('2026-11-22T11:00:00-03:00');
   const sundayMeetingInfo = getWeekInfoForDate(sundayMeetingDate);
   assert(
     sundayMeetingInfo.weekNumber === saturdayInfo.weekNumber,
-    `Lançamentos de domingo durante o encontro entram na mesma semana que os de sábado (Semana ${saturdayInfo.weekNumber})`
+    `Lançamentos de domingo entram na mesma semana que os de sábado (Semana ${saturdayInfo.weekNumber})`
   );
-  assert(sundayMeetingInfo.isPartial === true, 'Domingo antes das 16h é parcial (encontro em andamento)');
 
-  // Domingo às 15:59 (minuto final antes do encerramento das 16h)
-  const sundayJustBefore16h = new Date('2026-11-22T15:59:00-03:00');
-  const sundayJustBeforeInfo = getWeekInfoForDate(sundayJustBefore16h);
+  // Último segundo de domingo ainda pertence à mesma semana.
+  const sundayLastSecond = new Date('2026-11-22T23:59:59-03:00');
+  const sundayLastInfo = getWeekInfoForDate(sundayLastSecond);
   assert(
-    sundayJustBeforeInfo.weekNumber === saturdayInfo.weekNumber,
-    'Lançamentos às 15:59 de domingo entram na semana do encontro'
+    sundayLastInfo.weekNumber === saturdayInfo.weekNumber,
+    'Lançamentos às 23:59:59 de domingo entram na semana corrente'
   );
-  assert(sundayJustBeforeInfo.isPartial === true, 'Antes das 16h permanece parcial');
 
-  // Domingo às 16:05 (após o término do encontro e revelação do placar)
-  const sundayAfterMeeting = new Date('2026-11-22T16:05:00-03:00');
-  const sundayAfterMeetingInfo = getWeekInfoForDate(sundayAfterMeeting);
+  const monday = new Date('2026-11-23T00:00:00-03:00');
+  const mondayInfo = getWeekInfoForDate(monday);
   assert(
-    sundayAfterMeetingInfo.weekNumber === saturdayInfo.weekNumber + 1,
-    `Lançamentos feitos após as 16h de domingo já pertencem ao próximo ciclo/semana (Semana ${sundayAfterMeetingInfo.weekNumber})`
+    mondayInfo.weekNumber === saturdayInfo.weekNumber + 1,
+    `Lançamentos a partir da segunda-feira pertencem à próxima semana (Semana ${mondayInfo.weekNumber})`
   );
 
   console.log('\n--- Teste 7: Estorno Auditado de Lançamento (Sem Pontos Negativos) ---');

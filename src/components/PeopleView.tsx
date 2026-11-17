@@ -44,7 +44,7 @@ export default function PeopleView({
   const [formName, setFormName] = useState('');
   const [formNationId, setFormNationId] = useState('');
   const [formTribeId, setFormTribeId] = useState('');
-  const [formCategory, setFormCategory] = useState<'jovem' | 'obreiro' | 'colaborador'>('jovem');
+  const [formCategory, setFormCategory] = useState<'jovem' | 'membro' | 'obreiro' | 'colaborador'>('jovem');
   const [formRole, setFormRole] = useState<'participante' | 'lider_tribo' | 'lider_nacao'>('participante');
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -173,7 +173,7 @@ export default function PeopleView({
     <div className="space-y-6">
       
       {/* Cabeçalho da Seção de Integrantes */}
-      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-4 sm:p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-black text-slate-100 flex items-center space-x-2">
             <Users className="w-5 h-5 text-amber-500" />
@@ -186,7 +186,7 @@ export default function PeopleView({
 
         <button
           onClick={handleOpenCreateModal}
-          className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
+          className="min-h-11 w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
         >
           <UserPlus className="w-4 h-4" />
           <span>Cadastrar Novo Integrante</span>
@@ -194,7 +194,7 @@ export default function PeopleView({
       </div>
 
       {/* Barra de Filtros e Busca */}
-      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-5 shadow-xl space-y-3">
+      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-3 sm:p-5 shadow-xl space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           
           {/* Busca por Nome */}
@@ -205,7 +205,8 @@ export default function PeopleView({
               placeholder="Buscar por nome..."
               value={searchName}
               onChange={(e) => setSearchName(e.target.value)}
-              className="w-full bg-dark-950 border border-dark-700 rounded-xl pl-9 pr-3 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
+              aria-label="Buscar integrante por nome"
+              className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl pl-9 pr-3 py-2 text-base sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
             />
           </div>
 
@@ -253,6 +254,7 @@ export default function PeopleView({
             >
               <option value="">Todas as Categorias</option>
               <option value="jovem">Jovem</option>
+              <option value="membro">Membro</option>
               <option value="obreiro">Obreiro</option>
               <option value="colaborador">Colaborador</option>
             </select>
@@ -296,8 +298,28 @@ export default function PeopleView({
         </div>
       </div>
 
-      {/* TABELA / LISTA DE INTEGRANTES */}
-      <div className="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden shadow-xl">
+      {/* Cartões de integrantes em telas pequenas. */}
+      <div className="space-y-3 sm:hidden">
+        {filteredPeople.length === 0 ? (
+          <p className="rounded-2xl border border-dark-800 bg-dark-900 p-6 text-center text-sm text-slate-400">Nenhum integrante encontrado.</p>
+        ) : filteredPeople.map((person) => (
+          <article key={person.id} className="rounded-2xl border border-dark-800 bg-dark-900 p-4 shadow-lg">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <h3 className="break-words text-base font-bold text-slate-100">{person.name}</h3>
+                <p className="mt-1 text-sm text-slate-300">{person.tribe?.name || 'Tribo'} · {person.nation?.name || 'Nação'}</p>
+              </div>
+              <button onClick={() => handleOpenEditModal(person)} aria-label={`Editar ${person.name}`} className="min-h-11 min-w-11 shrink-0 rounded-xl border border-dark-700 text-amber-400 flex items-center justify-center"><Edit2 className="h-4 w-4" /></button>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2 text-xs">
+              <span className="rounded-full border border-dark-700 px-2 py-1 capitalize text-slate-300">{person.category}</span>
+              <span className="rounded-full border border-amber-700/50 bg-amber-500/10 px-2 py-1 text-amber-200">{person.role === 'lider_nacao' ? 'Líder de Nação' : person.role === 'lider_tribo' ? 'Líder de Tribo' : 'Participante'}</span>
+            </div>
+          </article>
+        ))}
+      </div>
+      {/* Tabela em tablet e desktop. */}
+      <div className="hidden sm:block bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs sm:text-sm">
             <thead className="bg-dark-950 text-slate-400 border-b border-dark-800 uppercase text-[11px] font-semibold tracking-wider">
@@ -369,8 +391,8 @@ export default function PeopleView({
                       <td className="py-3 px-4 text-right">
                         <button
                           onClick={() => handleOpenEditModal(person)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-dark-800 transition-colors"
-                          title="Editar Integrante"
+                          className="min-h-11 min-w-11 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-dark-800 transition-colors"
+                          aria-label={`Editar ${person.name}`}
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
@@ -386,8 +408,8 @@ export default function PeopleView({
 
       {/* MODAL DE CADASTRO / EDIÇÃO */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm overflow-y-auto">
-          <div className="relative w-full max-w-md bg-dark-900 border border-dark-700 rounded-2xl shadow-2xl p-6 my-8">
+        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto sm:p-4">
+          <div role="dialog" aria-modal="true" aria-label={editingPerson ? 'Editar integrante' : 'Cadastrar integrante'} className="relative w-full min-h-dvh sm:min-h-0 sm:max-w-md max-h-dvh overflow-y-auto bg-dark-900 border border-dark-700 rounded-none sm:rounded-2xl shadow-2xl p-4 sm:p-6 sm:my-8">
             
             <div className="flex items-center justify-between pb-4 border-b border-dark-800">
               <div className="flex items-center space-x-3">
@@ -403,7 +425,8 @@ export default function PeopleView({
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                aria-label="Fechar cadastro"
+                className="min-h-11 min-w-11 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -426,10 +449,11 @@ export default function PeopleView({
               
               {/* Nome */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label htmlFor="person-name" className="block text-xs font-semibold text-slate-300 mb-1">
                   Nome Completo <span className="text-amber-500">*</span>
                 </label>
                 <input
+                  id="person-name"
                   type="text"
                   placeholder="Ex: João da Silva"
                   value={formName}
@@ -441,10 +465,11 @@ export default function PeopleView({
 
               {/* Nação */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label htmlFor="person-nation" className="block text-xs font-semibold text-slate-300 mb-1">
                   Nação <span className="text-amber-500">*</span>
                 </label>
                 <select
+                  id="person-nation"
                   value={formNationId}
                   onChange={(e) => handleNationChange(e.target.value)}
                   className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
@@ -460,10 +485,11 @@ export default function PeopleView({
 
               {/* Tribo (Filtrada estritamente pela nação) */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label htmlFor="person-tribe" className="block text-xs font-semibold text-slate-300 mb-1">
                   Tribo (Pertencente à Nação) <span className="text-amber-500">*</span>
                 </label>
                 <select
+                  id="person-tribe"
                   value={formTribeId}
                   onChange={(e) => setFormTribeId(e.target.value)}
                   className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
@@ -483,16 +509,18 @@ export default function PeopleView({
 
               {/* Categoria */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label htmlFor="person-category" className="block text-xs font-semibold text-slate-300 mb-1">
                   Categoria <span className="text-amber-500">*</span>
                 </label>
                 <select
+                  id="person-category"
                   value={formCategory}
                   onChange={(e) => setFormCategory(e.target.value as any)}
                   className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
                   required
                 >
                   <option value="jovem">Jovem</option>
+                  <option value="membro">Membro</option>
                   <option value="obreiro">Obreiro</option>
                   <option value="colaborador">Colaborador</option>
                 </select>
@@ -500,10 +528,11 @@ export default function PeopleView({
 
               {/* Função */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label htmlFor="person-role" className="block text-xs font-semibold text-slate-300 mb-1">
                   Função no Rali <span className="text-amber-500">*</span>
                 </label>
                 <select
+                  id="person-role"
                   value={formRole}
                   onChange={(e) => setFormRole(e.target.value as any)}
                   className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
@@ -520,7 +549,7 @@ export default function PeopleView({
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
+                  className="w-full min-h-12 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
                 >
                   {formLoading
                     ? 'Salvando...'
