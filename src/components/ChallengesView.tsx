@@ -133,12 +133,12 @@ export default function ChallengesView({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       
       {/* Cabeçalho */}
-      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="text-lg font-black text-slate-100 flex items-center space-x-2">
+          <h2 className="text-base sm:text-lg font-black text-slate-100 flex items-center space-x-2">
             <Flame className="w-5 h-5 text-amber-500" />
             <span>Desafios e Missões do Rali</span>
           </h2>
@@ -149,33 +149,33 @@ export default function ChallengesView({
 
         <button
           onClick={() => setIsCreating(!isCreating)}
-          className="min-h-11 flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
+          className="min-h-11 w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
         >
           <Plus className="w-4 h-4" />
           <span>{isCreating ? 'Fechar Formulário' : 'Criar Novo Desafio'}</span>
         </button>
       </div>
 
-      {successMsg && <p role="status" className="rounded-xl border border-emerald-800 bg-emerald-950/40 p-3 text-sm text-emerald-200">{successMsg}</p>}
+      {successMsg && <p role="status" className="rounded-xl border border-emerald-800 bg-emerald-950/40 p-3 text-xs sm:text-sm text-emerald-200">{successMsg}</p>}
 
       {/* Formulário de Criação (Toggle) */}
       {isCreating && (
-        <div className="bg-dark-900 border border-amber-600/40 rounded-2xl p-6 shadow-2xl space-y-4 gold-glow">
+        <div className="bg-dark-900 border border-amber-600/40 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl space-y-3.5 sm:space-y-4 gold-glow">
           <div className="flex items-center space-x-2 pb-2 border-b border-dark-800">
             <Sparkles className="w-4 h-4 text-amber-500" />
             <h3 className="text-sm font-bold text-slate-100">Configurar Novo Desafio</h3>
           </div>
 
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
+            <div className="p-2.5 sm:p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
               <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
 
-          <form onSubmit={handleCreateChallenge} className="space-y-3.5">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div className="md:col-span-2">
+          <form onSubmit={handleCreateChallenge} className="space-y-3 sm:space-y-3.5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+              <div className="sm:col-span-2">
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
                   Título do Desafio <span className="text-amber-500">*</span>
                 </label>
@@ -184,7 +184,7 @@ export default function ChallengesView({
                   placeholder="Ex: Evangelismo de Sábado"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                  className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
                   required
                 />
               </div>
@@ -198,7 +198,7 @@ export default function ChallengesView({
                   min="1"
                   value={defaultPoints}
                   onChange={(e) => setDefaultPoints(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                  className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500 font-semibold"
                   required
                 />
               </div>
@@ -213,22 +213,22 @@ export default function ChallengesView({
                 placeholder="Ex: Presença mínima de 5 jovens no ponto de oração..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
               />
             </div>
 
-            <div className="flex justify-end space-x-3 pt-2">
+            <div className="flex justify-end space-x-2.5 sm:space-x-3 pt-2">
               <button
                 type="button"
                 onClick={() => setIsCreating(false)}
-                className="px-4 py-2 rounded-xl border border-dark-700 text-slate-300 hover:bg-dark-800 text-xs font-semibold"
+                className="min-h-10 px-4 py-2 rounded-xl border border-dark-700 text-slate-300 hover:bg-dark-800 text-xs font-semibold"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                className="min-h-10 px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50"
               >
                 {loading ? 'Salvando...' : 'Salvar sem Pontuar'}
               </button>
@@ -238,7 +238,7 @@ export default function ChallengesView({
       )}
 
       {/* Grid de Desafios Existentes */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {challenges.length === 0 ? (
           <div className="col-span-full py-12 text-center text-slate-500 bg-dark-900 border border-dark-800 rounded-2xl">
             Nenhum desafio cadastrado. Crie um desafio para começar.
@@ -247,7 +247,7 @@ export default function ChallengesView({
           challenges.map((challenge) => (
             <div
               key={challenge.id}
-              className="bg-dark-900 border border-dark-800 hover:border-amber-600/40 rounded-2xl p-5 shadow-xl flex flex-col justify-between transition-all group"
+              className="bg-dark-900 border border-dark-800 hover:border-amber-600/40 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col justify-between transition-all group"
             >
               <div>
                 <div className="flex items-center justify-between mb-2.5">

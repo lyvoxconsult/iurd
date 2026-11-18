@@ -232,18 +232,27 @@ export default function ScoreModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto sm:p-4">
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="score-dialog-title" tabIndex={-1} className="relative w-full min-h-dvh sm:min-h-0 sm:max-w-lg max-h-dvh overflow-y-auto bg-dark-900 border border-dark-700 rounded-none sm:rounded-2xl shadow-2xl p-4 pb-8 sm:p-6 sm:my-8 focus:outline-none">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm sm:p-4">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="score-dialog-title"
+        tabIndex={-1}
+        className="relative w-full max-h-[92dvh] sm:max-h-[85vh] sm:max-w-lg overflow-y-auto bg-dark-900 border border-dark-700/80 rounded-t-[28px] sm:rounded-2xl shadow-2xl p-4 pb-6 sm:p-6 focus:outline-none flex flex-col"
+      >
+        {/* Barra de puxar no mobile (Bottom Sheet handle) */}
+        <div className="sm:hidden w-12 h-1 bg-dark-600 rounded-full mx-auto mb-2.5 shrink-0" />
         
         {/* Cabeçalho do Modal */}
-        <div className="flex items-center justify-between pb-4 border-b border-dark-800">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
-              {modalTab === 'challenge' ? <Flame className="w-5 h-5" /> : <Crown className="w-5 h-5" />}
+        <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-dark-800">
+          <div className="flex items-center space-x-2.5 sm:space-x-3">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shrink-0">
+              {modalTab === 'challenge' ? <Flame className="w-4 h-4 sm:w-5 sm:h-5" /> : <Crown className="w-4 h-4 sm:w-5 sm:h-5" />}
             </div>
             <div>
-              <h2 id="score-dialog-title" className="text-lg font-bold text-slate-100">Lançar Pontuação</h2>
-              <p className="text-xs text-slate-400">IURD Umarizal • Registro de pontos</p>
+              <h2 id="score-dialog-title" className="text-base sm:text-lg font-bold text-slate-100">Lançar Pontuação</h2>
+              <p className="text-[11px] sm:text-xs text-slate-400">IURD Umarizal • Registro de pontos</p>
             </div>
           </div>
           <button
@@ -256,20 +265,20 @@ export default function ScoreModal({
         </div>
 
         {/* Abas do Modal */}
-        <div className="grid grid-cols-2 gap-2 mt-4 p-1 bg-dark-950 rounded-xl border border-dark-800">
+        <div className="grid grid-cols-2 gap-1.5 sm:gap-2 mt-3 sm:mt-4 p-1 bg-dark-950 rounded-xl border border-dark-800">
           <button
             type="button"
             onClick={() => {
               setModalTab('challenge');
               setErrorMsg(null);
             }}
-            className={`min-h-11 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center space-x-1 sm:space-x-2 transition-all ${
+            className={`min-h-10 sm:min-h-11 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center space-x-1.5 sm:space-x-2 transition-all ${
               modalTab === 'challenge'
                 ? 'bg-amber-500 text-dark-950 shadow-md'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Flame className="w-4 h-4" />
+            <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>Desafio do Rali</span>
           </button>
           <button
@@ -278,26 +287,26 @@ export default function ScoreModal({
               setModalTab('leader');
               setErrorMsg(null);
             }}
-            className={`min-h-11 py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center space-x-1 sm:space-x-2 transition-all ${
+            className={`min-h-10 sm:min-h-11 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center space-x-1.5 sm:space-x-2 transition-all ${
               modalTab === 'leader'
                 ? 'bg-amber-500 text-dark-950 shadow-md'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            <Crown className="w-4 h-4" />
+            <Crown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             <span>Pontos de Líder</span>
           </button>
         </div>
 
         {/* Alertas */}
         {errorMsg && (
-          <div className="mt-4 p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
+          <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
             <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
             <span>{errorMsg}</span>
           </div>
         )}
         {successMsg && (
-          <div className="mt-4 p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center space-x-2">
+          <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center space-x-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
             <span>{successMsg}</span>
           </div>
@@ -305,191 +314,192 @@ export default function ScoreModal({
 
         {/* Formulário 1: Desafio */}
         {modalTab === 'challenge' && (
-          <form onSubmit={handleSubmitChallenge} className="mt-4 space-y-4">
-            
-            {/* Escrever o Desafio Dinamicamente */}
-            <div>
-              <label htmlFor="challenge-title" className="block text-sm font-semibold text-slate-300 mb-1">
-                Qual foi o desafio? <span className="text-amber-500">*</span>
-              </label>
-              <input
-                id="challenge-title"
-                type="text"
-                placeholder="Escreva qual foi o desafio realizado..."
-                value={challengeTitle}
-                onChange={(e) => setChallengeTitle(e.target.value)}
-                readOnly={!!selectedChallenge}
-                className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-base text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
-                required
-                autoFocus
-              />
-            </div>
-
-            {/* Tipo de Alvo: Nação / Tribo / Pessoa */}
-            <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Alvo da Pontuação <span className="text-amber-500">*</span>
-              </label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'nation', label: 'Nação' },
-                  { id: 'tribe', label: 'Tribo' },
-                  { id: 'person', label: 'Pessoa' },
-                ].map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    aria-pressed={targetType === t.id}
-                    onClick={() => handleTargetTypeChange(t.id as any)}
-                    className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
-                      targetType === t.id
-                        ? 'bg-amber-500/20 border-amber-500 text-amber-300'
-                        : 'bg-dark-950 border-dark-800 text-slate-400 hover:border-dark-700'
-                    }`}
-                  >
-                    {t.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Selecionar Alvo Específico */}
-            <div>
-              <label htmlFor="score-target" className="block text-xs font-semibold text-slate-300 mb-1">
-                {targetType === 'nation'
-                  ? 'Selecione a Nação'
-                  : targetType === 'tribe'
-                  ? 'Selecione a Tribo'
-                  : 'Selecione o Integrante'}{' '}
-                <span className="text-amber-500">*</span>
-              </label>
-
-              {targetType === 'nation' && (
-                <select
-                  id="score-target"
-                  value={targetId}
-                  onChange={(e) => setTargetId(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
-                >
-                  {nations.map((n) => (
-                    <option key={n.id} value={n.id}>
-                      {n.name}
-                    </option>
-                  ))}
-                </select>
-              )}
-
-              {targetType === 'tribe' && (
-                <select
-                  id="score-target"
-                  value={targetId}
-                  onChange={(e) => setTargetId(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
-                >
-                  {tribes.map((t) => (
-                    <option key={t.id} value={t.id}>
-                      {t.name} ({t.nation?.name || 'Nação'})
-                    </option>
-                  ))}
-                </select>
-              )}
-
-              {targetType === 'person' && (
-                <select
-                  id="score-target"
-                  value={targetId}
-                  onChange={(e) => setTargetId(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
-                >
-                  {people.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} — {p.tribe?.name} ({p.nation?.name})
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-
-            {/* Regra Explicativa Visual */}
-            <div className="p-3 bg-dark-950 border border-dark-800 rounded-xl text-xs text-slate-400 flex items-start space-x-2">
-              <Info className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+          <form onSubmit={handleSubmitChallenge} className="mt-3 sm:mt-4 space-y-3 sm:space-y-3.5 flex-1 flex flex-col justify-between">
+            <div className="space-y-3">
+              {/* Escrever o Desafio Dinamicamente */}
               <div>
+                <label htmlFor="challenge-title" className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1">
+                  Qual foi o desafio? <span className="text-amber-500">*</span>
+                </label>
+                <input
+                  id="challenge-title"
+                  type="text"
+                  placeholder="Escreva qual foi o desafio realizado..."
+                  value={challengeTitle}
+                  onChange={(e) => setChallengeTitle(e.target.value)}
+                  readOnly={!!selectedChallenge}
+                  className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
+                  required
+                  autoFocus
+                />
+              </div>
+
+              {/* Tipo de Alvo: Nação / Tribo / Pessoa */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                  Alvo da Pontuação <span className="text-amber-500">*</span>
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'nation', label: 'Nação' },
+                    { id: 'tribe', label: 'Tribo' },
+                    { id: 'person', label: 'Pessoa' },
+                  ].map((t) => (
+                    <button
+                      key={t.id}
+                      type="button"
+                      aria-pressed={targetType === t.id}
+                      onClick={() => handleTargetTypeChange(t.id as any)}
+                      className={`min-h-10 py-1.5 sm:py-2 px-2 rounded-xl text-xs font-bold border transition-all ${
+                        targetType === t.id
+                          ? 'bg-amber-500/20 border-amber-500 text-amber-300'
+                          : 'bg-dark-950 border-dark-800 text-slate-400 hover:border-dark-700'
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Selecionar Alvo Específico */}
+              <div>
+                <label htmlFor="score-target" className="block text-xs font-semibold text-slate-300 mb-1">
+                  {targetType === 'nation'
+                    ? 'Selecione a Nação'
+                    : targetType === 'tribe'
+                    ? 'Selecione a Tribo'
+                    : 'Selecione o Integrante'}{' '}
+                  <span className="text-amber-500">*</span>
+                </label>
+
                 {targetType === 'nation' && (
-                  <span>
-                    <strong>Alvo Nação:</strong> Pontua <u>somente a nação</u> selecionada.
-                  </span>
+                  <select
+                    id="score-target"
+                    value={targetId}
+                    onChange={(e) => setTargetId(e.target.value)}
+                    className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    required
+                  >
+                    {nations.map((n) => (
+                      <option key={n.id} value={n.id}>
+                        {n.name}
+                      </option>
+                    ))}
+                  </select>
                 )}
+
                 {targetType === 'tribe' && (
-                  <span>
-                    <strong>Alvo Tribo:</strong> Pontua a tribo e a sua nação correspondente.
-                  </span>
+                  <select
+                    id="score-target"
+                    value={targetId}
+                    onChange={(e) => setTargetId(e.target.value)}
+                    className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    required
+                  >
+                    {tribes.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name} ({t.nation?.name || 'Nação'})
+                      </option>
+                    ))}
+                  </select>
                 )}
+
                 {targetType === 'person' && (
-                  <span>
-                    <strong>Alvo Pessoa:</strong> Pontua a tribo e a nação desta pessoa. Se a pessoa for líder, não altera o ranking de líderes.
-                  </span>
+                  <select
+                    id="score-target"
+                    value={targetId}
+                    onChange={(e) => setTargetId(e.target.value)}
+                    className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    required
+                  >
+                    {people.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} — {p.tribe?.name} ({p.nation?.name})
+                      </option>
+                    ))}
+                  </select>
                 )}
               </div>
-            </div>
 
-            {/* Pontos e Data */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label htmlFor="challenge-points" className="block text-sm font-semibold text-slate-300 mb-1">
-                  Pontos <span className="text-amber-500">*</span>
-                </label>
-                <input
-                  id="challenge-points"
-                  type="number"
-                  min="1"
-                  value={selectedChallenge?.defaultPoints ?? points}
-                  onChange={(e) => setPoints(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-                  disabled={!!selectedChallenge}
-                  className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base text-slate-100 focus:outline-none focus:border-amber-500 disabled:opacity-70"
-                  required
-                />
-                {selectedChallenge && <p className="mt-1 text-xs text-slate-400">Valor definido neste desafio.</p>}
+              {/* Regra Explicativa Visual */}
+              <div className="p-2.5 sm:p-3 bg-dark-950 border border-dark-800 rounded-xl text-xs text-slate-400 flex items-start space-x-2">
+                <Info className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  {targetType === 'nation' && (
+                    <span>
+                      <strong>Alvo Nação:</strong> Pontua <u>somente a nação</u> selecionada.
+                    </span>
+                  )}
+                  {targetType === 'tribe' && (
+                    <span>
+                      <strong>Alvo Tribo:</strong> Pontua a tribo e a sua nação correspondente.
+                    </span>
+                  )}
+                  {targetType === 'person' && (
+                    <span>
+                      <strong>Alvo Pessoa:</strong> Pontua a tribo e a nação desta pessoa. Se a pessoa for líder, não altera o ranking de líderes.
+                    </span>
+                  )}
+                </div>
               </div>
 
+              {/* Pontos e Data - Em 2 colunas mesmo no mobile para economizar altura */}
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                <div>
+                  <label htmlFor="challenge-points" className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1">
+                    Pontos <span className="text-amber-500">*</span>
+                  </label>
+                  <input
+                    id="challenge-points"
+                    type="number"
+                    min="1"
+                    value={selectedChallenge?.defaultPoints ?? points}
+                    onChange={(e) => setPoints(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
+                    disabled={!!selectedChallenge}
+                    className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500 disabled:opacity-70 font-semibold"
+                    required
+                  />
+                  {selectedChallenge && <p className="mt-1 text-[10px] text-slate-400">Valor fixo do desafio.</p>}
+                </div>
+
+                <div>
+                  <label htmlFor="challenge-date" className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1">
+                    Data e Hora <span className="text-amber-500">*</span>
+                  </label>
+                  <input
+                    id="challenge-date"
+                    type="datetime-local"
+                    value={scoreDate}
+                    onChange={(e) => setScoreDate(e.target.value)}
+                    className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-2.5 sm:px-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Observações */}
               <div>
-                <label htmlFor="challenge-date" className="block text-sm font-semibold text-slate-300 mb-1">
-                  Data e Hora <span className="text-amber-500">*</span>
+                <label htmlFor="challenge-notes" className="block text-xs font-semibold text-slate-300 mb-1">
+                  Observações (opcional)
                 </label>
                 <input
-                  id="challenge-date"
-                  type="datetime-local"
-                  value={scoreDate}
-                  onChange={(e) => setScoreDate(e.target.value)}
-                  className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
+                  id="challenge-notes"
+                  type="text"
+                  placeholder="Ex: Culto com mobilização máxima"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="w-full min-h-10 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
                 />
               </div>
             </div>
 
-            {/* Observações */}
-            <div>
-              <label htmlFor="challenge-notes" className="block text-xs font-semibold text-slate-300 mb-1">
-                Observações / Justificativa (opcional)
-              </label>
-              <input
-                id="challenge-notes"
-                type="text"
-                placeholder="Ex: Culto das 19h com mobilização máxima"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-              />
-            </div>
-
-            {/* Ação */}
-            <div className="pt-2">
+            {/* Ação Sticky na parte inferior */}
+            <div className="sticky bottom-0 bg-dark-900/95 backdrop-blur-sm pt-3 pb-1 -mx-1 px-1 border-t border-dark-800/60 mt-3">
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
+                className="w-full min-h-12 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
               >
                 {loading ? 'Registrando...' : 'Confirmar Lançamento de Desafio'}
               </button>
@@ -499,92 +509,93 @@ export default function ScoreModal({
 
         {/* Formulário 2: Pontos de Líder */}
         {modalTab === 'leader' && (
-          <form onSubmit={handleSubmitLeader} className="mt-4 space-y-4">
-            
-            {/* Escolher Líder */}
-            <div>
-              <label htmlFor="leader-target" className="block text-xs font-semibold text-slate-300 mb-1">
-                Selecione o Líder <span className="text-amber-500">*</span>
-              </label>
-              <select
-                id="leader-target"
-                value={selectedLeaderId}
-                onChange={(e) => setSelectedLeaderId(e.target.value)}
-                className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                required
-              >
-                <option value="">-- Selecione um líder --</option>
-                {leadersOnly.map((l) => (
-                  <option key={l.id} value={l.id}>
-                    {l.name} — {l.role === 'lider_nacao' ? 'Líder de Nação' : 'Líder de Tribo'} ({l.nation?.name})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Regra Explicativa de Líder */}
-            <div className="p-3 bg-amber-950/30 border border-amber-800/40 rounded-xl text-xs text-amber-200/90 flex items-start space-x-2">
-              <Crown className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+          <form onSubmit={handleSubmitLeader} className="mt-3 sm:mt-4 space-y-3 sm:space-y-3.5 flex-1 flex flex-col justify-between">
+            <div className="space-y-3">
+              {/* Escolher Líder */}
               <div>
-                <strong>Regra Exclusiva de Líderes:</strong> Esta pontuação é manual e entra{' '}
-                <u>somente no ranking do líder</u>. Não altera em nenhuma hipótese o placar da tribo ou da nação.
+                <label htmlFor="leader-target" className="block text-xs font-semibold text-slate-300 mb-1">
+                  Selecione o Líder <span className="text-amber-500">*</span>
+                </label>
+                <select
+                  id="leader-target"
+                  value={selectedLeaderId}
+                  onChange={(e) => setSelectedLeaderId(e.target.value)}
+                  className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                  required
+                >
+                  <option value="">-- Selecione um líder --</option>
+                  {leadersOnly.map((l) => (
+                    <option key={l.id} value={l.id}>
+                      {l.name} — {l.role === 'lider_nacao' ? 'Líder de Nação' : 'Líder de Tribo'} ({l.nation?.name})
+                    </option>
+                  ))}
+                </select>
               </div>
-            </div>
 
-            {/* Pontos e Data */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Regra Explicativa de Líder */}
+              <div className="p-2.5 sm:p-3 bg-amber-950/30 border border-amber-800/40 rounded-xl text-xs text-amber-200/90 flex items-start space-x-2">
+                <Crown className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <strong>Regra Exclusiva de Líderes:</strong> Esta pontuação entra{' '}
+                  <u>somente no ranking do líder</u>. Não altera em nenhuma hipótese o placar da tribo ou da nação.
+                </div>
+              </div>
+
+              {/* Pontos e Data - Em 2 colunas no mobile */}
+              <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                <div>
+                  <label htmlFor="leader-points" className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1">
+                    Pontos <span className="text-amber-500">*</span>
+                  </label>
+                  <input
+                    id="leader-points"
+                    type="number"
+                    min="1"
+                    value={leaderPoints}
+                    onChange={(e) => setLeaderPoints(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
+                    className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500 font-semibold"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="leader-date" className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1">
+                    Data e Hora <span className="text-amber-500">*</span>
+                  </label>
+                  <input
+                    id="leader-date"
+                    type="datetime-local"
+                    value={leaderScoreDate}
+                    onChange={(e) => setLeaderScoreDate(e.target.value)}
+                    className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-2.5 sm:px-3 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    required
+                  />
+                </div>
+              </div>
+
+              {/* Motivo OBRIGATÓRIO */}
               <div>
-                <label htmlFor="leader-points" className="block text-xs font-semibold text-slate-300 mb-1">
-                  Pontos do Líder <span className="text-amber-500">*</span>
+                <label htmlFor="leader-reason" className="block text-xs font-semibold text-slate-300 mb-1">
+                  Motivo do Lançamento <span className="text-amber-500">*</span>
                 </label>
                 <input
-                  id="leader-points"
-                  type="number"
-                  min="1"
-                  value={leaderPoints}
-                  onChange={(e) => setLeaderPoints(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                  id="leader-reason"
+                  type="text"
+                  placeholder="Ex: Líder mais engajado na evangelização"
+                  value={leaderReason}
+                  onChange={(e) => setLeaderReason(e.target.value)}
+                  className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
                   required
                 />
               </div>
-
-              <div>
-                <label htmlFor="leader-date" className="block text-xs font-semibold text-slate-300 mb-1">
-                  Data e Hora <span className="text-amber-500">*</span>
-                </label>
-                <input
-                  id="leader-date"
-                  type="datetime-local"
-                  value={leaderScoreDate}
-                  onChange={(e) => setLeaderScoreDate(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
-                />
-              </div>
             </div>
 
-            {/* Motivo OBRIGATÓRIO */}
-            <div>
-              <label htmlFor="leader-reason" className="block text-xs font-semibold text-slate-300 mb-1">
-                Motivo do Lançamento <span className="text-amber-500">*</span>
-              </label>
-              <input
-                id="leader-reason"
-                type="text"
-                placeholder="Ex: Líder mais engajado na evangelização"
-                value={leaderReason}
-                onChange={(e) => setLeaderReason(e.target.value)}
-                className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                required
-              />
-            </div>
-
-            {/* Ação */}
-            <div className="pt-2">
+            {/* Ação Sticky na parte inferior */}
+            <div className="sticky bottom-0 bg-dark-900/95 backdrop-blur-sm pt-3 pb-1 -mx-1 px-1 border-t border-dark-800/60 mt-3">
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
+                className="w-full min-h-12 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
               >
                 {loading ? 'Registrando...' : 'Confirmar Pontos do Líder'}
               </button>

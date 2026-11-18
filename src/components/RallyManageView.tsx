@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Settings, 
   PlusCircle, 
@@ -49,6 +49,19 @@ export default function RallyManageView({
   const [editingTribe, setEditingTribe] = useState<any | null>(null);
   const [tribeName, setTribeName] = useState('');
   const [tribeCode, setTribeCode] = useState('');
+
+  // Fechar modals ao pressionar Escape
+  useEffect(() => {
+    if (!editingNation && !editingTribe) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setEditingNation(null);
+        setEditingTribe(null);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [editingNation, editingTribe]);
 
   // Handlers de Rali
   const handleCreateRally = async (e: React.FormEvent) => {
@@ -498,9 +511,17 @@ export default function RallyManageView({
 
       {/* MODAL: EDITAR NAÇÃO */}
       {editingNation && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto sm:p-4">
-          <div role="dialog" aria-modal="true" aria-label="Editar nação" className="relative w-full min-h-dvh sm:min-h-0 sm:max-w-sm max-h-dvh overflow-y-auto bg-dark-900 border border-dark-700 rounded-none sm:rounded-2xl shadow-2xl p-4 sm:p-6 sm:my-8">
-            <div className="flex items-center justify-between pb-4 border-b border-dark-800">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm sm:p-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Editar nação"
+            className="relative w-full max-h-[92dvh] sm:max-h-[85vh] sm:max-w-sm overflow-y-auto bg-dark-900 border border-dark-700/80 rounded-t-[28px] sm:rounded-2xl shadow-2xl p-4 pb-6 sm:p-6 focus:outline-none flex flex-col"
+          >
+            {/* Barra de puxar no mobile (Bottom Sheet handle) */}
+            <div className="sm:hidden w-12 h-1 bg-dark-600 rounded-full mx-auto mb-2.5 shrink-0" />
+
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-dark-800">
               <div className="flex items-center space-x-2">
                 <Flag className="w-5 h-5 text-amber-500" />
                 <h3 className="text-base font-bold text-slate-100">Editar Nação</h3>
@@ -508,58 +529,60 @@ export default function RallyManageView({
               <button
                 onClick={() => setEditingNation(null)}
                 aria-label="Fechar edição da nação"
-                className="min-h-11 min-w-11 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveNation} className="mt-4 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Nome da Nação <span className="text-amber-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={nationName}
-                  onChange={(e) => setNationName(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Cor de Destaque
-                </label>
-                <div className="flex items-center space-x-3">
-                  <input
-                    type="color"
-                    value={nationColor}
-                    onChange={(e) => setNationColor(e.target.value)}
-                    className="w-10 h-10 rounded-lg cursor-pointer bg-dark-950 border border-dark-700"
-                  />
+            <form onSubmit={handleSaveNation} className="mt-3 sm:mt-4 space-y-3.5 flex-1 flex flex-col justify-between">
+              <div className="space-y-3.5">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Nome da Nação <span className="text-amber-500">*</span>
+                  </label>
                   <input
                     type="text"
-                    value={nationColor}
-                    onChange={(e) => setNationColor(e.target.value)}
-                    className="flex-1 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500 font-mono"
+                    value={nationName}
+                    onChange={(e) => setNationName(e.target.value)}
+                    className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    required
                   />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Cor de Destaque
+                  </label>
+                  <div className="flex items-center space-x-3">
+                    <input
+                      type="color"
+                      value={nationColor}
+                      onChange={(e) => setNationColor(e.target.value)}
+                      className="w-10 h-10 rounded-lg cursor-pointer bg-dark-950 border border-dark-700 shrink-0"
+                    />
+                    <input
+                      type="text"
+                      value={nationColor}
+                      onChange={(e) => setNationColor(e.target.value)}
+                      className="flex-1 min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500 font-mono"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-2 pt-2">
+              <div className="sticky bottom-0 bg-dark-900/95 backdrop-blur-sm pt-3 pb-1 -mx-1 px-1 border-t border-dark-800/60 mt-3 grid grid-cols-2 gap-2 sm:flex sm:justify-end sm:space-x-2">
                 <button
                   type="button"
                   onClick={() => setEditingNation(null)}
-                  className="px-3.5 py-2 rounded-xl border border-dark-700 text-slate-300 hover:bg-dark-800 text-xs font-semibold"
+                  className="min-h-11 px-3.5 py-2 rounded-xl border border-dark-700 text-slate-300 hover:bg-dark-800 text-xs font-semibold flex items-center justify-center"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                  className="min-h-11 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center justify-center"
                 >
                   {loading ? 'Salvando...' : 'Salvar Alterações'}
                 </button>
@@ -571,9 +594,17 @@ export default function RallyManageView({
 
       {/* MODAL: CRIAR / EDITAR TRIBO */}
       {editingTribe && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto sm:p-4">
-          <div role="dialog" aria-modal="true" aria-label="Editar tribo" className="relative w-full min-h-dvh sm:min-h-0 sm:max-w-sm max-h-dvh overflow-y-auto bg-dark-900 border border-dark-700 rounded-none sm:rounded-2xl shadow-2xl p-4 sm:p-6 sm:my-8">
-            <div className="flex items-center justify-between pb-4 border-b border-dark-800">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm sm:p-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Editar tribo"
+            className="relative w-full max-h-[92dvh] sm:max-h-[85vh] sm:max-w-sm overflow-y-auto bg-dark-900 border border-dark-700/80 rounded-t-[28px] sm:rounded-2xl shadow-2xl p-4 pb-6 sm:p-6 focus:outline-none flex flex-col"
+          >
+            {/* Barra de puxar no mobile (Bottom Sheet handle) */}
+            <div className="sm:hidden w-12 h-1 bg-dark-600 rounded-full mx-auto mb-2.5 shrink-0" />
+
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-dark-800">
               <div className="flex items-center space-x-2">
                 <Shield className="w-5 h-5 text-amber-500" />
                 <h3 className="text-base font-bold text-slate-100">
@@ -585,54 +616,56 @@ export default function RallyManageView({
                   setEditingTribe(null);
                 }}
                 aria-label="Fechar edição da tribo"
-                className="min-h-11 min-w-11 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveTribe} className="mt-4 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Nome da Tribo <span className="text-amber-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ex: Tribo Leão, Tribo Guerreiros..."
-                  value={tribeName}
-                  onChange={(e) => setTribeName(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
-                />
+            <form onSubmit={handleSaveTribe} className="mt-3 sm:mt-4 space-y-3.5 flex-1 flex flex-col justify-between">
+              <div className="space-y-3.5">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Nome da Tribo <span className="text-amber-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Tribo Leão, Tribo Guerreiros..."
+                    value={tribeName}
+                    onChange={(e) => setTribeName(e.target.value)}
+                    className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Código da Tribo (opcional)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ex: LEAO, GUERR..."
+                    value={tribeCode}
+                    onChange={(e) => setTribeCode(e.target.value)}
+                    className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500 uppercase font-mono"
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Código da Tribo (opcional)
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ex: LEAO, GUERR..."
-                  value={tribeCode}
-                  onChange={(e) => setTribeCode(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500 uppercase font-mono"
-                />
-              </div>
-
-              <div className="flex justify-end space-x-2 pt-2">
+              <div className="sticky bottom-0 bg-dark-900/95 backdrop-blur-sm pt-3 pb-1 -mx-1 px-1 border-t border-dark-800/60 mt-3 grid grid-cols-2 gap-2 sm:flex sm:justify-end sm:space-x-2">
                 <button
                   type="button"
                   onClick={() => {
                     setEditingTribe(null);
                   }}
-                  className="px-3.5 py-2 rounded-xl border border-dark-700 text-slate-300 hover:bg-dark-800 text-xs font-semibold"
+                  className="min-h-11 px-3.5 py-2 rounded-xl border border-dark-700 text-slate-300 hover:bg-dark-800 text-xs font-semibold flex items-center justify-center"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                  className="min-h-11 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center justify-center"
                 >
                   {loading ? 'Salvando...' : 'Salvar Tribo'}
                 </button>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   UserPlus, 
@@ -49,6 +49,16 @@ export default function PeopleView({
   const [formLoading, setFormLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [formSuccess, setFormSuccess] = useState<string | null>(null);
+
+  // Fechar modal ao pressionar Escape
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsModalOpen(false);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isModalOpen]);
 
   // Tribos filtradas pela nação selecionada no formulário
   const availableTribesForForm = tribes.filter((t) => t.nationId === formNationId);
@@ -194,22 +204,22 @@ export default function PeopleView({
       </div>
 
       {/* Barra de Filtros e Busca */}
-      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-3 sm:p-5 shadow-xl space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-          
-          {/* Busca por Nome */}
-          <div className="relative">
-            <Search className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
-            <input
-              type="text"
-              placeholder="Buscar por nome..."
-              value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
-              aria-label="Buscar integrante por nome"
-              className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl pl-9 pr-3 py-2 text-base sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
-            />
-          </div>
+      <div className="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-xl space-y-2.5 sm:space-y-3">
+        {/* Busca por Nome (linha cheia) */}
+        <div className="relative">
+          <Search className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
+          <input
+            type="text"
+            placeholder="Buscar por nome..."
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            aria-label="Buscar integrante por nome"
+            className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl pl-9 pr-3 py-2 text-base sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
+          />
+        </div>
 
+        {/* 4 Filtros: 2x2 no mobile, 4 colunas em desktop */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           {/* Filtro por Nação */}
           <div>
             <select
@@ -218,7 +228,7 @@ export default function PeopleView({
                 setFilterNationId(e.target.value);
                 setFilterTribeId(''); // resetar tribo se mudar nação
               }}
-              className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-amber-500"
+              className="w-full min-h-10 bg-dark-950 border border-dark-700 rounded-xl px-2.5 py-1.5 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-amber-500"
             >
               <option value="">Todas as Nações</option>
               {nations.map((n) => (
@@ -234,7 +244,7 @@ export default function PeopleView({
             <select
               value={filterTribeId}
               onChange={(e) => setFilterTribeId(e.target.value)}
-              className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-amber-500"
+              className="w-full min-h-10 bg-dark-950 border border-dark-700 rounded-xl px-2.5 py-1.5 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-amber-500"
             >
               <option value="">Todas as Tribos</option>
               {filterAvailableTribes.map((t) => (
@@ -250,7 +260,7 @@ export default function PeopleView({
             <select
               value={filterCategory}
               onChange={(e) => setFilterCategory(e.target.value)}
-              className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-amber-500"
+              className="w-full min-h-10 bg-dark-950 border border-dark-700 rounded-xl px-2.5 py-1.5 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-amber-500"
             >
               <option value="">Todas as Categorias</option>
               <option value="jovem">Jovem</option>
@@ -265,7 +275,7 @@ export default function PeopleView({
             <select
               value={filterRole}
               onChange={(e) => setFilterRole(e.target.value)}
-              className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-amber-500"
+              className="w-full min-h-10 bg-dark-950 border border-dark-700 rounded-xl px-2.5 py-1.5 text-xs sm:text-sm text-slate-200 focus:outline-none focus:border-amber-500"
             >
               <option value="">Todas as Funções</option>
               <option value="participante">Participante</option>
@@ -273,13 +283,12 @@ export default function PeopleView({
               <option value="lider_nacao">Líder de Nação</option>
             </select>
           </div>
-
         </div>
 
         {/* Totalizadores rápidos */}
         <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-dark-800">
           <span>
-            Mostrando <strong>{filteredPeople.length}</strong> de <strong>{people.length}</strong> integrantes cadastrados
+            Mostrando <strong>{filteredPeople.length}</strong> de <strong>{people.length}</strong> integrantes
           </span>
           {(searchName || filterNationId || filterTribeId || filterCategory || filterRole) && (
             <button
@@ -299,21 +308,21 @@ export default function PeopleView({
       </div>
 
       {/* Cartões de integrantes em telas pequenas. */}
-      <div className="space-y-3 sm:hidden">
+      <div className="space-y-2.5 sm:hidden">
         {filteredPeople.length === 0 ? (
-          <p className="rounded-2xl border border-dark-800 bg-dark-900 p-6 text-center text-sm text-slate-400">Nenhum integrante encontrado.</p>
+          <p className="rounded-xl border border-dark-800 bg-dark-900 p-6 text-center text-sm text-slate-400">Nenhum integrante encontrado.</p>
         ) : filteredPeople.map((person) => (
-          <article key={person.id} className="rounded-2xl border border-dark-800 bg-dark-900 p-4 shadow-lg">
-            <div className="flex items-start justify-between gap-3">
+          <article key={person.id} className="rounded-xl border border-dark-800 bg-dark-900 p-3 shadow-md">
+            <div className="flex items-start justify-between gap-2.5">
               <div className="min-w-0">
-                <h3 className="break-words text-base font-bold text-slate-100">{person.name}</h3>
-                <p className="mt-1 text-sm text-slate-300">{person.tribe?.name || 'Tribo'} · {person.nation?.name || 'Nação'}</p>
+                <h3 className="break-words text-sm font-bold text-slate-100">{person.name}</h3>
+                <p className="mt-0.5 text-xs text-slate-300">{person.tribe?.name || 'Tribo'} · {person.nation?.name || 'Nação'}</p>
               </div>
-              <button onClick={() => handleOpenEditModal(person)} aria-label={`Editar ${person.name}`} className="min-h-11 min-w-11 shrink-0 rounded-xl border border-dark-700 text-amber-400 flex items-center justify-center"><Edit2 className="h-4 w-4" /></button>
+              <button onClick={() => handleOpenEditModal(person)} aria-label={`Editar ${person.name}`} className="min-h-10 min-w-10 shrink-0 rounded-lg border border-dark-700 text-amber-400 flex items-center justify-center hover:bg-dark-800"><Edit2 className="h-4 w-4" /></button>
             </div>
-            <div className="mt-3 flex flex-wrap gap-2 text-xs">
-              <span className="rounded-full border border-dark-700 px-2 py-1 capitalize text-slate-300">{person.category}</span>
-              <span className="rounded-full border border-amber-700/50 bg-amber-500/10 px-2 py-1 text-amber-200">{person.role === 'lider_nacao' ? 'Líder de Nação' : person.role === 'lider_tribo' ? 'Líder de Tribo' : 'Participante'}</span>
+            <div className="mt-2 flex flex-wrap gap-1.5 text-[11px]">
+              <span className="rounded-full border border-dark-700 px-2 py-0.5 capitalize text-slate-300">{person.category}</span>
+              <span className="rounded-full border border-amber-700/50 bg-amber-500/10 px-2 py-0.5 text-amber-200">{person.role === 'lider_nacao' ? 'Líder de Nação' : person.role === 'lider_tribo' ? 'Líder de Tribo' : 'Participante'}</span>
             </div>
           </article>
         ))}
@@ -408,144 +417,159 @@ export default function PeopleView({
 
       {/* MODAL DE CADASTRO / EDIÇÃO */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto sm:p-4">
-          <div role="dialog" aria-modal="true" aria-label={editingPerson ? 'Editar integrante' : 'Cadastrar integrante'} className="relative w-full min-h-dvh sm:min-h-0 sm:max-w-md max-h-dvh overflow-y-auto bg-dark-900 border border-dark-700 rounded-none sm:rounded-2xl shadow-2xl p-4 sm:p-6 sm:my-8">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm sm:p-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label={editingPerson ? 'Editar integrante' : 'Cadastrar integrante'}
+            className="relative w-full max-h-[92dvh] sm:max-h-[85vh] sm:max-w-md overflow-y-auto bg-dark-900 border border-dark-700/80 rounded-t-[28px] sm:rounded-2xl shadow-2xl p-4 pb-6 sm:p-6 focus:outline-none flex flex-col"
+          >
+            {/* Barra de puxar no mobile (Bottom Sheet handle) */}
+            <div className="sm:hidden w-12 h-1 bg-dark-600 rounded-full mx-auto mb-2.5 shrink-0" />
             
-            <div className="flex items-center justify-between pb-4 border-b border-dark-800">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
-                  <UserPlus className="w-5 h-5" />
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-dark-800">
+              <div className="flex items-center space-x-2.5 sm:space-x-3">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shrink-0">
+                  <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-100">
+                  <h3 className="text-base sm:text-lg font-bold text-slate-100">
                     {editingPerson ? 'Editar Integrante' : 'Novo Integrante'}
                   </h3>
-                  <p className="text-xs text-slate-400">Vínculo obrigatório entre tribo e nação</p>
+                  <p className="text-[11px] sm:text-xs text-slate-400">Vínculo obrigatório entre tribo e nação</p>
                 </div>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
                 aria-label="Fechar cadastro"
-                className="min-h-11 min-w-11 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {formError && (
-              <div className="mt-4 p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
+              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
                 <span>{formError}</span>
               </div>
             )}
             {formSuccess && (
-              <div className="mt-4 p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center space-x-2">
+              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                 <span>{formSuccess}</span>
               </div>
             )}
 
-            <form onSubmit={handleSavePerson} className="mt-4 space-y-3.5">
+            <form onSubmit={handleSavePerson} className="mt-3 sm:mt-4 space-y-3 flex-1 flex flex-col justify-between">
               
-              {/* Nome */}
-              <div>
-                <label htmlFor="person-name" className="block text-xs font-semibold text-slate-300 mb-1">
-                  Nome Completo <span className="text-amber-500">*</span>
-                </label>
-                <input
-                  id="person-name"
-                  type="text"
-                  placeholder="Ex: João da Silva"
-                  value={formName}
-                  onChange={(e) => setFormName(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
-                />
+              <div className="space-y-3">
+                {/* Nome */}
+                <div>
+                  <label htmlFor="person-name" className="block text-xs font-semibold text-slate-300 mb-1">
+                    Nome Completo <span className="text-amber-500">*</span>
+                  </label>
+                  <input
+                    id="person-name"
+                    type="text"
+                    placeholder="Ex: João da Silva"
+                    value={formName}
+                    onChange={(e) => setFormName(e.target.value)}
+                    className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    required
+                  />
+                </div>
+
+                {/* Nação e Tribo em 2 colunas */}
+                <div className="grid grid-cols-2 gap-2.5">
+                  {/* Nação */}
+                  <div>
+                    <label htmlFor="person-nation" className="block text-xs font-semibold text-slate-300 mb-1">
+                      Nação <span className="text-amber-500">*</span>
+                    </label>
+                    <select
+                      id="person-nation"
+                      value={formNationId}
+                      onChange={(e) => handleNationChange(e.target.value)}
+                      className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-2.5 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                      required
+                    >
+                      {nations.map((n) => (
+                        <option key={n.id} value={n.id}>
+                          {n.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Tribo (Filtrada estritamente pela nação) */}
+                  <div>
+                    <label htmlFor="person-tribe" className="block text-xs font-semibold text-slate-300 mb-1">
+                      Tribo <span className="text-amber-500">*</span>
+                    </label>
+                    <select
+                      id="person-tribe"
+                      value={formTribeId}
+                      onChange={(e) => setFormTribeId(e.target.value)}
+                      className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-2.5 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                      required
+                    >
+                      {availableTribesForForm.length === 0 ? (
+                        <option value="">Nenhuma</option>
+                      ) : (
+                        availableTribesForForm.map((t) => (
+                          <option key={t.id} value={t.id}>
+                            {t.name}
+                          </option>
+                        ))
+                      )}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Categoria e Função em 2 colunas */}
+                <div className="grid grid-cols-2 gap-2.5">
+                  {/* Categoria */}
+                  <div>
+                    <label htmlFor="person-category" className="block text-xs font-semibold text-slate-300 mb-1">
+                      Categoria <span className="text-amber-500">*</span>
+                    </label>
+                    <select
+                      id="person-category"
+                      value={formCategory}
+                      onChange={(e) => setFormCategory(e.target.value as any)}
+                      className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-2.5 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                      required
+                    >
+                      <option value="jovem">Jovem</option>
+                      <option value="membro">Membro</option>
+                      <option value="obreiro">Obreiro</option>
+                      <option value="colaborador">Colaborador</option>
+                    </select>
+                  </div>
+
+                  {/* Função */}
+                  <div>
+                    <label htmlFor="person-role" className="block text-xs font-semibold text-slate-300 mb-1">
+                      Função <span className="text-amber-500">*</span>
+                    </label>
+                    <select
+                      id="person-role"
+                      value={formRole}
+                      onChange={(e) => setFormRole(e.target.value as any)}
+                      className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-2.5 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                      required
+                    >
+                      <option value="participante">Participante</option>
+                      <option value="lider_tribo">Líder de Tribo</option>
+                      <option value="lider_nacao">Líder de Nação</option>
+                    </select>
+                  </div>
+                </div>
               </div>
 
-              {/* Nação */}
-              <div>
-                <label htmlFor="person-nation" className="block text-xs font-semibold text-slate-300 mb-1">
-                  Nação <span className="text-amber-500">*</span>
-                </label>
-                <select
-                  id="person-nation"
-                  value={formNationId}
-                  onChange={(e) => handleNationChange(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
-                >
-                  {nations.map((n) => (
-                    <option key={n.id} value={n.id}>
-                      {n.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Tribo (Filtrada estritamente pela nação) */}
-              <div>
-                <label htmlFor="person-tribe" className="block text-xs font-semibold text-slate-300 mb-1">
-                  Tribo (Pertencente à Nação) <span className="text-amber-500">*</span>
-                </label>
-                <select
-                  id="person-tribe"
-                  value={formTribeId}
-                  onChange={(e) => setFormTribeId(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
-                >
-                  {availableTribesForForm.length === 0 ? (
-                    <option value="">Nenhuma tribo disponível</option>
-                  ) : (
-                    availableTribesForForm.map((t) => (
-                      <option key={t.id} value={t.id}>
-                        {t.name}
-                      </option>
-                    ))
-                  )}
-                </select>
-              </div>
-
-              {/* Categoria */}
-              <div>
-                <label htmlFor="person-category" className="block text-xs font-semibold text-slate-300 mb-1">
-                  Categoria <span className="text-amber-500">*</span>
-                </label>
-                <select
-                  id="person-category"
-                  value={formCategory}
-                  onChange={(e) => setFormCategory(e.target.value as any)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
-                >
-                  <option value="jovem">Jovem</option>
-                  <option value="membro">Membro</option>
-                  <option value="obreiro">Obreiro</option>
-                  <option value="colaborador">Colaborador</option>
-                </select>
-              </div>
-
-              {/* Função */}
-              <div>
-                <label htmlFor="person-role" className="block text-xs font-semibold text-slate-300 mb-1">
-                  Função no Rali <span className="text-amber-500">*</span>
-                </label>
-                <select
-                  id="person-role"
-                  value={formRole}
-                  onChange={(e) => setFormRole(e.target.value as any)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
-                >
-                  <option value="participante">Participante</option>
-                  <option value="lider_tribo">Líder de Tribo</option>
-                  <option value="lider_nacao">Líder de Nação</option>
-                </select>
-              </div>
-
-              {/* Ação */}
-              <div className="pt-3">
+              {/* Ação Sticky */}
+              <div className="sticky bottom-0 bg-dark-900/95 backdrop-blur-sm pt-3 pb-1 -mx-1 px-1 border-t border-dark-800/60 mt-3">
                 <button
                   type="submit"
                   disabled={formLoading}

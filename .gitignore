@@ -32,5 +32,6 @@ Thumbs.db
 graphify-out/
 backups/
 .playwright-mcp/
+auditoria-mobile/
 tsconfig.tsbuildinfo
 *.db.bak

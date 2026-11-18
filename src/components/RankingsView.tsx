@@ -110,8 +110,37 @@ export default function RankingsView({
 
       </div>
 
-      {/* Abas dos 4 Rankings */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+      {/* Abas dos 4 Rankings - Mobile: Barra compacta de 4 colunas | Desktop: Grid 4 cards */}
+      {/* Mobile Tab Bar */}
+      <div className="grid grid-cols-4 gap-1 p-1 bg-dark-950 rounded-xl border border-dark-800 md:hidden">
+        {[
+          { id: 'nations', label: 'Nações', icon: Trophy },
+          { id: 'tribes', label: 'Tribos', icon: Flame },
+          { id: 'tribeLeaders', label: 'Líd. Tribo', icon: Crown },
+          { id: 'nationLeaders', label: 'Líd. Nação', icon: Award },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              aria-pressed={isActive}
+              className={`py-2 px-1 rounded-lg flex flex-col items-center justify-center transition-all ${
+                isActive
+                  ? 'bg-amber-500 text-dark-950 shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <Icon className="w-4 h-4 mb-0.5" />
+              <span className="text-[10px] font-bold tracking-tight truncate w-full text-center">{tab.label}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Desktop / Tablet Grid */}
+      <div className="hidden md:grid md:grid-cols-4 gap-2">
         {[
           { id: 'nations', label: 'Nações (2)', icon: Trophy, count: nationsList.length },
           { id: 'tribes', label: 'Tribos (12)', icon: Flame, count: tribesList.length },
@@ -178,35 +207,35 @@ export default function RankingsView({
                 return (
                   <div
                     key={rankItem.item.id}
-                    className={`p-4 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all ${
+                    className={`p-2.5 sm:p-4 rounded-xl border flex items-center justify-between gap-2.5 sm:gap-4 transition-all ${
                       isFirst
                         ? 'bg-amber-950/20 border-amber-600/50'
                         : 'bg-dark-950/80 border-dark-800'
                     }`}
                   >
-                    <div className="flex items-center space-x-3 w-full sm:w-auto">
+                    <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
                       <div
-                        className={`w-10 h-10 rounded-xl font-black text-sm flex items-center justify-center flex-shrink-0 shadow-md ${
+                        className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center shrink-0 shadow-md ${
                           isFirst ? 'bg-amber-500 text-dark-950' : 'bg-dark-800 text-slate-300'
                         }`}
                       >
                         {rankItem.rank}º
                       </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <h4 className="text-base font-black text-slate-100">{rankItem.item.name}</h4>
+                      <div className="min-w-0">
+                        <div className="flex items-center space-x-1.5 sm:space-x-2">
+                          <h4 className="text-xs sm:text-base font-black text-slate-100 truncate">{rankItem.item.name}</h4>
                           {rankItem.isTied && (
-                            <span className="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+                            <span className="text-[9px] sm:text-[11px] px-1.5 py-0.2 sm:px-2 sm:py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold shrink-0">
                               Empate
                             </span>
                           )}
                         </div>
-                        <span className="text-xs text-slate-400">Nação Oficial do Rali</span>
+                        <span className="text-[10px] sm:text-xs text-slate-400 block truncate">Nação Oficial do Rali</span>
                       </div>
                     </div>
 
-                    <div className="w-full sm:w-64 flex items-center space-x-4">
-                      <div className="flex-1">
+                    <div className="flex items-center space-x-3 sm:space-x-4 shrink-0">
+                      <div className="hidden sm:block w-36 md:w-64">
                         <div className="h-2 w-full bg-dark-900 rounded-full overflow-hidden border border-dark-800">
                           <div
                             className="h-full bg-amber-500 rounded-full"
@@ -214,8 +243,8 @@ export default function RankingsView({
                           />
                         </div>
                       </div>
-                      <span className="text-lg font-black text-amber-400 w-20 text-right">
-                        {rankItem.points} <span className="text-xs text-slate-400">pts</span>
+                      <span className="text-sm sm:text-lg font-black text-amber-400 min-w-16 sm:w-20 text-right">
+                        {rankItem.points} <span className="text-[10px] sm:text-xs text-slate-400">pts</span>
                       </span>
                     </div>
                   </div>
@@ -235,37 +264,37 @@ export default function RankingsView({
                 return (
                   <div
                     key={rankItem.item.id}
-                    className={`p-3.5 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 transition-all ${
+                    className={`p-2.5 sm:p-3.5 rounded-xl border flex items-center justify-between gap-2.5 sm:gap-3 transition-all ${
                       isFirst
                         ? 'bg-amber-950/20 border-amber-600/40'
                         : 'bg-dark-950/80 border-dark-800'
                     }`}
                   >
-                    <div className="flex items-center space-x-3 w-full sm:w-auto">
+                    <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
                       <div
-                        className={`w-9 h-9 rounded-xl font-black text-xs flex items-center justify-center flex-shrink-0 shadow-md ${
+                        className={`w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl font-black text-xs flex items-center justify-center shrink-0 shadow-md ${
                           isFirst ? 'bg-amber-500 text-dark-950' : 'bg-dark-800 text-slate-300'
                         }`}
                       >
                         {rankItem.rank}º
                       </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <h4 className="text-sm font-bold text-slate-100">{rankItem.item.name}</h4>
+                      <div className="min-w-0">
+                        <div className="flex items-center space-x-1.5 sm:space-x-2">
+                          <h4 className="text-xs sm:text-sm font-bold text-slate-100 truncate">{rankItem.item.name}</h4>
                           {rankItem.isTied && (
-                            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+                            <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold shrink-0">
                               Empate
                             </span>
                           )}
                         </div>
-                        <span className="text-[11px] text-slate-400">
+                        <span className="text-[10px] sm:text-[11px] text-slate-400 block truncate">
                           {rankItem.item.nation?.name || 'Nação'}
                         </span>
                       </div>
                     </div>
 
-                    <div className="w-full sm:w-56 flex items-center space-x-4">
-                      <div className="flex-1">
+                    <div className="flex items-center space-x-3 sm:space-x-4 shrink-0">
+                      <div className="hidden sm:block w-36 md:w-56">
                         <div className="h-2 w-full bg-dark-900 rounded-full overflow-hidden border border-dark-800">
                           <div
                             className="h-full bg-amber-500 rounded-full"
@@ -273,8 +302,8 @@ export default function RankingsView({
                           />
                         </div>
                       </div>
-                      <span className="text-base font-black text-amber-400 w-16 text-right">
-                        {rankItem.points} <span className="text-xs text-slate-400">pts</span>
+                      <span className="text-sm sm:text-base font-black text-amber-400 min-w-14 sm:w-16 text-right">
+                        {rankItem.points} <span className="text-[10px] sm:text-xs text-slate-400">pts</span>
                       </span>
                     </div>
                   </div>
@@ -294,37 +323,37 @@ export default function RankingsView({
                 return (
                   <div
                     key={rankItem.item.id}
-                    className={`p-3.5 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 transition-all ${
+                    className={`p-2.5 sm:p-3.5 rounded-xl border flex items-center justify-between gap-2.5 sm:gap-3 transition-all ${
                       isFirst
                         ? 'bg-amber-950/20 border-amber-600/40'
                         : 'bg-dark-950/80 border-dark-800'
                     }`}
                   >
-                    <div className="flex items-center space-x-3 w-full sm:w-auto">
+                    <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
                       <div
-                        className={`w-9 h-9 rounded-xl font-black text-xs flex items-center justify-center flex-shrink-0 shadow-md ${
+                        className={`w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl font-black text-xs flex items-center justify-center shrink-0 shadow-md ${
                           isFirst ? 'bg-amber-500 text-dark-950' : 'bg-dark-800 text-slate-300'
                         }`}
                       >
                         {rankItem.rank}º
                       </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <h4 className="text-sm font-bold text-slate-100">{rankItem.item.name}</h4>
+                      <div className="min-w-0">
+                        <div className="flex items-center space-x-1.5 sm:space-x-2">
+                          <h4 className="text-xs sm:text-sm font-bold text-slate-100 truncate">{rankItem.item.name}</h4>
                           {rankItem.isTied && (
-                            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+                            <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold shrink-0">
                               Empate
                             </span>
                           )}
                         </div>
-                        <span className="text-[11px] text-slate-400">
+                        <span className="text-[10px] sm:text-[11px] text-slate-400 block truncate">
                           {rankItem.item.tribe?.name} ({rankItem.item.nation?.name})
                         </span>
                       </div>
                     </div>
 
-                    <div className="w-full sm:w-56 flex items-center space-x-4">
-                      <div className="flex-1">
+                    <div className="flex items-center space-x-3 sm:space-x-4 shrink-0">
+                      <div className="hidden sm:block w-36 md:w-56">
                         <div className="h-2 w-full bg-dark-900 rounded-full overflow-hidden border border-dark-800">
                           <div
                             className="h-full bg-amber-500 rounded-full"
@@ -332,8 +361,8 @@ export default function RankingsView({
                           />
                         </div>
                       </div>
-                      <span className="text-base font-black text-amber-400 w-16 text-right">
-                        {rankItem.points} <span className="text-xs text-slate-400">pts</span>
+                      <span className="text-sm sm:text-base font-black text-amber-400 min-w-14 sm:w-16 text-right">
+                        {rankItem.points} <span className="text-[10px] sm:text-xs text-slate-400">pts</span>
                       </span>
                     </div>
                   </div>
@@ -353,37 +382,37 @@ export default function RankingsView({
                 return (
                   <div
                     key={rankItem.item.id}
-                    className={`p-3.5 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 transition-all ${
+                    className={`p-2.5 sm:p-3.5 rounded-xl border flex items-center justify-between gap-2.5 sm:gap-3 transition-all ${
                       isFirst
                         ? 'bg-amber-950/20 border-amber-600/40'
                         : 'bg-dark-950/80 border-dark-800'
                     }`}
                   >
-                    <div className="flex items-center space-x-3 w-full sm:w-auto">
+                    <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
                       <div
-                        className={`w-9 h-9 rounded-xl font-black text-xs flex items-center justify-center flex-shrink-0 shadow-md ${
+                        className={`w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl font-black text-xs flex items-center justify-center shrink-0 shadow-md ${
                           isFirst ? 'bg-amber-500 text-dark-950' : 'bg-dark-800 text-slate-300'
                         }`}
                       >
                         {rankItem.rank}º
                       </div>
-                      <div>
-                        <div className="flex items-center space-x-2">
-                          <h4 className="text-sm font-bold text-slate-100">{rankItem.item.name}</h4>
+                      <div className="min-w-0">
+                        <div className="flex items-center space-x-1.5 sm:space-x-2">
+                          <h4 className="text-xs sm:text-sm font-bold text-slate-100 truncate">{rankItem.item.name}</h4>
                           {rankItem.isTied && (
-                            <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold">
+                            <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold shrink-0">
                               Empate
                             </span>
                           )}
                         </div>
-                        <span className="text-[11px] text-slate-400">
+                        <span className="text-[10px] sm:text-[11px] text-slate-400 block truncate">
                           {rankItem.item.nation?.name}
                         </span>
                       </div>
                     </div>
 
-                    <div className="w-full sm:w-56 flex items-center space-x-4">
-                      <div className="flex-1">
+                    <div className="flex items-center space-x-3 sm:space-x-4 shrink-0">
+                      <div className="hidden sm:block w-36 md:w-56">
                         <div className="h-2 w-full bg-dark-900 rounded-full overflow-hidden border border-dark-800">
                           <div
                             className="h-full bg-amber-500 rounded-full"
@@ -391,8 +420,8 @@ export default function RankingsView({
                           />
                         </div>
                       </div>
-                      <span className="text-base font-black text-amber-400 w-16 text-right">
-                        {rankItem.points} <span className="text-xs text-slate-400">pts</span>
+                      <span className="text-sm sm:text-base font-black text-amber-400 min-w-14 sm:w-16 text-right">
+                        {rankItem.points} <span className="text-[10px] sm:text-xs text-slate-400">pts</span>
                       </span>
                     </div>
                   </div>

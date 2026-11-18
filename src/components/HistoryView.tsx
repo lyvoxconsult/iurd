@@ -65,6 +65,16 @@ export default function HistoryView({
     fetchHistory();
   }, [filterType, filterStatus, filterWeek]);
 
+  // Fechar modal ao pressionar Escape
+  useEffect(() => {
+    if (!voidModalItem) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setVoidModalItem(null);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [voidModalItem]);
+
   const handleOpenVoidModal = (item: any) => {
     setVoidModalItem(item);
     setVoidReason('');
@@ -330,71 +340,82 @@ export default function HistoryView({
 
       {/* MODAL DE CONFIRMAÇÃO DE ESTORNO */}
       {voidModalItem && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto sm:p-4">
-          <div role="dialog" aria-modal="true" aria-label="Estornar pontuação" className="relative w-full min-h-dvh sm:min-h-0 sm:max-w-md max-h-dvh overflow-y-auto bg-dark-900 border border-red-900/80 rounded-none sm:rounded-2xl shadow-2xl p-4 sm:p-6 sm:my-8">
-            <div className="flex items-center justify-between pb-4 border-b border-dark-800">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-red-950 text-red-400 flex items-center justify-center border border-red-800">
-                  <Ban className="w-5 h-5" />
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm sm:p-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Estornar pontuação"
+            className="relative w-full max-h-[92dvh] sm:max-h-[85vh] sm:max-w-md overflow-y-auto bg-dark-900 border border-red-900/80 rounded-t-[28px] sm:rounded-2xl shadow-2xl p-4 pb-6 sm:p-6 focus:outline-none flex flex-col"
+          >
+            {/* Barra de puxar no mobile (Bottom Sheet handle) */}
+            <div className="sm:hidden w-12 h-1 bg-dark-600 rounded-full mx-auto mb-2.5 shrink-0" />
+
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-dark-800">
+              <div className="flex items-center space-x-2.5 sm:space-x-3">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-red-950 text-red-400 flex items-center justify-center border border-red-800 shrink-0">
+                  <Ban className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-100">Estorno de Lançamento</h3>
-                  <p className="text-xs text-slate-400">Correção auditada sem perda de histórico</p>
+                  <h3 className="text-base sm:text-lg font-bold text-slate-100">Estorno de Lançamento</h3>
+                  <p className="text-[11px] sm:text-xs text-slate-400">Correção auditada sem perda de histórico</p>
                 </div>
               </div>
               <button
                 onClick={() => setVoidModalItem(null)}
-                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                aria-label="Fechar modal de estorno"
+                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {voidError && (
-              <div className="mt-4 p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
+              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
                 <span>{voidError}</span>
               </div>
             )}
             {voidSuccess && (
-              <div className="mt-4 p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center space-x-2">
+              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                 <span>{voidSuccess}</span>
               </div>
             )}
 
-            <form onSubmit={handleConfirmVoid} className="mt-4 space-y-4">
-              <div className="p-3 bg-dark-950 rounded-xl border border-dark-800 text-xs text-slate-300">
-                Você está estornando: <strong>{voidModalItem.title}</strong> (+{voidModalItem.points} pts).
-                O lançamento será invalidado nos rankings, mantendo a trilha registrada.
+            <form onSubmit={handleConfirmVoid} className="mt-3 sm:mt-4 space-y-3 flex-1 flex flex-col justify-between">
+              <div className="space-y-3">
+                <div className="p-2.5 sm:p-3 bg-dark-950 rounded-xl border border-dark-800 text-xs text-slate-300">
+                  Você está estornando: <strong>{voidModalItem.title}</strong> (+{voidModalItem.points} pts).
+                  O lançamento será invalidado nos rankings, mantendo a trilha registrada.
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    Motivo Obrigatório da Correção / Estorno <span className="text-red-400">*</span>
+                  </label>
+                  <textarea
+                    rows={3}
+                    placeholder="Ex: Pontuação lançada em duplicidade ou alvo incorreto..."
+                    value={voidReason}
+                    onChange={(e) => setVoidReason(e.target.value)}
+                    className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-red-500"
+                    required
+                  />
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Motivo Obrigatório da Correção / Estorno <span className="text-red-400">*</span>
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder="Ex: Pontuação lançada em duplicidade ou alvo incorreto..."
-                  value={voidReason}
-                  onChange={(e) => setVoidReason(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-red-500"
-                  required
-                />
-              </div>
-
-              <div className="flex justify-end space-x-3 pt-2">
+              <div className="sticky bottom-0 bg-dark-900/95 backdrop-blur-sm pt-3 pb-1 -mx-1 px-1 border-t border-dark-800/60 mt-3 grid grid-cols-2 gap-2 sm:flex sm:justify-end sm:space-x-3">
                 <button
                   type="button"
                   onClick={() => setVoidModalItem(null)}
-                  className="px-4 py-2 rounded-xl border border-dark-700 text-slate-300 hover:bg-dark-800 text-xs font-semibold"
+                  className="min-h-11 px-4 py-2 rounded-xl border border-dark-700 text-slate-300 hover:bg-dark-800 text-xs font-semibold flex items-center justify-center"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
                   disabled={voidLoading}
-                  className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                  className="min-h-11 px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center justify-center"
                 >
                   {voidLoading ? 'Processando...' : 'Confirmar Estorno'}
                 </button>

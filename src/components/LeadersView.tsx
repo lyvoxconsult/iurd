@@ -77,6 +77,16 @@ export default function LeadersView({
     }
   };
 
+  // Fechar modal ao pressionar Escape
+  useEffect(() => {
+    if (!quickLaunchLeader) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setQuickLaunchLeader(null);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [quickLaunchLeader]);
+
   const handleOpenQuickLaunch = (leader: any) => {
     setQuickLaunchLeader(leader);
     setPoints(50);
@@ -229,10 +239,10 @@ export default function LeadersView({
                     </div>
                   </div>
 
-                  <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
+                  <div className="grid grid-cols-2 gap-2 w-full sm:w-auto">
                     <button
                       onClick={() => fetchLeaderHistory(leader.id)}
-                      className="flex items-center space-x-1.5 px-3 py-2 rounded-xl bg-dark-950 hover:bg-dark-800 border border-dark-700 text-xs font-semibold text-slate-300 transition-all"
+                      className="min-h-11 flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl bg-dark-950 hover:bg-dark-800 border border-dark-700 text-xs font-semibold text-slate-300 transition-all"
                     >
                       <History className="w-3.5 h-3.5 text-amber-500" />
                       <span>Histórico</span>
@@ -245,7 +255,7 @@ export default function LeadersView({
 
                     <button
                       onClick={() => handleOpenQuickLaunch(leader)}
-                      className="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-xs shadow-md transition-all active:scale-95"
+                      className="min-h-11 flex items-center justify-center space-x-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-xs shadow-md transition-all active:scale-95"
                     >
                       <PlusCircle className="w-3.5 h-3.5" />
                       <span>Pontuar Líder</span>
@@ -255,14 +265,14 @@ export default function LeadersView({
 
                 {/* Histórico Individual Expandido */}
                 {isExpanded && (
-                  <div className="p-5 bg-dark-950 border-t border-dark-800 space-y-3">
+                  <div className="p-4 sm:p-5 bg-dark-950 border-t border-dark-800 space-y-3">
                     <div className="flex items-center justify-between pb-2 border-b border-dark-800">
                       <h4 className="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
                         <History className="w-4 h-4 text-amber-500" />
                         <span>Histórico de Pontuações de {leader.name}</span>
                       </h4>
                       <span className="text-[11px] text-slate-500">
-                        {leaderHistory.length} lançamento(s) registrado(s)
+                        {leaderHistory.length} lançamento(s)
                       </span>
                     </div>
 
@@ -277,7 +287,7 @@ export default function LeadersView({
                         {leaderHistory.map((item) => (
                           <div
                             key={item.id}
-                            className={`p-3 rounded-xl border flex items-center justify-between text-xs ${
+                            className={`p-2.5 sm:p-3 rounded-xl border flex items-center justify-between text-xs ${
                               item.status === 'VOIDED'
                                 ? 'bg-red-950/20 border-red-900/40 opacity-60'
                                 : 'bg-dark-900 border-dark-800'
@@ -292,7 +302,7 @@ export default function LeadersView({
                                   </span>
                                 )}
                               </div>
-                              <span className="text-[11px] text-slate-400">
+                              <span className="text-[10px] sm:text-[11px] text-slate-400">
                                 {new Date(item.scoreDate).toLocaleDateString('pt-BR', {
                                   day: '2-digit',
                                   month: '2-digit',
@@ -300,7 +310,7 @@ export default function LeadersView({
                                   hour: '2-digit',
                                   minute: '2-digit',
                                 })}{' '}
-                                • Semana {item.weekNumber}
+                                • Sem. {item.weekNumber}
                               </span>
                             </div>
 
@@ -327,93 +337,105 @@ export default function LeadersView({
 
       {/* MODAL DE LANÇAMENTO RÁPIDO PARA LÍDER */}
       {quickLaunchLeader && (
-        <div className="fixed inset-0 z-50 flex items-start sm:items-center justify-center bg-black/80 backdrop-blur-sm overflow-y-auto sm:p-4">
-          <div role="dialog" aria-modal="true" aria-label="Pontuar líder" className="relative w-full min-h-dvh sm:min-h-0 sm:max-w-md max-h-dvh overflow-y-auto bg-dark-900 border border-dark-700 rounded-none sm:rounded-2xl shadow-2xl p-4 sm:p-6 sm:my-8">
-            <div className="flex items-center justify-between pb-4 border-b border-dark-800">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30">
-                  <Crown className="w-5 h-5" />
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm sm:p-4">
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Pontuar líder"
+            className="relative w-full max-h-[92dvh] sm:max-h-[85vh] sm:max-w-md overflow-y-auto bg-dark-900 border border-dark-700/80 rounded-t-[28px] sm:rounded-2xl shadow-2xl p-4 pb-6 sm:p-6 focus:outline-none flex flex-col"
+          >
+            {/* Barra de puxar no mobile (Bottom Sheet handle) */}
+            <div className="sm:hidden w-12 h-1 bg-dark-600 rounded-full mx-auto mb-2.5 shrink-0" />
+
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-dark-800">
+              <div className="flex items-center space-x-2.5 sm:space-x-3">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shrink-0">
+                  <Crown className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-100">Pontuar Líder</h3>
-                  <p className="text-xs text-amber-400 font-semibold">{quickLaunchLeader.name}</p>
+                  <h3 className="text-base sm:text-lg font-bold text-slate-100">Pontuar Líder</h3>
+                  <p className="text-xs text-amber-400 font-semibold truncate">{quickLaunchLeader.name}</p>
                 </div>
               </div>
               <button
                 onClick={() => setQuickLaunchLeader(null)}
-                className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                aria-label="Fechar pontuação de líder"
+                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {launchError && (
-              <div className="mt-4 p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
+              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
                 <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
                 <span>{launchError}</span>
               </div>
             )}
             {launchSuccess && (
-              <div className="mt-4 p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center space-x-2">
+              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center space-x-2">
                 <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
                 <span>{launchSuccess}</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmitQuickLaunch} className="mt-4 space-y-3.5">
+            <form onSubmit={handleSubmitQuickLaunch} className="mt-3 sm:mt-4 space-y-3 flex-1 flex flex-col justify-between">
               
-              <div className="p-3 bg-dark-950 rounded-xl border border-dark-800 text-xs text-slate-400">
-                Lançamento manual independente. Pontua exclusivamente no ranking de{' '}
-                <strong>
-                  {quickLaunchLeader.role === 'lider_nacao' ? 'Líderes de Nação' : 'Líderes de Tribo'}
-                </strong>
-                . Não altera o placar de tribo ou nação.
-              </div>
+              <div className="space-y-3">
+                <div className="p-2.5 sm:p-3 bg-dark-950 rounded-xl border border-dark-800 text-xs text-slate-400">
+                  Lançamento manual independente para{' '}
+                  <strong>
+                    {quickLaunchLeader.role === 'lider_nacao' ? 'Líderes de Nação' : 'Líderes de Tribo'}
+                  </strong>
+                  . Não altera tribo ou nação.
+                </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Pontos <span className="text-amber-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    value={points}
-                    onChange={(e) => setPoints(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
-                    className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                    required
-                  />
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                      Pontos <span className="text-amber-500">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={points}
+                      onChange={(e) => setPoints(e.target.value === '' ? '' : parseInt(e.target.value, 10))}
+                      className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500 font-semibold"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                      Data e Hora <span className="text-amber-500">*</span>
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={scoreDate}
+                      onChange={(e) => setScoreDate(e.target.value)}
+                      className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-2.5 py-2 text-xs sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                      required
+                    />
+                  </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Data e Hora <span className="text-amber-500">*</span>
+                    Motivo Obrigatório <span className="text-amber-500">*</span>
                   </label>
                   <input
-                    type="datetime-local"
-                    value={scoreDate}
-                    onChange={(e) => setScoreDate(e.target.value)}
-                    className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
+                    type="text"
+                    placeholder="Ex: Líder destaque no acolhimento"
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                    className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
                     required
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Motivo Obrigatório <span className="text-amber-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Ex: Líder destaque no acolhimento de jovens"
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"
-                  required
-                />
-              </div>
-
-              <div className="pt-2">
+              {/* Ação Sticky */}
+              <div className="sticky bottom-0 bg-dark-900/95 backdrop-blur-sm pt-3 pb-1 -mx-1 px-1 border-t border-dark-800/60 mt-3">
                 <button
                   type="submit"
                   disabled={launchLoading}

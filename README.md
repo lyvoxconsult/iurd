@@ -51,6 +51,13 @@ Sistema web responsivo para gestão do rali da igreja IURD Umarizal.
 - **Snapshot Histórico**: Nações e tribos beneficiadas são gravadas no momento do lançamento, garantindo que transferências posteriores de cadastro não alterem placares do passado.
 - **Proteção contra Duplo Clique**: Chaves de idempotência e bloqueio no client/server.
 
+### 7. Experiência Mobile First
+- **Navegação por Polegar**: Barra de navegação inferior nativa fixa no mobile (`Início`, `Rankings`, botão central elevado dourado `Pontuar`, `Desafios` e menu deslizante `Mais`).
+- **Duelo Imediato**: Visão lado a lado das duas Nações (Judá vs. Benjamim) em `grid-cols-2` simétrico acima da dobra em celulares (360px a 430px).
+- **Destaques Top 3 Segmentados**: Seletor compacto por pílula para Tribos, Líderes de Tribo e Líderes de Nação, poupando rolagem vertical.
+- **Modais como Bottom Sheets**: Aberturas inferiores com puxador visual, cantos superiores arredondados e botão de submissão fixo (sticky footer) para ergonomia e compatibilidade com teclado virtual.
+- **Preservação Desktop/Tablet**: Barra de navegação horizontal completa, cards espaçosos e progress bars mantidos integralmente para telas médias e grandes (`sm:` / `lg:`).
+
 ---
 
 ## 🛠️ Stack Tecnológica e Justificativa

@@ -10,6 +10,20 @@ import ChallengesView from '@/components/ChallengesView';
 import LeadersView from '@/components/LeadersView';
 import HistoryView from '@/components/HistoryView';
 import RallyManageView from '@/components/RallyManageView';
+import { 
+  Trophy, 
+  Award, 
+  PlusCircle, 
+  Flame, 
+  MoreHorizontal, 
+  Users, 
+  Crown, 
+  History, 
+  Settings, 
+  LogOut, 
+  X, 
+  ChevronRight 
+} from 'lucide-react';
 
 export default function HomePage() {
   const [session, setSession] = useState<'checking' | 'setup' | 'locked' | 'ready'>('checking');
@@ -19,6 +33,7 @@ export default function HomePage() {
   const [loadError, setLoadError] = useState('');
   const [currentTab, setCurrentTab] = useState('dashboard');
   const [isScoreModalOpen, setIsScoreModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Dados globais
   const [activeRally, setActiveRally] = useState<any | null>(null);
@@ -298,8 +313,8 @@ export default function HomePage() {
         initialLeaderId={modalInitialLeaderId}
       />
 
-      {/* Rodapé Oficial */}
-      <footer className="bg-dark-900 border-t border-dark-800 py-6 text-center text-xs text-slate-500">
+      {/* Rodapé Oficial (oculto no mobile para visual de app) */}
+      <footer className="hidden sm:block bg-dark-900 border-t border-dark-800 py-6 text-center text-xs text-slate-500">
         <p>
           Sistema de Pontuação do Rali • <strong>IURD Umarizal</strong>
         </p>
@@ -307,6 +322,163 @@ export default function HomePage() {
           Operação no fuso horário America/Sao_Paulo • Semanas de Segunda a Domingo
         </p>
       </footer>
+
+      {/* BOTTOM NAVIGATION BAR MOBILE (App-Like, Fixed) */}
+      <nav 
+        aria-label="Navegação móvel principal"
+        className="fixed bottom-0 left-0 right-0 z-40 bg-dark-900/95 backdrop-blur-lg border-t border-dark-800 px-2 py-1 sm:hidden safe-area-bottom"
+      >
+        <div className="flex items-center justify-around max-w-md mx-auto">
+          
+          {/* 1. Início (Dashboard) */}
+          <button
+            onClick={() => { setCurrentTab('dashboard'); setIsMobileMenuOpen(false); }}
+            className={`flex flex-col items-center justify-center min-h-[48px] min-w-[54px] rounded-xl transition-all ${
+              currentTab === 'dashboard' ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Trophy className={`w-5 h-5 ${currentTab === 'dashboard' ? 'stroke-[2.5]' : 'stroke-[1.8]'}`} />
+            <span className="text-[10px] mt-0.5">Início</span>
+          </button>
+
+          {/* 2. Rankings */}
+          <button
+            onClick={() => { setCurrentTab('rankings'); setIsMobileMenuOpen(false); }}
+            className={`flex flex-col items-center justify-center min-h-[48px] min-w-[54px] rounded-xl transition-all ${
+              currentTab === 'rankings' ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Award className={`w-5 h-5 ${currentTab === 'rankings' ? 'stroke-[2.5]' : 'stroke-[1.8]'}`} />
+            <span className="text-[10px] mt-0.5">Rankings</span>
+          </button>
+
+          {/* 3. Botão Central de Ação: Pontuar (Destaque Ergonômico no Polegar) */}
+          <button
+            onClick={() => { setIsScoreModalOpen(true); setIsMobileMenuOpen(false); }}
+            aria-label="Lançar pontuação no rali"
+            className="flex flex-col items-center justify-center min-h-[48px] min-w-[56px] -mt-3.5 group"
+          >
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-500 to-amber-400 text-dark-950 flex items-center justify-center shadow-lg shadow-amber-500/30 group-active:scale-95 transition-transform">
+              <PlusCircle className="w-6 h-6 stroke-[2.5]" />
+            </div>
+            <span className="text-[10px] font-black text-amber-400 mt-1">Pontuar</span>
+          </button>
+
+          {/* 4. Desafios */}
+          <button
+            onClick={() => { setCurrentTab('challenges'); setIsMobileMenuOpen(false); }}
+            className={`flex flex-col items-center justify-center min-h-[48px] min-w-[54px] rounded-xl transition-all ${
+              currentTab === 'challenges' ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Flame className={`w-5 h-5 ${currentTab === 'challenges' ? 'stroke-[2.5]' : 'stroke-[1.8]'}`} />
+            <span className="text-[10px] mt-0.5">Desafios</span>
+          </button>
+
+          {/* 5. Menu Mais */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-expanded={isMobileMenuOpen}
+            aria-label="Mais opções e configurações"
+            className={`flex flex-col items-center justify-center min-h-[48px] min-w-[54px] rounded-xl transition-all ${
+              isMobileMenuOpen || ['people', 'leaders', 'history', 'rally'].includes(currentTab)
+                ? 'text-amber-400 font-bold'
+                : 'text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <div className="relative">
+              <MoreHorizontal className="w-5 h-5 stroke-[2]" />
+              {['people', 'leaders', 'history', 'rally'].includes(currentTab) && (
+                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-amber-400" />
+              )}
+            </div>
+            <span className="text-[10px] mt-0.5">Mais</span>
+          </button>
+
+        </div>
+      </nav>
+
+      {/* BOTTOM SHEET: MENU MAIS NO MOBILE */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm sm:hidden flex flex-col justify-end"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          <div 
+            className="bg-dark-900 border-t border-dark-700 rounded-t-3xl p-4 shadow-2xl max-h-[80dvh] overflow-y-auto animate-in slide-in-from-bottom duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Handle do Bottom Sheet */}
+            <div className="w-12 h-1 bg-dark-700 rounded-full mx-auto mb-3" />
+            
+            <div className="flex items-center justify-between pb-3 border-b border-dark-800">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Opções do Rali</span>
+              </div>
+              <button
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Fechar menu de opções"
+                className="min-h-9 min-w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-dark-800"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="py-2 space-y-1">
+              {[
+                { id: 'people', label: 'Integrantes', desc: 'Consulta e cadastro de participantes', icon: Users },
+                { id: 'leaders', label: 'Líderes', desc: 'Pontuação de líderes e histórico individual', icon: Crown },
+                { id: 'history', label: 'Histórico', desc: 'Auditoria de pontuações e estornos', icon: History },
+                { id: 'rally', label: 'Gestão Rali', desc: 'Ciclos de rali, nações e tribos', icon: Settings },
+              ].map((item) => {
+                const Icon = item.icon;
+                const isActive = currentTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setCurrentTab(item.id);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${
+                      isActive 
+                        ? 'bg-amber-500/15 border border-amber-500/40 text-amber-300' 
+                        : 'text-slate-200 hover:bg-dark-800'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
+                        isActive ? 'bg-amber-500 text-dark-950 font-bold' : 'bg-dark-800 text-amber-400'
+                      }`}>
+                        <Icon className="w-4 h-4" />
+                      </div>
+                      <div className="text-left">
+                        <div className="text-sm font-bold text-slate-100">{item.label}</div>
+                        <div className="text-[11px] text-slate-400">{item.desc}</div>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-500" />
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="pt-2 border-t border-dark-800 mt-2">
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  handleLogout();
+                }}
+                className="w-full min-h-11 flex items-center justify-center gap-2 p-2.5 rounded-xl border border-red-900/60 text-red-300 hover:bg-red-950/40 text-xs font-bold transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>Sair da Administração</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
 
     </div>
   );
