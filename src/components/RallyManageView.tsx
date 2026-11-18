@@ -25,6 +25,12 @@ interface RallyManageViewProps {
   onRefresh: () => void;
 }
 
+function displayNationColor(color?: string) {
+  if (color?.toLowerCase() === '#f59e0b') return '#b9923f';
+  if (color?.toLowerCase() === '#0ea5e9') return '#2f6fa8';
+  return color || '#b9923f';
+}
+
 export default function RallyManageView({
   activeRally,
   allRallies,
@@ -148,7 +154,7 @@ export default function RallyManageView({
   const handleOpenEditNation = (nation: any) => {
     setEditingNation(nation);
     setNationName(nation.name);
-    setNationColor(nation.color || '#f59e0b');
+    setNationColor(displayNationColor(nation.color));
     setErrorMsg(null);
     setSuccessMsg(null);
   };
@@ -232,7 +238,7 @@ export default function RallyManageView({
       <div className="bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-black text-slate-100 flex items-center space-x-2">
-            <Settings className="w-5 h-5 text-amber-500" />
+            <Settings className="w-5 h-5 text-amber-700" />
             <span>Gestão e Estrutura do Rali</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -243,7 +249,7 @@ export default function RallyManageView({
         <button
           onClick={() => setIsCreating(!isCreating)}
           disabled={!!activeRally}
-          className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-xs sm:text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <PlusCircle className="w-4 h-4" />
           <span>{isCreating ? 'Fechar Formulário' : 'Iniciar Novo Rali'}</span>
@@ -253,14 +259,14 @@ export default function RallyManageView({
       {activeRally && <p className="text-xs text-slate-400">O rali atual continua até você clicar em Encerrar Rali Ativo. Depois, poderá iniciar ou reativar outro.</p>}
 
       {errorMsg && (
-        <div className="p-3.5 rounded-xl bg-red-950/50 border border-red-800 text-red-200 text-xs flex items-center space-x-2">
-          <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+        <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center space-x-2">
+          <AlertCircle className="w-4 h-4 text-red-800 flex-shrink-0" />
           <span>{errorMsg}</span>
         </div>
       )}
       {successMsg && (
-        <div className="p-3.5 rounded-xl bg-emerald-950/50 border border-emerald-800 text-emerald-200 text-xs flex items-center space-x-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-800 flex-shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
@@ -270,7 +276,7 @@ export default function RallyManageView({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-dark-800 gap-2">
           <div>
             <h3 className="text-base font-bold text-slate-100 flex items-center space-x-2">
-              <Flag className="w-5 h-5 text-amber-500" />
+              <Flag className="w-5 h-5 text-amber-700" />
               <span>Nações e Tribos do Rali</span>
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
@@ -295,7 +301,7 @@ export default function RallyManageView({
                     <div className="flex items-center space-x-3">
                       <div
                         className="w-4 h-4 rounded-full flex-shrink-0 shadow-sm"
-                        style={{ backgroundColor: nation.color || '#f59e0b' }}
+                        style={{ backgroundColor: displayNationColor(nation.color) }}
                       />
                       <div>
                         <h4 className="text-base font-black text-slate-100">{nation.name}</h4>
@@ -307,7 +313,7 @@ export default function RallyManageView({
 
                     <button
                       onClick={() => handleOpenEditNation(nation)}
-                      className="min-h-11 flex items-center space-x-1 px-2.5 py-1.5 rounded-lg border border-dark-700 bg-dark-900 hover:bg-dark-800 text-slate-300 text-xs font-semibold transition-all hover:text-amber-400"
+                      className="min-h-11 flex items-center space-x-1 px-2.5 py-1.5 rounded-lg border border-dark-700 bg-dark-900 hover:bg-dark-800 text-slate-300 text-xs font-semibold transition-all hover:text-amber-700"
                       title="Editar Nome da Nação"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
@@ -340,7 +346,7 @@ export default function RallyManageView({
                           <div className="flex items-center space-x-1">
                             <button
                               onClick={() => handleOpenEditTribe(tribe)}
-                              className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-amber-400 hover:bg-dark-950 rounded-lg transition-colors"
+                              className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-amber-700 hover:bg-dark-950 rounded-lg transition-colors"
                               aria-label={`Editar ${tribe.name}`}
                             >
                               <Edit2 className="w-3.5 h-3.5" />
@@ -363,12 +369,12 @@ export default function RallyManageView({
         <div className="bg-gradient-to-br from-amber-950/30 via-dark-900 to-dark-950 border border-amber-600/50 rounded-2xl p-6 shadow-xl space-y-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-dark-950 uppercase tracking-wider inline-block mb-1.5">
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-slate-100 uppercase tracking-wider inline-block mb-1.5">
                 Rali Ativo em Andamento
               </span>
               <h3 className="text-xl font-black text-slate-100">{activeRally.name}</h3>
               <p className="text-xs text-slate-400 mt-1 flex items-center space-x-2">
-                <Calendar className="w-3.5 h-3.5 text-amber-500" />
+                <Calendar className="w-3.5 h-3.5 text-amber-700" />
                 <span>
                   Início: {new Date(activeRally.startDate).toLocaleDateString('pt-BR')}
                 </span>
@@ -377,7 +383,7 @@ export default function RallyManageView({
 
             <button
               onClick={() => handleCloseRally(activeRally.id)}
-              className="px-3.5 py-2 rounded-xl border border-red-800 bg-red-950/40 hover:bg-red-900/60 text-red-200 text-xs font-bold transition-all flex items-center space-x-1.5"
+              className="px-3.5 py-2 rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-800 text-xs font-bold transition-all flex items-center space-x-1.5"
             >
               <Square className="w-3.5 h-3.5" />
               <span>Encerrar Rali Ativo</span>
@@ -387,19 +393,19 @@ export default function RallyManageView({
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-dark-800">
             <div className="p-3 bg-dark-950/80 rounded-xl border border-dark-800">
               <span className="text-[11px] text-slate-400 block font-medium">Nações</span>
-              <span className="text-lg font-black text-amber-400">{nations.length}</span>
+              <span className="text-lg font-black text-amber-700">{nations.length}</span>
             </div>
             <div className="p-3 bg-dark-950/80 rounded-xl border border-dark-800">
               <span className="text-[11px] text-slate-400 block font-medium">Tribos</span>
-              <span className="text-lg font-black text-amber-400">{tribes.length}</span>
+              <span className="text-lg font-black text-amber-700">{tribes.length}</span>
             </div>
             <div className="p-3 bg-dark-950/80 rounded-xl border border-dark-800">
               <span className="text-[11px] text-slate-400 block font-medium">Integrantes</span>
-              <span className="text-lg font-black text-amber-400">{activeRally._count?.people || 0}</span>
+              <span className="text-lg font-black text-amber-700">{activeRally._count?.people || 0}</span>
             </div>
             <div className="p-3 bg-dark-950/80 rounded-xl border border-dark-800">
               <span className="text-[11px] text-slate-400 block font-medium">Lançamentos</span>
-              <span className="text-lg font-black text-amber-400">{activeRally._count?.scoreLaunches || 0}</span>
+              <span className="text-lg font-black text-amber-700">{activeRally._count?.scoreLaunches || 0}</span>
             </div>
           </div>
         </div>
@@ -409,7 +415,7 @@ export default function RallyManageView({
       {isCreating && !activeRally && (
         <div className="bg-dark-900 border border-amber-600/40 rounded-2xl p-6 shadow-2xl space-y-4 gold-glow">
           <div className="flex items-center space-x-2 pb-2 border-b border-dark-800">
-            <Sparkles className="w-4 h-4 text-amber-500" />
+            <Sparkles className="w-4 h-4 text-amber-700" />
             <h3 className="text-sm font-bold text-slate-100">Criar Novo Ciclo de Rali</h3>
           </div>
 
@@ -421,7 +427,7 @@ export default function RallyManageView({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Nome do Rali <span className="text-amber-500">*</span>
+                  Nome do Rali <span className="text-amber-700">*</span>
                 </label>
                 <input
                   type="text"
@@ -457,7 +463,7 @@ export default function RallyManageView({
               <button
                 type="submit"
                 disabled={loading}
-                className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-100 font-bold text-xs shadow-md transition-all disabled:opacity-50"
               >
                 {loading ? 'Inicializando...' : 'Confirmar e Iniciar Novo Rali'}
               </button>
@@ -480,7 +486,7 @@ export default function RallyManageView({
                 <div className="flex items-center space-x-2">
                   <h4 className="text-sm font-bold text-slate-100">{rally.name}</h4>
                   {rally.isActive ? (
-                    <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                    <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-800 border border-amber-500/40">
                       Ativo
                     </span>
                   ) : (
@@ -498,7 +504,7 @@ export default function RallyManageView({
               {!rally.isActive && !activeRally && (
                 <button
                   onClick={() => handleActivateRally(rally.id)}
-                  className="px-3 py-1.5 rounded-lg border border-dark-700 bg-dark-900 hover:bg-amber-500 hover:text-dark-950 text-slate-300 text-xs font-semibold transition-all flex items-center space-x-1"
+                  className="px-3 py-1.5 rounded-lg border border-dark-700 bg-dark-900 hover:bg-amber-500 hover:text-slate-100 text-slate-300 text-xs font-semibold transition-all flex items-center space-x-1"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                   <span>Tornar Ativo</span>
@@ -511,7 +517,7 @@ export default function RallyManageView({
 
       {/* MODAL: EDITAR NAÇÃO */}
       {editingNation && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm sm:p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm sm:p-4">
           <div
             role="dialog"
             aria-modal="true"
@@ -523,13 +529,13 @@ export default function RallyManageView({
 
             <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-dark-800">
               <div className="flex items-center space-x-2">
-                <Flag className="w-5 h-5 text-amber-500" />
+                <Flag className="w-5 h-5 text-amber-700" />
                 <h3 className="text-base font-bold text-slate-100">Editar Nação</h3>
               </div>
               <button
                 onClick={() => setEditingNation(null)}
                 aria-label="Fechar edição da nação"
-                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-slate-100 rounded-lg hover:bg-dark-800"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -539,7 +545,7 @@ export default function RallyManageView({
               <div className="space-y-3.5">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Nome da Nação <span className="text-amber-500">*</span>
+                    Nome da Nação <span className="text-amber-700">*</span>
                   </label>
                   <input
                     type="text"
@@ -582,7 +588,7 @@ export default function RallyManageView({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="min-h-11 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center justify-center"
+                  className="min-h-11 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-100 font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center justify-center"
                 >
                   {loading ? 'Salvando...' : 'Salvar Alterações'}
                 </button>
@@ -594,7 +600,7 @@ export default function RallyManageView({
 
       {/* MODAL: CRIAR / EDITAR TRIBO */}
       {editingTribe && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm sm:p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm sm:p-4">
           <div
             role="dialog"
             aria-modal="true"
@@ -606,7 +612,7 @@ export default function RallyManageView({
 
             <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-dark-800">
               <div className="flex items-center space-x-2">
-                <Shield className="w-5 h-5 text-amber-500" />
+                <Shield className="w-5 h-5 text-amber-700" />
                 <h3 className="text-base font-bold text-slate-100">
                   Editar Tribo
                 </h3>
@@ -616,7 +622,7 @@ export default function RallyManageView({
                   setEditingTribe(null);
                 }}
                 aria-label="Fechar edição da tribo"
-                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-slate-100 rounded-lg hover:bg-dark-800"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -626,7 +632,7 @@ export default function RallyManageView({
               <div className="space-y-3.5">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Nome da Tribo <span className="text-amber-500">*</span>
+                    Nome da Tribo <span className="text-amber-700">*</span>
                   </label>
                   <input
                     type="text"
@@ -665,7 +671,7 @@ export default function RallyManageView({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="min-h-11 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center justify-center"
+                  className="min-h-11 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-100 font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center justify-center"
                 >
                   {loading ? 'Salvando...' : 'Salvar Tribo'}
                 </button>

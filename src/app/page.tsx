@@ -178,7 +178,7 @@ export default function HomePage() {
     return (
       <main className="min-h-dvh bg-dark-950 px-4 py-8 flex items-center justify-center text-slate-100">
         <div className="w-full max-w-sm rounded-3xl border border-dark-700 bg-dark-900 p-6 sm:p-8 shadow-2xl">
-          <p className="text-xs font-bold tracking-[0.2em] text-amber-400 uppercase">IURD Umarizal</p>
+          <p className="text-xs font-bold tracking-[0.2em] text-amber-700 uppercase">IURD Umarizal</p>
           <h1 className="mt-3 text-2xl font-black">Gestão do rali</h1>
           {session === 'checking' ? <p className="mt-5 text-slate-300" role="status">Verificando acesso…</p> : session === 'setup' ? (
             <div className="mt-5 space-y-2 text-sm text-slate-300" role="alert">
@@ -188,9 +188,9 @@ export default function HomePage() {
           ) : (
             <form className="mt-6 space-y-4" onSubmit={handleLogin}>
               <label htmlFor="admin-password" className="block text-sm font-semibold">Senha de administração</label>
-              <input id="admin-password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full min-h-12 rounded-xl border border-dark-700 bg-dark-950 px-4 text-base text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400" />
-              {authError && <p role="alert" className="text-sm text-red-300">{authError}</p>}
-              <button type="submit" disabled={authBusy} className="w-full min-h-12 rounded-xl bg-amber-500 px-4 font-bold text-dark-950 disabled:opacity-60">{authBusy ? 'Entrando…' : 'Entrar'}</button>
+              <input id="admin-password" type="password" autoComplete="current-password" required value={password} onChange={(e) => setPassword(e.target.value)} className="w-full min-h-12 rounded-xl border border-dark-700 bg-dark-950 px-4 text-base text-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-400" />
+              {authError && <p role="alert" className="text-sm text-red-800">{authError}</p>}
+              <button type="submit" disabled={authBusy} className="w-full min-h-12 rounded-xl bg-amber-500 px-4 font-bold text-slate-100 disabled:opacity-60">{authBusy ? 'Entrando…' : 'Entrar'}</button>
             </form>
           )}
         </div>
@@ -222,10 +222,10 @@ export default function HomePage() {
             <p className="text-sm text-slate-400 font-medium">Carregando IURD Umarizal...</p>
           </div>
         ) : loadError ? (
-          <div role="alert" className="mx-auto max-w-md rounded-2xl border border-red-700/60 bg-red-950/40 p-6 text-center">
+          <div role="alert" className="mx-auto max-w-md rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
             <h2 className="text-lg font-bold">Não foi possível carregar os dados</h2>
-            <p className="mt-2 text-sm text-red-200">{loadError}</p>
-            <button onClick={loadData} className="mt-5 min-h-11 rounded-xl bg-amber-500 px-5 font-bold text-dark-950">Tentar novamente</button>
+            <p className="mt-2 text-sm text-red-800">{loadError}</p>
+            <button onClick={loadData} className="mt-5 min-h-11 rounded-xl bg-amber-500 px-5 font-bold text-slate-100">Tentar novamente</button>
           </div>
         ) : (
           <>
@@ -334,7 +334,7 @@ export default function HomePage() {
           <button
             onClick={() => { setCurrentTab('dashboard'); setIsMobileMenuOpen(false); }}
             className={`flex flex-col items-center justify-center min-h-[48px] min-w-[54px] rounded-xl transition-all ${
-              currentTab === 'dashboard' ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+              currentTab === 'dashboard' ? 'text-amber-700 font-bold' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Trophy className={`w-5 h-5 ${currentTab === 'dashboard' ? 'stroke-[2.5]' : 'stroke-[1.8]'}`} />
@@ -345,7 +345,7 @@ export default function HomePage() {
           <button
             onClick={() => { setCurrentTab('rankings'); setIsMobileMenuOpen(false); }}
             className={`flex flex-col items-center justify-center min-h-[48px] min-w-[54px] rounded-xl transition-all ${
-              currentTab === 'rankings' ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+              currentTab === 'rankings' ? 'text-amber-700 font-bold' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Award className={`w-5 h-5 ${currentTab === 'rankings' ? 'stroke-[2.5]' : 'stroke-[1.8]'}`} />
@@ -358,17 +358,17 @@ export default function HomePage() {
             aria-label="Lançar pontuação no rali"
             className="flex flex-col items-center justify-center min-h-[48px] min-w-[56px] -mt-3.5 group"
           >
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-500 to-amber-400 text-dark-950 flex items-center justify-center shadow-lg shadow-amber-500/30 group-active:scale-95 transition-transform">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 via-amber-500 to-amber-400 text-slate-100 flex items-center justify-center shadow-lg shadow-amber-500/30 group-active:scale-95 transition-transform">
               <PlusCircle className="w-6 h-6 stroke-[2.5]" />
             </div>
-            <span className="text-[10px] font-black text-amber-400 mt-1">Pontuar</span>
+            <span className="text-[10px] font-black text-amber-700 mt-1">Pontuar</span>
           </button>
 
           {/* 4. Desafios */}
           <button
             onClick={() => { setCurrentTab('challenges'); setIsMobileMenuOpen(false); }}
             className={`flex flex-col items-center justify-center min-h-[48px] min-w-[54px] rounded-xl transition-all ${
-              currentTab === 'challenges' ? 'text-amber-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+              currentTab === 'challenges' ? 'text-amber-700 font-bold' : 'text-slate-400 hover:text-slate-200'
             }`}
           >
             <Flame className={`w-5 h-5 ${currentTab === 'challenges' ? 'stroke-[2.5]' : 'stroke-[1.8]'}`} />
@@ -382,7 +382,7 @@ export default function HomePage() {
             aria-label="Mais opções e configurações"
             className={`flex flex-col items-center justify-center min-h-[48px] min-w-[54px] rounded-xl transition-all ${
               isMobileMenuOpen || ['people', 'leaders', 'history', 'rally'].includes(currentTab)
-                ? 'text-amber-400 font-bold'
+                ? 'text-amber-700 font-bold'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -401,7 +401,7 @@ export default function HomePage() {
       {/* BOTTOM SHEET: MENU MAIS NO MOBILE */}
       {isMobileMenuOpen && (
         <div 
-          className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm sm:hidden flex flex-col justify-end"
+          className="fixed inset-0 z-50 bg-slate-900/30 backdrop-blur-sm sm:hidden flex flex-col justify-end"
           onClick={() => setIsMobileMenuOpen(false)}
         >
           <div 
@@ -413,12 +413,12 @@ export default function HomePage() {
             
             <div className="flex items-center justify-between pb-3 border-b border-dark-800">
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-400">Opções do Rali</span>
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-700">Opções do Rali</span>
               </div>
               <button
                 onClick={() => setIsMobileMenuOpen(false)}
                 aria-label="Fechar menu de opções"
-                className="min-h-9 min-w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-white hover:bg-dark-800"
+                className="min-h-9 min-w-9 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-100 hover:bg-dark-800"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -442,13 +442,13 @@ export default function HomePage() {
                     }}
                     className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${
                       isActive 
-                        ? 'bg-amber-500/15 border border-amber-500/40 text-amber-300' 
+                        ? 'bg-amber-500/15 border border-amber-500/40 text-amber-800'
                         : 'text-slate-200 hover:bg-dark-800'
                     }`}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                        isActive ? 'bg-amber-500 text-dark-950 font-bold' : 'bg-dark-800 text-amber-400'
+                        isActive ? 'bg-amber-500 text-slate-100 font-bold' : 'bg-dark-800 text-amber-700'
                       }`}>
                         <Icon className="w-4 h-4" />
                       </div>
@@ -469,7 +469,7 @@ export default function HomePage() {
                   setIsMobileMenuOpen(false);
                   handleLogout();
                 }}
-                className="w-full min-h-11 flex items-center justify-center gap-2 p-2.5 rounded-xl border border-red-900/60 text-red-300 hover:bg-red-950/40 text-xs font-bold transition-colors"
+                className="w-full min-h-11 flex items-center justify-center gap-2 p-2.5 rounded-xl border border-red-200 text-red-800 hover:bg-red-50 text-xs font-bold transition-colors"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Sair da Administração</span>

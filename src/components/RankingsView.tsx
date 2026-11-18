@@ -63,8 +63,8 @@ export default function RankingsView({
             onClick={() => setPeriod('week')}
             className={`min-h-11 flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center space-x-1.5 transition-all ${
               period === 'week'
-                ? 'bg-amber-500 text-dark-950 shadow-md'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-amber-500 text-slate-100 shadow-md'
+                : 'text-slate-400 hover:text-slate-100'
             }`}
           >
             <Calendar className="w-4 h-4" />
@@ -74,8 +74,8 @@ export default function RankingsView({
             onClick={() => setPeriod('total')}
             className={`min-h-11 flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-bold flex items-center justify-center space-x-1.5 transition-all ${
               period === 'total'
-                ? 'bg-amber-500 text-dark-950 shadow-md'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-amber-500 text-slate-100 shadow-md'
+                : 'text-slate-400 hover:text-slate-100'
             }`}
           >
             <Sparkles className="w-4 h-4" />
@@ -87,7 +87,7 @@ export default function RankingsView({
         {period === 'week' && availableWeeks.length > 0 && (
           <div className="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
             <span className="text-xs font-semibold text-slate-400 flex items-center space-x-1">
-              <Filter className="w-3.5 h-3.5 text-amber-500" />
+              <Filter className="w-3.5 h-3.5 text-amber-700" />
               <span>Semana:</span>
             </span>
             <select
@@ -128,7 +128,7 @@ export default function RankingsView({
               aria-pressed={isActive}
               className={`py-2 px-1 rounded-lg flex flex-col items-center justify-center transition-all ${
                 isActive
-                  ? 'bg-amber-500 text-dark-950 shadow-sm'
+                  ? 'bg-amber-500 text-slate-100 shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -156,14 +156,14 @@ export default function RankingsView({
               aria-pressed={isActive}
               className={`min-h-14 p-3 sm:p-3.5 rounded-2xl border text-left flex items-center justify-between transition-all ${
                 isActive
-                  ? 'bg-dark-900 border-amber-500 shadow-lg gold-glow text-amber-400'
+                  ? 'bg-dark-900 border-amber-500 shadow-lg gold-glow text-amber-700'
                   : 'bg-dark-900/60 border-dark-800 text-slate-400 hover:border-dark-700 hover:text-slate-200'
               }`}
             >
               <div className="flex items-center space-x-2.5">
                 <div
                   className={`w-8 h-8 rounded-xl flex items-center justify-center ${
-                    isActive ? 'bg-amber-500/20 text-amber-400' : 'bg-dark-950 text-slate-400'
+                    isActive ? 'bg-amber-500/20 text-amber-700' : 'bg-dark-950 text-slate-400'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -185,7 +185,7 @@ export default function RankingsView({
               <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-dark-950 border border-dark-700 text-slate-300">
                 {period === 'week' ? `Semana ${rankingsData?.targetWeek?.weekNumber ?? ''} (${rankingsData?.targetWeek?.weekYear ?? ''})` : 'Geral Acumulado'}
               </span>
-              {period === 'week' && typeof rankingsData?.targetWeek?.isPartial === 'boolean' && <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${rankingsData.targetWeek.isPartial ? 'bg-amber-950 text-amber-300' : 'bg-emerald-950 text-emerald-300'}`}>{rankingsData.targetWeek.isPartial ? 'Parcial' : 'Encerrada'}</span>}
+              {period === 'week' && typeof rankingsData?.targetWeek?.isPartial === 'boolean' && <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${rankingsData.targetWeek.isPartial ? 'bg-amber-950 text-amber-800' : 'bg-emerald-50 text-emerald-800'}`}>{rankingsData.targetWeek.isPartial ? 'Parcial' : 'Encerrada'}</span>}
             </h3>
             <p className="text-xs text-slate-400 mt-0.5">
               Empates mantêm a mesma posição com transparência total.
@@ -216,7 +216,7 @@ export default function RankingsView({
                     <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
                       <div
                         className={`w-8 h-8 sm:w-10 sm:h-10 rounded-xl font-black text-xs sm:text-sm flex items-center justify-center shrink-0 shadow-md ${
-                          isFirst ? 'bg-amber-500 text-dark-950' : 'bg-dark-800 text-slate-300'
+                          isFirst ? 'bg-amber-500 text-slate-100' : 'bg-dark-800 text-slate-300'
                         }`}
                       >
                         {rankItem.rank}º
@@ -225,7 +225,7 @@ export default function RankingsView({
                         <div className="flex items-center space-x-1.5 sm:space-x-2">
                           <h4 className="text-xs sm:text-base font-black text-slate-100 truncate">{rankItem.item.name}</h4>
                           {rankItem.isTied && (
-                            <span className="text-[9px] sm:text-[11px] px-1.5 py-0.2 sm:px-2 sm:py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold shrink-0">
+                            <span className="text-[9px] sm:text-[11px] px-1.5 py-0.2 sm:px-2 sm:py-0.5 rounded-full bg-amber-500/20 text-amber-800 border border-amber-500/30 font-bold shrink-0">
                               Empate
                             </span>
                           )}
@@ -243,7 +243,7 @@ export default function RankingsView({
                           />
                         </div>
                       </div>
-                      <span className="text-sm sm:text-lg font-black text-amber-400 min-w-16 sm:w-20 text-right">
+                      <span className="text-sm sm:text-lg font-black text-amber-700 min-w-16 sm:w-20 text-right">
                         {rankItem.points} <span className="text-[10px] sm:text-xs text-slate-400">pts</span>
                       </span>
                     </div>
@@ -273,7 +273,7 @@ export default function RankingsView({
                     <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
                       <div
                         className={`w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl font-black text-xs flex items-center justify-center shrink-0 shadow-md ${
-                          isFirst ? 'bg-amber-500 text-dark-950' : 'bg-dark-800 text-slate-300'
+                          isFirst ? 'bg-amber-500 text-slate-100' : 'bg-dark-800 text-slate-300'
                         }`}
                       >
                         {rankItem.rank}º
@@ -282,7 +282,7 @@ export default function RankingsView({
                         <div className="flex items-center space-x-1.5 sm:space-x-2">
                           <h4 className="text-xs sm:text-sm font-bold text-slate-100 truncate">{rankItem.item.name}</h4>
                           {rankItem.isTied && (
-                            <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold shrink-0">
+                            <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-800 border border-amber-500/30 font-bold shrink-0">
                               Empate
                             </span>
                           )}
@@ -302,7 +302,7 @@ export default function RankingsView({
                           />
                         </div>
                       </div>
-                      <span className="text-sm sm:text-base font-black text-amber-400 min-w-14 sm:w-16 text-right">
+                      <span className="text-sm sm:text-base font-black text-amber-700 min-w-14 sm:w-16 text-right">
                         {rankItem.points} <span className="text-[10px] sm:text-xs text-slate-400">pts</span>
                       </span>
                     </div>
@@ -332,7 +332,7 @@ export default function RankingsView({
                     <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
                       <div
                         className={`w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl font-black text-xs flex items-center justify-center shrink-0 shadow-md ${
-                          isFirst ? 'bg-amber-500 text-dark-950' : 'bg-dark-800 text-slate-300'
+                          isFirst ? 'bg-amber-500 text-slate-100' : 'bg-dark-800 text-slate-300'
                         }`}
                       >
                         {rankItem.rank}º
@@ -341,7 +341,7 @@ export default function RankingsView({
                         <div className="flex items-center space-x-1.5 sm:space-x-2">
                           <h4 className="text-xs sm:text-sm font-bold text-slate-100 truncate">{rankItem.item.name}</h4>
                           {rankItem.isTied && (
-                            <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold shrink-0">
+                            <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-800 border border-amber-500/30 font-bold shrink-0">
                               Empate
                             </span>
                           )}
@@ -361,7 +361,7 @@ export default function RankingsView({
                           />
                         </div>
                       </div>
-                      <span className="text-sm sm:text-base font-black text-amber-400 min-w-14 sm:w-16 text-right">
+                      <span className="text-sm sm:text-base font-black text-amber-700 min-w-14 sm:w-16 text-right">
                         {rankItem.points} <span className="text-[10px] sm:text-xs text-slate-400">pts</span>
                       </span>
                     </div>
@@ -391,7 +391,7 @@ export default function RankingsView({
                     <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
                       <div
                         className={`w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl font-black text-xs flex items-center justify-center shrink-0 shadow-md ${
-                          isFirst ? 'bg-amber-500 text-dark-950' : 'bg-dark-800 text-slate-300'
+                          isFirst ? 'bg-amber-500 text-slate-100' : 'bg-dark-800 text-slate-300'
                         }`}
                       >
                         {rankItem.rank}º
@@ -400,7 +400,7 @@ export default function RankingsView({
                         <div className="flex items-center space-x-1.5 sm:space-x-2">
                           <h4 className="text-xs sm:text-sm font-bold text-slate-100 truncate">{rankItem.item.name}</h4>
                           {rankItem.isTied && (
-                            <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold shrink-0">
+                            <span className="text-[9px] sm:text-[10px] px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-800 border border-amber-500/30 font-bold shrink-0">
                               Empate
                             </span>
                           )}
@@ -420,7 +420,7 @@ export default function RankingsView({
                           />
                         </div>
                       </div>
-                      <span className="text-sm sm:text-base font-black text-amber-400 min-w-14 sm:w-16 text-right">
+                      <span className="text-sm sm:text-base font-black text-amber-700 min-w-14 sm:w-16 text-right">
                         {rankItem.points} <span className="text-[10px] sm:text-xs text-slate-400">pts</span>
                       </span>
                     </div>

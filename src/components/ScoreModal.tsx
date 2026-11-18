@@ -232,7 +232,7 @@ export default function ScoreModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm sm:p-4">
       <div
         ref={dialogRef}
         role="dialog"
@@ -247,7 +247,7 @@ export default function ScoreModal({
         {/* Cabeçalho do Modal */}
         <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-dark-800">
           <div className="flex items-center space-x-2.5 sm:space-x-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shrink-0">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/20 text-amber-700 flex items-center justify-center border border-amber-500/30 shrink-0">
               {modalTab === 'challenge' ? <Flame className="w-4 h-4 sm:w-5 sm:h-5" /> : <Crown className="w-4 h-4 sm:w-5 sm:h-5" />}
             </div>
             <div>
@@ -258,7 +258,7 @@ export default function ScoreModal({
           <button
             onClick={onClose}
             aria-label="Fechar lançamento"
-            className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-dark-800 transition-colors"
+            className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-slate-100 rounded-lg hover:bg-dark-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -274,7 +274,7 @@ export default function ScoreModal({
             }}
             className={`min-h-10 sm:min-h-11 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center space-x-1.5 sm:space-x-2 transition-all ${
               modalTab === 'challenge'
-                ? 'bg-amber-500 text-dark-950 shadow-md'
+                ? 'bg-amber-500 text-slate-100 shadow-md'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -289,7 +289,7 @@ export default function ScoreModal({
             }}
             className={`min-h-10 sm:min-h-11 py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center space-x-1.5 sm:space-x-2 transition-all ${
               modalTab === 'leader'
-                ? 'bg-amber-500 text-dark-950 shadow-md'
+                ? 'bg-amber-500 text-slate-100 shadow-md'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -300,14 +300,14 @@ export default function ScoreModal({
 
         {/* Alertas */}
         {errorMsg && (
-          <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
-            <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+          <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 text-red-800 flex-shrink-0" />
             <span>{errorMsg}</span>
           </div>
         )}
         {successMsg && (
-          <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center space-x-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+          <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-800 flex-shrink-0" />
             <span>{successMsg}</span>
           </div>
         )}
@@ -319,7 +319,7 @@ export default function ScoreModal({
               {/* Escrever o Desafio Dinamicamente */}
               <div>
                 <label htmlFor="challenge-title" className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1">
-                  Qual foi o desafio? <span className="text-amber-500">*</span>
+                  Qual foi o desafio? <span className="text-amber-700">*</span>
                 </label>
                 <input
                   id="challenge-title"
@@ -337,7 +337,7 @@ export default function ScoreModal({
               {/* Tipo de Alvo: Nação / Tribo / Pessoa */}
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Alvo da Pontuação <span className="text-amber-500">*</span>
+                  Alvo da Pontuação <span className="text-amber-700">*</span>
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {[
@@ -352,7 +352,7 @@ export default function ScoreModal({
                       onClick={() => handleTargetTypeChange(t.id as any)}
                       className={`min-h-10 py-1.5 sm:py-2 px-2 rounded-xl text-xs font-bold border transition-all ${
                         targetType === t.id
-                          ? 'bg-amber-500/20 border-amber-500 text-amber-300'
+                          ? 'bg-amber-500/20 border-amber-500 text-amber-800'
                           : 'bg-dark-950 border-dark-800 text-slate-400 hover:border-dark-700'
                       }`}
                     >
@@ -370,7 +370,7 @@ export default function ScoreModal({
                     : targetType === 'tribe'
                     ? 'Selecione a Tribo'
                     : 'Selecione o Integrante'}{' '}
-                  <span className="text-amber-500">*</span>
+                  <span className="text-amber-700">*</span>
                 </label>
 
                 {targetType === 'nation' && (
@@ -424,7 +424,7 @@ export default function ScoreModal({
 
               {/* Regra Explicativa Visual */}
               <div className="p-2.5 sm:p-3 bg-dark-950 border border-dark-800 rounded-xl text-xs text-slate-400 flex items-start space-x-2">
-                <Info className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
+                <Info className="w-4 h-4 text-amber-700 mt-0.5 flex-shrink-0" />
                 <div>
                   {targetType === 'nation' && (
                     <span>
@@ -448,7 +448,7 @@ export default function ScoreModal({
               <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                 <div>
                   <label htmlFor="challenge-points" className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1">
-                    Pontos <span className="text-amber-500">*</span>
+                    Pontos <span className="text-amber-700">*</span>
                   </label>
                   <input
                     id="challenge-points"
@@ -465,7 +465,7 @@ export default function ScoreModal({
 
                 <div>
                   <label htmlFor="challenge-date" className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1">
-                    Data e Hora <span className="text-amber-500">*</span>
+                    Data e Hora <span className="text-amber-700">*</span>
                   </label>
                   <input
                     id="challenge-date"
@@ -499,7 +499,7 @@ export default function ScoreModal({
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full min-h-12 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
+                className="w-full min-h-12 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
               >
                 {loading ? 'Registrando...' : 'Confirmar Lançamento de Desafio'}
               </button>
@@ -514,7 +514,7 @@ export default function ScoreModal({
               {/* Escolher Líder */}
               <div>
                 <label htmlFor="leader-target" className="block text-xs font-semibold text-slate-300 mb-1">
-                  Selecione o Líder <span className="text-amber-500">*</span>
+                  Selecione o Líder <span className="text-amber-700">*</span>
                 </label>
                 <select
                   id="leader-target"
@@ -533,8 +533,8 @@ export default function ScoreModal({
               </div>
 
               {/* Regra Explicativa de Líder */}
-              <div className="p-2.5 sm:p-3 bg-amber-950/30 border border-amber-800/40 rounded-xl text-xs text-amber-200/90 flex items-start space-x-2">
-                <Crown className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+              <div className="p-2.5 sm:p-3 bg-amber-950/30 border border-amber-800/40 rounded-xl text-xs text-amber-800/90 flex items-start space-x-2">
+                <Crown className="w-4 h-4 text-amber-700 mt-0.5 flex-shrink-0" />
                 <div>
                   <strong>Regra Exclusiva de Líderes:</strong> Esta pontuação entra{' '}
                   <u>somente no ranking do líder</u>. Não altera em nenhuma hipótese o placar da tribo ou da nação.
@@ -545,7 +545,7 @@ export default function ScoreModal({
               <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                 <div>
                   <label htmlFor="leader-points" className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1">
-                    Pontos <span className="text-amber-500">*</span>
+                    Pontos <span className="text-amber-700">*</span>
                   </label>
                   <input
                     id="leader-points"
@@ -560,7 +560,7 @@ export default function ScoreModal({
 
                 <div>
                   <label htmlFor="leader-date" className="block text-xs sm:text-sm font-semibold text-slate-300 mb-1">
-                    Data e Hora <span className="text-amber-500">*</span>
+                    Data e Hora <span className="text-amber-700">*</span>
                   </label>
                   <input
                     id="leader-date"
@@ -576,7 +576,7 @@ export default function ScoreModal({
               {/* Motivo OBRIGATÓRIO */}
               <div>
                 <label htmlFor="leader-reason" className="block text-xs font-semibold text-slate-300 mb-1">
-                  Motivo do Lançamento <span className="text-amber-500">*</span>
+                  Motivo do Lançamento <span className="text-amber-700">*</span>
                 </label>
                 <input
                   id="leader-reason"
@@ -595,7 +595,7 @@ export default function ScoreModal({
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full min-h-12 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
+                className="w-full min-h-12 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
               >
                 {loading ? 'Registrando...' : 'Confirmar Pontos do Líder'}
               </button>

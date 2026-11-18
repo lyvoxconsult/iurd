@@ -50,7 +50,7 @@ export async function createRally(name: string, startDate: Date) {
     tx.create(rally, rallyData);
     tx.set(pointer, { rallyId: rally.id, updatedAt: now });
     for (const [index, [nationName, color, tribes]] of [
-      ['Nação Judá', '#f59e0b', firstTribes], ['Nação Benjamim', '#0ea5e9', secondTribes],
+      ['Nação Judá', '#b9923f', firstTribes], ['Nação Benjamim', '#2f6fa8', secondTribes],
     ].entries()) {
       const nation = db.collection('nations').doc();
       tx.create(nation, { rallyId: rally.id, name: nationName, color, orderIndex: index + 1, createdAt: now, updatedAt: now });

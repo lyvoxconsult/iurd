@@ -186,7 +186,7 @@ export default function PeopleView({
       <div className="bg-dark-900 border border-dark-800 rounded-2xl p-4 sm:p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-black text-slate-100 flex items-center space-x-2">
-            <Users className="w-5 h-5 text-amber-500" />
+            <Users className="w-5 h-5 text-amber-700" />
             <span>Gestão de Integrantes do Rali</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -196,7 +196,7 @@ export default function PeopleView({
 
         <button
           onClick={handleOpenCreateModal}
-          className="min-h-11 w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
+          className="min-h-11 w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
         >
           <UserPlus className="w-4 h-4" />
           <span>Cadastrar Novo Integrante</span>
@@ -299,7 +299,7 @@ export default function PeopleView({
                 setFilterCategory('');
                 setFilterRole('');
               }}
-              className="text-amber-400 hover:text-amber-300 font-semibold"
+              className="text-amber-700 hover:text-amber-800 font-semibold"
             >
               Limpar filtros
             </button>
@@ -318,11 +318,11 @@ export default function PeopleView({
                 <h3 className="break-words text-sm font-bold text-slate-100">{person.name}</h3>
                 <p className="mt-0.5 text-xs text-slate-300">{person.tribe?.name || 'Tribo'} · {person.nation?.name || 'Nação'}</p>
               </div>
-              <button onClick={() => handleOpenEditModal(person)} aria-label={`Editar ${person.name}`} className="min-h-10 min-w-10 shrink-0 rounded-lg border border-dark-700 text-amber-400 flex items-center justify-center hover:bg-dark-800"><Edit2 className="h-4 w-4" /></button>
+              <button onClick={() => handleOpenEditModal(person)} aria-label={`Editar ${person.name}`} className="min-h-10 min-w-10 shrink-0 rounded-lg border border-dark-700 text-amber-700 flex items-center justify-center hover:bg-dark-800"><Edit2 className="h-4 w-4" /></button>
             </div>
             <div className="mt-2 flex flex-wrap gap-1.5 text-[11px]">
               <span className="rounded-full border border-dark-700 px-2 py-0.5 capitalize text-slate-300">{person.category}</span>
-              <span className="rounded-full border border-amber-700/50 bg-amber-500/10 px-2 py-0.5 text-amber-200">{person.role === 'lider_nacao' ? 'Líder de Nação' : person.role === 'lider_tribo' ? 'Líder de Tribo' : 'Participante'}</span>
+              <span className="rounded-full border border-amber-700/50 bg-amber-500/10 px-2 py-0.5 text-amber-800">{person.role === 'lider_nacao' ? 'Líder de Nação' : person.role === 'lider_tribo' ? 'Líder de Tribo' : 'Participante'}</span>
             </div>
           </article>
         ))}
@@ -357,9 +357,9 @@ export default function PeopleView({
                     <tr key={person.id} className="hover:bg-dark-950/50 transition-colors">
                       <td className="py-3 px-4 font-semibold text-slate-100 flex items-center space-x-2">
                         {isLeaderNation ? (
-                          <Award className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                          <Award className="w-4 h-4 text-amber-700 flex-shrink-0" />
                         ) : isLeaderTribe ? (
-                          <Crown className="w-4 h-4 text-amber-400 flex-shrink-0" />
+                          <Crown className="w-4 h-4 text-amber-700 flex-shrink-0" />
                         ) : (
                           <UserCheck className="w-4 h-4 text-slate-500 flex-shrink-0" />
                         )}
@@ -384,9 +384,9 @@ export default function PeopleView({
                         <span
                           className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
                             isLeaderNation
-                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+                              ? 'bg-amber-500/20 text-amber-800 border border-amber-500/40'
                               : isLeaderTribe
-                              ? 'bg-sky-500/20 text-sky-300 border border-sky-500/40'
+                              ? 'bg-sky-500/20 text-sky-800 border border-sky-500/40'
                               : 'bg-dark-950 text-slate-400 border border-dark-800'
                           }`}
                         >
@@ -400,7 +400,7 @@ export default function PeopleView({
                       <td className="py-3 px-4 text-right">
                         <button
                           onClick={() => handleOpenEditModal(person)}
-                          className="min-h-11 min-w-11 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-dark-800 transition-colors"
+                          className="min-h-11 min-w-11 rounded-lg text-slate-400 hover:text-amber-700 hover:bg-dark-800 transition-colors"
                           aria-label={`Editar ${person.name}`}
                         >
                           <Edit2 className="w-4 h-4" />
@@ -417,7 +417,7 @@ export default function PeopleView({
 
       {/* MODAL DE CADASTRO / EDIÇÃO */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm sm:p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm sm:p-4">
           <div
             role="dialog"
             aria-modal="true"
@@ -429,7 +429,7 @@ export default function PeopleView({
             
             <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-dark-800">
               <div className="flex items-center space-x-2.5 sm:space-x-3">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shrink-0">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/20 text-amber-700 flex items-center justify-center border border-amber-500/30 shrink-0">
                   <UserPlus className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
@@ -442,21 +442,21 @@ export default function PeopleView({
               <button
                 onClick={() => setIsModalOpen(false)}
                 aria-label="Fechar cadastro"
-                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-slate-100 rounded-lg hover:bg-dark-800"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {formError && (
-              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
-                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center space-x-2">
+                <AlertCircle className="w-4 h-4 text-red-800 flex-shrink-0" />
                 <span>{formError}</span>
               </div>
             )}
             {formSuccess && (
-              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-800 flex-shrink-0" />
                 <span>{formSuccess}</span>
               </div>
             )}
@@ -467,7 +467,7 @@ export default function PeopleView({
                 {/* Nome */}
                 <div>
                   <label htmlFor="person-name" className="block text-xs font-semibold text-slate-300 mb-1">
-                    Nome Completo <span className="text-amber-500">*</span>
+                    Nome Completo <span className="text-amber-700">*</span>
                   </label>
                   <input
                     id="person-name"
@@ -485,7 +485,7 @@ export default function PeopleView({
                   {/* Nação */}
                   <div>
                     <label htmlFor="person-nation" className="block text-xs font-semibold text-slate-300 mb-1">
-                      Nação <span className="text-amber-500">*</span>
+                      Nação <span className="text-amber-700">*</span>
                     </label>
                     <select
                       id="person-nation"
@@ -505,7 +505,7 @@ export default function PeopleView({
                   {/* Tribo (Filtrada estritamente pela nação) */}
                   <div>
                     <label htmlFor="person-tribe" className="block text-xs font-semibold text-slate-300 mb-1">
-                      Tribo <span className="text-amber-500">*</span>
+                      Tribo <span className="text-amber-700">*</span>
                     </label>
                     <select
                       id="person-tribe"
@@ -532,7 +532,7 @@ export default function PeopleView({
                   {/* Categoria */}
                   <div>
                     <label htmlFor="person-category" className="block text-xs font-semibold text-slate-300 mb-1">
-                      Categoria <span className="text-amber-500">*</span>
+                      Categoria <span className="text-amber-700">*</span>
                     </label>
                     <select
                       id="person-category"
@@ -551,7 +551,7 @@ export default function PeopleView({
                   {/* Função */}
                   <div>
                     <label htmlFor="person-role" className="block text-xs font-semibold text-slate-300 mb-1">
-                      Função <span className="text-amber-500">*</span>
+                      Função <span className="text-amber-700">*</span>
                     </label>
                     <select
                       id="person-role"
@@ -573,7 +573,7 @@ export default function PeopleView({
                 <button
                   type="submit"
                   disabled={formLoading}
-                  className="w-full min-h-12 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
+                  className="w-full min-h-12 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
                 >
                   {formLoading
                     ? 'Salvando...'

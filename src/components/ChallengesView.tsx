@@ -139,7 +139,7 @@ export default function ChallengesView({
       <div className="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
           <h2 className="text-base sm:text-lg font-black text-slate-100 flex items-center space-x-2">
-            <Flame className="w-5 h-5 text-amber-500" />
+            <Flame className="w-5 h-5 text-amber-700" />
             <span>Desafios e Missões do Rali</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -149,26 +149,26 @@ export default function ChallengesView({
 
         <button
           onClick={() => setIsCreating(!isCreating)}
-          className="min-h-11 w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
+          className="min-h-11 w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
         >
           <Plus className="w-4 h-4" />
           <span>{isCreating ? 'Fechar Formulário' : 'Criar Novo Desafio'}</span>
         </button>
       </div>
 
-      {successMsg && <p role="status" className="rounded-xl border border-emerald-800 bg-emerald-950/40 p-3 text-xs sm:text-sm text-emerald-200">{successMsg}</p>}
+      {successMsg && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs sm:text-sm text-emerald-800">{successMsg}</p>}
 
       {/* Formulário de Criação (Toggle) */}
       {isCreating && (
         <div className="bg-dark-900 border border-amber-600/40 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl space-y-3.5 sm:space-y-4 gold-glow">
           <div className="flex items-center space-x-2 pb-2 border-b border-dark-800">
-            <Sparkles className="w-4 h-4 text-amber-500" />
+            <Sparkles className="w-4 h-4 text-amber-700" />
             <h3 className="text-sm font-bold text-slate-100">Configurar Novo Desafio</h3>
           </div>
 
           {errorMsg && (
-            <div className="p-2.5 sm:p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
-              <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+            <div className="p-2.5 sm:p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center space-x-2">
+              <AlertCircle className="w-4 h-4 text-red-800 flex-shrink-0" />
               <span>{errorMsg}</span>
             </div>
           )}
@@ -177,7 +177,7 @@ export default function ChallengesView({
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
               <div className="sm:col-span-2">
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Título do Desafio <span className="text-amber-500">*</span>
+                  Título do Desafio <span className="text-amber-700">*</span>
                 </label>
                 <input
                   type="text"
@@ -191,7 +191,7 @@ export default function ChallengesView({
 
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Pontos Padrão <span className="text-amber-500">*</span>
+                  Pontos Padrão <span className="text-amber-700">*</span>
                 </label>
                 <input
                   type="number"
@@ -228,7 +228,7 @@ export default function ChallengesView({
               <button
                 type="submit"
                 disabled={loading}
-                className="min-h-10 px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50"
+                className="min-h-10 px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-100 font-bold text-xs shadow-md transition-all disabled:opacity-50"
               >
                 {loading ? 'Salvando...' : 'Salvar sem Pontuar'}
               </button>
@@ -251,10 +251,10 @@ export default function ChallengesView({
             >
               <div>
                 <div className="flex items-center justify-between mb-2.5">
-                  <span className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20 group-hover:scale-110 transition-transform">
+                  <span className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center border border-amber-500/20 group-hover:scale-110 transition-transform">
                     <Flame className="w-4 h-4" />
                   </span>
-                  <span className="text-base font-black text-amber-400">
+                  <span className="text-base font-black text-amber-700">
                     {challenge.defaultPoints} <span className="text-xs text-slate-400">pts</span>
                   </span>
                 </div>
@@ -276,7 +276,7 @@ export default function ChallengesView({
                     type="button"
                     onClick={() => handleShareChallenge(challenge)}
                     disabled={sharingId === challenge.id}
-                    className="min-h-11 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-dark-950 text-xs sm:text-sm font-bold transition-all disabled:opacity-60"
+                    className="min-h-11 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-100 text-xs sm:text-sm font-bold transition-all disabled:opacity-60"
                     aria-label={`Compartilhar imagem do desafio ${challenge.title}`}
                   >
                     <Share2 className="w-4 h-4 shrink-0" />
@@ -285,7 +285,7 @@ export default function ChallengesView({
                   <button
                     type="button"
                     onClick={() => onLaunchChallenge(challenge.id)}
-                    className="min-h-11 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg bg-dark-950 hover:bg-amber-500 hover:text-dark-950 text-amber-400 border border-amber-500/30 text-xs sm:text-sm font-bold transition-all"
+                    className="min-h-11 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg bg-dark-950 hover:bg-amber-500 hover:text-slate-100 text-amber-700 border border-amber-500/30 text-xs sm:text-sm font-bold transition-all"
                     aria-label={`Pontuar o desafio ${challenge.title}`}
                   >
                     <span>Pontuar</span>
@@ -303,10 +303,10 @@ export default function ChallengesView({
                           } catch (error) {
                             setShareNotice({ id: challenge.id, message: error instanceof Error ? error.message : 'Não foi possível baixar a imagem.', showFallback: false });
                           }
-                        }} className="min-h-11 inline-flex items-center gap-1 text-amber-300 underline underline-offset-2">
+                        }} className="min-h-11 inline-flex items-center gap-1 text-amber-800 underline underline-offset-2">
                           <Download className="w-4 h-4" /> Baixar imagem
                         </button>
-                        <a href={`https://wa.me/?text=${encodeURIComponent(shareText(challenge))}`} target="_blank" rel="noopener noreferrer" className="min-h-11 inline-flex items-center text-amber-300 underline underline-offset-2">
+                        <a href={`https://wa.me/?text=${encodeURIComponent(shareText(challenge))}`} target="_blank" rel="noopener noreferrer" className="min-h-11 inline-flex items-center text-amber-800 underline underline-offset-2">
                           Abrir WhatsApp
                         </a>
                       </div>

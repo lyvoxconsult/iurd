@@ -69,12 +69,12 @@ export function createChallengeImage(challenge: ChallengeCardData): File {
   canvas.height = height;
 
   const background = ctx.createLinearGradient(0, 0, WIDTH, height);
-  background.addColorStop(0, '#101b32');
-  background.addColorStop(1, '#070b14');
+  background.addColorStop(0, '#ffffff');
+  background.addColorStop(1, '#eaf2fb');
   ctx.fillStyle = background;
   ctx.fillRect(0, 0, WIDTH, height);
 
-  ctx.fillStyle = 'rgba(245, 158, 11, 0.08)';
+  ctx.fillStyle = 'rgba(209, 170, 82, 0.12)';
   ctx.beginPath();
   ctx.arc(WIDTH, 0, 440, 0, Math.PI * 2);
   ctx.fill();
@@ -83,22 +83,22 @@ export function createChallengeImage(challenge: ChallengeCardData): File {
   ctx.fill();
 
   roundedRect(ctx, 42, 42, WIDTH - 84, height - 84, 38);
-  ctx.strokeStyle = '#5d4825';
+  ctx.strokeStyle = '#afc1d3';
   ctx.lineWidth = 3;
   ctx.stroke();
 
   ctx.textBaseline = 'top';
-  ctx.fillStyle = '#fbbf24';
+  ctx.fillStyle = '#78591e';
   ctx.font = 'bold 35px Arial, sans-serif';
   ctx.fillText('IURD UMARIZAL', SIDE, 112);
-  ctx.fillStyle = '#94a3b8';
+  ctx.fillStyle = '#405d78';
   ctx.font = 'bold 28px Arial, sans-serif';
   ctx.fillText('DESAFIO DO RALI', SIDE, 166);
-  ctx.fillStyle = '#9a6a22';
+  ctx.fillStyle = '#b9923f';
   ctx.fillRect(SIDE, 232, TEXT_WIDTH, 3);
 
   let y = 325;
-  ctx.fillStyle = '#f8fafc';
+  ctx.fillStyle = '#19314f';
   ctx.font = 'bold 76px Arial, sans-serif';
   for (const line of titleLines) {
     ctx.fillText(line, SIDE, y);
@@ -107,7 +107,7 @@ export function createChallengeImage(challenge: ChallengeCardData): File {
 
   if (descriptionLines.length) {
     y += 42;
-    ctx.fillStyle = '#cbd5e1';
+    ctx.fillStyle = '#385572';
     ctx.font = '40px Arial, sans-serif';
     for (const line of descriptionLines) {
       ctx.fillText(line, SIDE, y);
@@ -117,9 +117,9 @@ export function createChallengeImage(challenge: ChallengeCardData): File {
 
   const pointsTop = height - 405;
   roundedRect(ctx, SIDE, pointsTop, TEXT_WIDTH, 230, 28);
-  ctx.fillStyle = '#f59e0b';
+  ctx.fillStyle = '#d1aa52';
   ctx.fill();
-  ctx.fillStyle = '#2b1a05';
+  ctx.fillStyle = '#19314f';
   ctx.font = 'bold 35px Arial, sans-serif';
   ctx.fillText('VALE', SIDE + 45, pointsTop + 44);
   const pointValue = String(challenge.points);
@@ -134,7 +134,7 @@ export function createChallengeImage(challenge: ChallengeCardData): File {
   const pointsText = 'PONTOS';
   ctx.fillText(pointsText, SIDE + TEXT_WIDTH - 45 - ctx.measureText(pointsText).width, pointsTop + 145);
 
-  ctx.fillStyle = '#94a3b8';
+  ctx.fillStyle = '#405d78';
   ctx.font = '28px Arial, sans-serif';
   ctx.fillText('Participe e faça a diferença na sua nação.', SIDE, height - 125);
 

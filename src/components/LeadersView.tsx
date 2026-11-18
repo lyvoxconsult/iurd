@@ -150,7 +150,7 @@ export default function LeadersView({
       <div className="bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-black text-slate-100 flex items-center space-x-2">
-            <Crown className="w-5 h-5 text-amber-500" />
+            <Crown className="w-5 h-5 text-amber-700" />
             <span>Painel de Liderança do Rali</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -183,7 +183,7 @@ export default function LeadersView({
               onClick={() => setFilterRole(tab.id as any)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
                 filterRole === tab.id
-                  ? 'bg-amber-500 text-dark-950 border-amber-500 shadow-md'
+                  ? 'bg-amber-500 text-slate-100 border-amber-500 shadow-md'
                   : 'bg-dark-950 text-slate-400 border-dark-800 hover:border-dark-700'
               }`}
             >
@@ -214,8 +214,8 @@ export default function LeadersView({
                     <div
                       className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold flex-shrink-0 shadow-md ${
                         isNation
-                          ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
-                          : 'bg-sky-500/20 text-sky-400 border border-sky-500/40'
+                          ? 'bg-amber-500/20 text-amber-700 border border-amber-500/40'
+                          : 'bg-sky-500/20 text-sky-700 border border-sky-500/40'
                       }`}
                     >
                       {isNation ? <Award className="w-6 h-6" /> : <Crown className="w-6 h-6" />}
@@ -226,8 +226,8 @@ export default function LeadersView({
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                             isNation
-                              ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                              : 'bg-sky-500/20 text-sky-300 border border-sky-500/30'
+                              ? 'bg-amber-500/20 text-amber-800 border border-amber-500/30'
+                              : 'bg-sky-500/20 text-sky-800 border border-sky-500/30'
                           }`}
                         >
                           {isNation ? 'Líder de Nação' : 'Líder de Tribo'}
@@ -244,7 +244,7 @@ export default function LeadersView({
                       onClick={() => fetchLeaderHistory(leader.id)}
                       className="min-h-11 flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl bg-dark-950 hover:bg-dark-800 border border-dark-700 text-xs font-semibold text-slate-300 transition-all"
                     >
-                      <History className="w-3.5 h-3.5 text-amber-500" />
+                      <History className="w-3.5 h-3.5 text-amber-700" />
                       <span>Histórico</span>
                       {isExpanded ? (
                         <ChevronUp className="w-3.5 h-3.5" />
@@ -255,7 +255,7 @@ export default function LeadersView({
 
                     <button
                       onClick={() => handleOpenQuickLaunch(leader)}
-                      className="min-h-11 flex items-center justify-center space-x-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-xs shadow-md transition-all active:scale-95"
+                      className="min-h-11 flex items-center justify-center space-x-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-xs shadow-md transition-all active:scale-95"
                     >
                       <PlusCircle className="w-3.5 h-3.5" />
                       <span>Pontuar Líder</span>
@@ -268,7 +268,7 @@ export default function LeadersView({
                   <div className="p-4 sm:p-5 bg-dark-950 border-t border-dark-800 space-y-3">
                     <div className="flex items-center justify-between pb-2 border-b border-dark-800">
                       <h4 className="text-xs font-bold text-slate-300 flex items-center space-x-1.5">
-                        <History className="w-4 h-4 text-amber-500" />
+                        <History className="w-4 h-4 text-amber-700" />
                         <span>Histórico de Pontuações de {leader.name}</span>
                       </h4>
                       <span className="text-[11px] text-slate-500">
@@ -289,7 +289,7 @@ export default function LeadersView({
                             key={item.id}
                             className={`p-2.5 sm:p-3 rounded-xl border flex items-center justify-between text-xs ${
                               item.status === 'VOIDED'
-                                ? 'bg-red-950/20 border-red-900/40 opacity-60'
+                                ? 'bg-red-50 border-red-200 opacity-60'
                                 : 'bg-dark-900 border-dark-800'
                             }`}
                           >
@@ -297,7 +297,7 @@ export default function LeadersView({
                               <div className="flex items-center space-x-2">
                                 <span className="font-bold text-slate-200">{item.reason}</span>
                                 {item.status === 'VOIDED' && (
-                                  <span className="px-1.5 py-0.2 rounded text-[10px] bg-red-900/50 text-red-300 font-bold">
+                                  <span className="px-1.5 py-0.2 rounded text-[10px] bg-red-100 text-red-800 font-bold">
                                     Estornado
                                   </span>
                                 )}
@@ -318,7 +318,7 @@ export default function LeadersView({
                               className={`text-sm font-black ${
                                 item.status === 'VOIDED'
                                   ? 'line-through text-slate-500'
-                                  : 'text-amber-400'
+                                  : 'text-amber-700'
                               }`}
                             >
                               +{item.points} pts
@@ -337,7 +337,7 @@ export default function LeadersView({
 
       {/* MODAL DE LANÇAMENTO RÁPIDO PARA LÍDER */}
       {quickLaunchLeader && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm sm:p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm sm:p-4">
           <div
             role="dialog"
             aria-modal="true"
@@ -349,32 +349,32 @@ export default function LeadersView({
 
             <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-dark-800">
               <div className="flex items-center space-x-2.5 sm:space-x-3">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shrink-0">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500/20 text-amber-700 flex items-center justify-center border border-amber-500/30 shrink-0">
                   <Crown className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
                   <h3 className="text-base sm:text-lg font-bold text-slate-100">Pontuar Líder</h3>
-                  <p className="text-xs text-amber-400 font-semibold truncate">{quickLaunchLeader.name}</p>
+                  <p className="text-xs text-amber-700 font-semibold truncate">{quickLaunchLeader.name}</p>
                 </div>
               </div>
               <button
                 onClick={() => setQuickLaunchLeader(null)}
                 aria-label="Fechar pontuação de líder"
-                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-slate-100 rounded-lg hover:bg-dark-800"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {launchError && (
-              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
-                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center space-x-2">
+                <AlertCircle className="w-4 h-4 text-red-800 flex-shrink-0" />
                 <span>{launchError}</span>
               </div>
             )}
             {launchSuccess && (
-              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-800 flex-shrink-0" />
                 <span>{launchSuccess}</span>
               </div>
             )}
@@ -393,7 +393,7 @@ export default function LeadersView({
                 <div className="grid grid-cols-2 gap-2.5">
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1">
-                      Pontos <span className="text-amber-500">*</span>
+                      Pontos <span className="text-amber-700">*</span>
                     </label>
                     <input
                       type="number"
@@ -407,7 +407,7 @@ export default function LeadersView({
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1">
-                      Data e Hora <span className="text-amber-500">*</span>
+                      Data e Hora <span className="text-amber-700">*</span>
                     </label>
                     <input
                       type="datetime-local"
@@ -421,7 +421,7 @@ export default function LeadersView({
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Motivo Obrigatório <span className="text-amber-500">*</span>
+                    Motivo Obrigatório <span className="text-amber-700">*</span>
                   </label>
                   <input
                     type="text"
@@ -439,7 +439,7 @@ export default function LeadersView({
                 <button
                   type="submit"
                   disabled={launchLoading}
-                  className="w-full min-h-12 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-dark-950 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
+                  className="w-full min-h-12 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
                 >
                   {launchLoading ? 'Registrando...' : 'Confirmar Pontos do Líder'}
                 </button>

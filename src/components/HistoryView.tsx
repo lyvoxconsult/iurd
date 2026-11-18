@@ -127,7 +127,7 @@ export default function HistoryView({
       <div className="bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-black text-slate-100 flex items-center space-x-2">
-            <History className="w-5 h-5 text-amber-500" />
+            <History className="w-5 h-5 text-amber-700" />
             <span>Auditoria e Histórico de Pontuação</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -151,8 +151,8 @@ export default function HistoryView({
               onClick={() => setFilterType(t.id as any)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 filterType === t.id
-                  ? 'bg-amber-500 text-dark-950 shadow-md'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-amber-500 text-slate-100 shadow-md'
+                  : 'text-slate-400 hover:text-slate-100'
               }`}
             >
               {t.label}
@@ -172,8 +172,8 @@ export default function HistoryView({
               onClick={() => setFilterStatus(s.id as any)}
               className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                 filterStatus === s.id
-                  ? 'bg-amber-500 text-dark-950 shadow-md'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-amber-500 text-slate-100 shadow-md'
+                  : 'text-slate-400 hover:text-slate-100'
               }`}
             >
               {s.label}
@@ -185,7 +185,7 @@ export default function HistoryView({
         {availableWeeks.length > 0 && (
           <div className="flex items-center space-x-2">
             <span className="text-xs font-semibold text-slate-400 flex items-center space-x-1">
-              <Calendar className="w-3.5 h-3.5 text-amber-500" />
+              <Calendar className="w-3.5 h-3.5 text-amber-700" />
               <span>Semana:</span>
             </span>
             <select
@@ -225,7 +225,7 @@ export default function HistoryView({
                 key={item.id}
                 className={`p-4 rounded-xl border flex flex-col md:flex-row items-start md:items-center justify-between gap-4 transition-all ${
                   isVoided
-                    ? 'bg-red-950/10 border-red-900/40 opacity-75'
+                    ? 'bg-red-50 border-red-200 opacity-75'
                     : 'bg-dark-950/80 border-dark-800 hover:border-dark-700'
                 }`}
               >
@@ -233,18 +233,18 @@ export default function HistoryView({
                   <div
                     className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5 shadow-md ${
                       isVoided
-                        ? 'bg-red-950 text-red-400 border border-red-800'
+                        ? 'bg-red-50 text-red-800 border border-red-200'
                         : isLeader
-                        ? 'bg-sky-500/20 text-sky-400 border border-sky-500/30'
-                        : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
+                        ? 'bg-sky-500/20 text-sky-700 border border-sky-500/30'
+                        : 'bg-amber-500/20 text-amber-700 border border-amber-500/30'
                     }`}
                   >
                     {isVoided ? (
-                      <Ban className="w-5 h-5 text-red-400" />
+                      <Ban className="w-5 h-5 text-red-800" />
                     ) : isLeader ? (
-                      <Crown className="w-5 h-5 text-sky-400" />
+                      <Crown className="w-5 h-5 text-sky-700" />
                     ) : (
-                      <Flame className="w-5 h-5 text-amber-400" />
+                      <Flame className="w-5 h-5 text-amber-700" />
                     )}
                   </div>
 
@@ -258,7 +258,7 @@ export default function HistoryView({
                         {item.title}
                       </h4>
                       {isVoided && (
-                        <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-red-950 border border-red-800 text-red-300">
+                        <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-red-50 border border-red-200 text-red-800">
                           Estornado
                         </span>
                       )}
@@ -276,11 +276,11 @@ export default function HistoryView({
                       ) : (
                         <span>
                           Alvo: <strong>{item.targetName}</strong> ({item.targetType}) • Pontuou nação{' '}
-                          <strong className="text-amber-400">{item.beneficiaryNation}</strong>
+                          <strong className="text-amber-700">{item.beneficiaryNation}</strong>
                           {item.beneficiaryTribe && (
                             <>
                               {' '}
-                              e tribo <strong className="text-sky-400">{item.beneficiaryTribe}</strong>
+                              e tribo <strong className="text-sky-700">{item.beneficiaryTribe}</strong>
                             </>
                           )}
                         </span>
@@ -294,7 +294,7 @@ export default function HistoryView({
                     )}
 
                     {isVoided && item.voidReason && (
-                      <p className="text-[11px] text-red-300/90 font-medium mt-1 bg-red-950/40 px-2 py-1 rounded-lg border border-red-900/50">
+                      <p className="text-[11px] text-red-800/90 font-medium mt-1 bg-red-50 px-2 py-1 rounded-lg border border-red-200">
                         <strong>Motivo do Estorno:</strong> {item.voidReason}
                       </p>
                     )}
@@ -314,7 +314,7 @@ export default function HistoryView({
                 <div className="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-end">
                   <span
                     className={`text-base font-black ${
-                      isVoided ? 'line-through text-slate-600' : 'text-amber-400'
+                      isVoided ? 'line-through text-slate-600' : 'text-amber-700'
                     }`}
                   >
                     +{item.points} pts
@@ -323,7 +323,7 @@ export default function HistoryView({
                   {!isVoided && (
                     <button
                       onClick={() => handleOpenVoidModal(item)}
-                      className="px-2.5 py-1.5 rounded-lg border border-red-900/50 bg-red-950/30 hover:bg-red-900/50 text-red-300 text-xs font-semibold flex items-center space-x-1 transition-all"
+                      className="px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-800 text-xs font-semibold flex items-center space-x-1 transition-all"
                       title="Estornar lançamento com justificativa"
                     >
                       <Ban className="w-3.5 h-3.5" />
@@ -340,19 +340,19 @@ export default function HistoryView({
 
       {/* MODAL DE CONFIRMAÇÃO DE ESTORNO */}
       {voidModalItem && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm sm:p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm sm:p-4">
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Estornar pontuação"
-            className="relative w-full max-h-[92dvh] sm:max-h-[85vh] sm:max-w-md overflow-y-auto bg-dark-900 border border-red-900/80 rounded-t-[28px] sm:rounded-2xl shadow-2xl p-4 pb-6 sm:p-6 focus:outline-none flex flex-col"
+            className="relative w-full max-h-[92dvh] sm:max-h-[85vh] sm:max-w-md overflow-y-auto bg-dark-900 border border-red-200 rounded-t-[28px] sm:rounded-2xl shadow-2xl p-4 pb-6 sm:p-6 focus:outline-none flex flex-col"
           >
             {/* Barra de puxar no mobile (Bottom Sheet handle) */}
             <div className="sm:hidden w-12 h-1 bg-dark-600 rounded-full mx-auto mb-2.5 shrink-0" />
 
             <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-dark-800">
               <div className="flex items-center space-x-2.5 sm:space-x-3">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-red-950 text-red-400 flex items-center justify-center border border-red-800 shrink-0">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-red-50 text-red-800 flex items-center justify-center border border-red-200 shrink-0">
                   <Ban className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div>
@@ -363,21 +363,21 @@ export default function HistoryView({
               <button
                 onClick={() => setVoidModalItem(null)}
                 aria-label="Fechar modal de estorno"
-                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-white rounded-lg hover:bg-dark-800"
+                className="min-h-11 min-w-11 flex items-center justify-center text-slate-400 hover:text-slate-100 rounded-lg hover:bg-dark-800"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {voidError && (
-              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-center space-x-2">
-                <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
+              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs flex items-center space-x-2">
+                <AlertCircle className="w-4 h-4 text-red-800 flex-shrink-0" />
                 <span>{voidError}</span>
               </div>
             )}
             {voidSuccess && (
-              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+              <div className="mt-3 p-2.5 sm:p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center space-x-2">
+                <CheckCircle2 className="w-4 h-4 text-emerald-800 flex-shrink-0" />
                 <span>{voidSuccess}</span>
               </div>
             )}
@@ -391,7 +391,7 @@ export default function HistoryView({
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Motivo Obrigatório da Correção / Estorno <span className="text-red-400">*</span>
+                    Motivo Obrigatório da Correção / Estorno <span className="text-red-800">*</span>
                   </label>
                   <textarea
                     rows={3}
@@ -415,7 +415,7 @@ export default function HistoryView({
                 <button
                   type="submit"
                   disabled={voidLoading}
-                  className="min-h-11 px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center justify-center"
+                  className="min-h-11 px-5 py-2 rounded-xl bg-red-700 hover:bg-red-600 text-white font-bold text-xs shadow-md transition-all disabled:opacity-50 flex items-center justify-center"
                 >
                   {voidLoading ? 'Processando...' : 'Confirmar Estorno'}
                 </button>
