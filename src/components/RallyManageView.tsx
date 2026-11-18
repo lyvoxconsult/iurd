@@ -412,7 +412,7 @@ export default function RallyManageView({
                 </label>
                 <input
                   type="text"
-                  placeholder="Ex: Rali U Marizal 2026"
+                  placeholder="Ex: Rali Umarizal 2026"
                   value={newRallyName}
                   onChange={(e) => setNewRallyName(e.target.value)}
                   className="w-full bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-amber-500"

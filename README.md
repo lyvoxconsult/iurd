@@ -1,6 +1,6 @@
-# IURD U Marizal • Sistema de Gestão e Pontuação do Rali
+# IURD Umarizal • Sistema de Gestão e Pontuação do Rali
 
-Sistema web responsivo para gestão do rali da igreja IURD U Marizal.
+Sistema web responsivo para gestão do rali da igreja IURD Umarizal.
 
 > **Hospedagem:** a aplicação usa Firestore pelo Firebase Admin SDK no servidor e está preparada para a Vercel. As regras do Firestore bloqueiam acesso direto pelo cliente; as APIs exigem sessão administrativa.
 
@@ -26,6 +26,8 @@ Sistema web responsivo para gestão do rali da igreja IURD U Marizal.
 
 ### 3. Mecânica de Desafios
 - O administrador cria um desafio com título, descrição opcional e valor em pontos. Também pode registrar um novo desafio durante o lançamento.
+- Salvar um desafio não atribui pontos a ninguém. O card do desafio pode gerar um PNG com título, descrição quando informada e pontos. Em celulares compatíveis, **Compartilhar** abre o menu do sistema para escolher o WhatsApp; quando o navegador não compartilha arquivos, o PNG é baixado para anexo manual.
+- O botão **Pontuar** de um desafio salvo permite atribuir seus pontos depois, sem recriar o desafio.
 - Cada lançamento de um desafio cadastrado usa o valor definido para esse desafio.
 - Cada lançamento tem exatamente **um alvo**: Nação, Tribo ou Pessoa.
 - O valor do desafio é aplicado **uma única vez** por lançamento (nunca multiplicado por integrantes).

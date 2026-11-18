@@ -2,7 +2,7 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('--- Iniciando Seed do Sistema IURD U Marizal ---');
+  console.log('--- Iniciando Seed do Sistema IURD Umarizal ---');
 
   // Verifica se já existe um rali
   let rally = await prisma.rally.findFirst({
@@ -12,7 +12,7 @@ async function main() {
   if (!rally) {
     rally = await prisma.rally.create({
       data: {
-        name: 'Rali IURD U Marizal',
+        name: 'Rali IURD Umarizal',
         startDate: new Date(),
         isActive: true,
       },

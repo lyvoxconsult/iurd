@@ -83,7 +83,7 @@ export default function DashboardView({
               <span>Placar Geral das Nações</span>
             </h2>
             <p className="text-xs text-slate-400">
-              Disputa entre as duas nações do IURD U Marizal
+              Disputa entre as duas nações do IURD Umarizal
             </p>
           </div>
           <button

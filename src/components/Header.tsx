@@ -60,7 +60,7 @@ export default function Header({
             <div className="min-w-0">
               <div className="flex min-w-0 items-center gap-2">
                 <span className="text-base sm:text-xl font-black tracking-tight sm:tracking-wider text-slate-100 whitespace-nowrap">
-                  IURD <span className="text-amber-500">U Marizal</span>
+                  IURD <span className="text-amber-500">Umarizal</span>
                 </span>
                 <span className="hidden sm:inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/30">
                   {rallyName || 'Rali 2026'}

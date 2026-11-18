@@ -243,7 +243,7 @@ export default function ScoreModal({
             </div>
             <div>
               <h2 id="score-dialog-title" className="text-lg font-bold text-slate-100">Lançar Pontuação</h2>
-              <p className="text-xs text-slate-400">IURD U Marizal • Registro de pontos</p>
+              <p className="text-xs text-slate-400">IURD Umarizal • Registro de pontos</p>
             </div>
           </div>
           <button

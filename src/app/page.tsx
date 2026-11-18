@@ -163,7 +163,7 @@ export default function HomePage() {
     return (
       <main className="min-h-dvh bg-dark-950 px-4 py-8 flex items-center justify-center text-slate-100">
         <div className="w-full max-w-sm rounded-3xl border border-dark-700 bg-dark-900 p-6 sm:p-8 shadow-2xl">
-          <p className="text-xs font-bold tracking-[0.2em] text-amber-400 uppercase">IURD U Marizal</p>
+          <p className="text-xs font-bold tracking-[0.2em] text-amber-400 uppercase">IURD Umarizal</p>
           <h1 className="mt-3 text-2xl font-black">Gestão do rali</h1>
           {session === 'checking' ? <p className="mt-5 text-slate-300" role="status">Verificando acesso…</p> : session === 'setup' ? (
             <div className="mt-5 space-y-2 text-sm text-slate-300" role="alert">
@@ -192,7 +192,7 @@ export default function HomePage() {
         setCurrentTab={setCurrentTab}
         onOpenScoreModal={() => setIsScoreModalOpen(true)}
         onLogout={handleLogout}
-        rallyName={activeRally?.name || 'Rali U Marizal'}
+        rallyName={activeRally?.name || 'Rali Umarizal'}
         isPartialWeek={currentWeekInfo?.isPartial ?? true}
         isSaturday={currentWeekInfo?.isSaturday ?? false}
         weekFormatted={currentWeekInfo?.formattedRange || ''}
@@ -204,7 +204,7 @@ export default function HomePage() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 space-y-3">
             <div className="w-10 h-10 border-4 border-amber-500/20 border-t-amber-500 rounded-full animate-spin" />
-            <p className="text-sm text-slate-400 font-medium">Carregando IURD U Marizal...</p>
+            <p className="text-sm text-slate-400 font-medium">Carregando IURD Umarizal...</p>
           </div>
         ) : loadError ? (
           <div role="alert" className="mx-auto max-w-md rounded-2xl border border-red-700/60 bg-red-950/40 p-6 text-center">
@@ -301,7 +301,7 @@ export default function HomePage() {
       {/* Rodapé Oficial */}
       <footer className="bg-dark-900 border-t border-dark-800 py-6 text-center text-xs text-slate-500">
         <p>
-          Sistema de Pontuação do Rali • <strong>IURD U Marizal</strong>
+          Sistema de Pontuação do Rali • <strong>IURD Umarizal</strong>
         </p>
         <p className="mt-1 text-[11px] text-slate-600">
           Operação no fuso horário America/Sao_Paulo • Semanas de Segunda a Domingo

@@ -3,16 +3,25 @@
 import React, { useState } from 'react';
 import { 
   Flame, 
-  PlusCircle, 
-  CheckCircle2, 
   AlertCircle, 
   Sparkles, 
   Plus,
-  ArrowRight
+  ArrowRight,
+  Share2,
+  Download
 } from 'lucide-react';
+import { createChallengeImage } from '@/lib/challenge-card';
+
+interface Challenge {
+  id: string;
+  title: string;
+  description?: string | null;
+  defaultPoints: number;
+  _count?: { scoreLaunches: number };
+}
 
 interface ChallengesViewProps {
-  challenges: any[];
+  challenges: Challenge[];
   onRefresh: () => void;
   onLaunchChallenge: (challengeId: string) => void;
 }
@@ -29,6 +38,55 @@ export default function ChallengesView({
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [sharingId, setSharingId] = useState<string | null>(null);
+  const [shareNotice, setShareNotice] = useState<{ id: string; message: string; showFallback: boolean } | null>(null);
+
+  const shareText = (challenge: Challenge) =>
+    `Desafio do rali: ${challenge.title} — ${challenge.defaultPoints} pontos${challenge.description ? `\n${challenge.description}` : ''}`;
+
+  const downloadImage = (challenge: Challenge, existingFile?: File) => {
+    const file = existingFile || createChallengeImage({ title: challenge.title, description: challenge.description, points: challenge.defaultPoints });
+    const url = URL.createObjectURL(file);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = file.name;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+  };
+
+  const handleShareChallenge = async (challenge: Challenge) => {
+    setSharingId(challenge.id);
+    setShareNotice(null);
+    try {
+      const file = createChallengeImage({ title: challenge.title, description: challenge.description, points: challenge.defaultPoints });
+      const files = [file];
+      let canShareFile = false;
+      try {
+        canShareFile = typeof navigator.share === 'function' &&
+          typeof navigator.canShare === 'function' && navigator.canShare({ files });
+      } catch {
+        canShareFile = false;
+      }
+      if (canShareFile) {
+        try {
+          await navigator.share({ files, title: challenge.title, text: shareText(challenge) });
+          setShareNotice({ id: challenge.id, message: 'Imagem enviada para o aplicativo escolhido.', showFallback: false });
+        } catch (error) {
+          if (error instanceof DOMException && error.name === 'AbortError') return;
+          setShareNotice({ id: challenge.id, message: 'Não foi possível compartilhar. Baixe a imagem e anexe-a no WhatsApp.', showFallback: true });
+        }
+      } else {
+        downloadImage(challenge, file);
+        setShareNotice({ id: challenge.id, message: 'Imagem baixada. Abra o WhatsApp e anexe o PNG à conversa.', showFallback: true });
+      }
+    } catch (error) {
+      setShareNotice({ id: challenge.id, message: error instanceof Error ? error.message : 'Não foi possível gerar a imagem.', showFallback: false });
+    } finally {
+      setSharingId(null);
+    }
+  };
 
   const handleCreateChallenge = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,14 +119,14 @@ export default function ChallengesView({
         throw new Error(data.error || 'Erro ao criar desafio');
       }
 
-      setSuccessMsg('Desafio criado com sucesso!');
+      setSuccessMsg('Desafio salvo sem pontuação. Compartilhe a imagem agora e use Pontuar quando alguém concluir.');
       setTitle('');
       setDescription('');
       setDefaultPoints(10);
       setIsCreating(false);
       onRefresh();
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Erro inesperado');
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Erro inesperado');
     } finally {
       setLoading(false);
     }
@@ -85,7 +143,7 @@ export default function ChallengesView({
             <span>Desafios e Missões do Rali</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            Criação de desafios e pontuação para Nações, Tribos e Integrantes
+            Crie o desafio, compartilhe a imagem e pontue depois quando ele for concluído.
           </p>
         </div>
 
@@ -97,6 +155,8 @@ export default function ChallengesView({
           <span>{isCreating ? 'Fechar Formulário' : 'Criar Novo Desafio'}</span>
         </button>
       </div>
+
+      {successMsg && <p role="status" className="rounded-xl border border-emerald-800 bg-emerald-950/40 p-3 text-sm text-emerald-200">{successMsg}</p>}
 
       {/* Formulário de Criação (Toggle) */}
       {isCreating && (
@@ -170,7 +230,7 @@ export default function ChallengesView({
                 disabled={loading}
                 className="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-dark-950 font-bold text-xs shadow-md transition-all disabled:opacity-50"
               >
-                {loading ? 'Salvando...' : 'Salvar Desafio'}
+                {loading ? 'Salvando...' : 'Salvar sem Pontuar'}
               </button>
             </div>
           </form>
@@ -207,17 +267,52 @@ export default function ChallengesView({
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-dark-800/80 flex items-center justify-between">
+              <div className="pt-3 border-t border-dark-800/80 space-y-3">
                 <span className="text-[11px] text-slate-400 font-medium">
                   {challenge._count?.scoreLaunches || 0} lançamentos
                 </span>
-                <button
-                  onClick={() => onLaunchChallenge(challenge.id)}
-                  className="min-h-11 flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-dark-950 hover:bg-amber-500 hover:text-dark-950 text-amber-400 border border-amber-500/30 text-sm font-bold transition-all"
-                >
-                  <span>Pontuar</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => handleShareChallenge(challenge)}
+                    disabled={sharingId === challenge.id}
+                    className="min-h-11 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-dark-950 text-xs sm:text-sm font-bold transition-all disabled:opacity-60"
+                    aria-label={`Compartilhar imagem do desafio ${challenge.title}`}
+                  >
+                    <Share2 className="w-4 h-4 shrink-0" />
+                    <span>{sharingId === challenge.id ? 'Abrindo...' : 'Compartilhar'}</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onLaunchChallenge(challenge.id)}
+                    className="min-h-11 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg bg-dark-950 hover:bg-amber-500 hover:text-dark-950 text-amber-400 border border-amber-500/30 text-xs sm:text-sm font-bold transition-all"
+                    aria-label={`Pontuar o desafio ${challenge.title}`}
+                  >
+                    <span>Pontuar</span>
+                    <ArrowRight className="w-4 h-4 shrink-0" />
+                  </button>
+                </div>
+                {shareNotice && shareNotice.id === challenge.id && (
+                  <div role="status" className="space-y-2 text-xs text-slate-300">
+                    <p>{shareNotice.message}</p>
+                    {shareNotice.showFallback && (
+                      <div className="flex flex-wrap gap-3">
+                        <button type="button" onClick={() => {
+                          try {
+                            downloadImage(challenge);
+                          } catch (error) {
+                            setShareNotice({ id: challenge.id, message: error instanceof Error ? error.message : 'Não foi possível baixar a imagem.', showFallback: false });
+                          }
+                        }} className="min-h-11 inline-flex items-center gap-1 text-amber-300 underline underline-offset-2">
+                          <Download className="w-4 h-4" /> Baixar imagem
+                        </button>
+                        <a href={`https://wa.me/?text=${encodeURIComponent(shareText(challenge))}`} target="_blank" rel="noopener noreferrer" className="min-h-11 inline-flex items-center text-amber-300 underline underline-offset-2">
+                          Abrir WhatsApp
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           ))
