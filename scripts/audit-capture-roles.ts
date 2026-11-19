@@ -138,9 +138,9 @@ async function main() {
   const setupMockRoutes = async (page: any, role: 'ADMIN' | 'LEADER' | 'unauth') => {
     await page.route('**/api/auth/session', (route: any) => {
       if (role === 'unauth') {
-        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ configured: true, authenticated: false }) });
+        return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ configured: true, leaderConfigured: true, authenticated: false }) });
       }
-      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ configured: true, authenticated: true, role }) });
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ configured: true, leaderConfigured: true, authenticated: true, role }) });
     });
     await page.route('**/api/rally', (route: any) =>
       route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(MOCK_DATA.rally) })
@@ -289,10 +289,10 @@ async function main() {
     await page.waitForTimeout(400);
     await page.screenshot({ path: path.join(outDir, '15_lider_gestao_rally.png'), fullPage: false });
 
-    // 16_lider_scoremodal (abrir modal de pontuar para ver aviso de restrição de escrita)
-    await page.locator('button[aria-label="Lançar pontuação no rally"]').first().click();
+    // A ação central do Líder leva a Integrantes, sem abrir o formulário de pontuação.
+    await page.getByRole('button', { name: 'Ver integrantes' }).click();
     await page.waitForTimeout(400);
-    await page.screenshot({ path: path.join(outDir, '16_lider_modal_pontuar_aviso.png'), fullPage: false });
+    await page.screenshot({ path: path.join(outDir, '16_lider_acao_integrantes.png'), fullPage: false });
 
     await ctx.close();
   }
@@ -305,6 +305,15 @@ async function main() {
     await setupMockRoutes(page, 'ADMIN');
     await page.goto(appUrl, { waitUntil: 'networkidle' });
     await page.screenshot({ path: path.join(outDir, `resp_${vp.name}_dashboard.png`), fullPage: false });
+    await ctx.close();
+  }
+
+  for (const width of [320, 390]) {
+    const ctx = await browser.newContext({ viewport: { width, height: 844 } });
+    const page = await ctx.newPage();
+    await setupMockRoutes(page, 'LEADER');
+    await page.goto(appUrl, { waitUntil: 'networkidle' });
+    await page.screenshot({ path: path.join(outDir, `resp_mobile_${width}_leader_dashboard.png`), fullPage: false });
     await ctx.close();
   }
 

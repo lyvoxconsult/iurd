@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getCurrentWeekInfo, getWeekInfoForDate, applyRankingWithTies } from '@/lib/scoring';
+import { getCurrentWeekInfo, applyRankingWithTies } from '@/lib/scoring';
 
 export async function GET(req: Request) {
   try {
@@ -102,7 +102,12 @@ export async function GET(req: Request) {
     });
 
     // 4. Ranking de Líderes de Tribo
-    const leaderIdsWithScores = new Set(leaderLaunches.map((l: any) => l.leaderId));
+    const tribeLeaderIdsWithScores = new Set(
+      leaderLaunches.filter((launch) => launch.leaderRole === 'lider_tribo').map((launch) => launch.leaderId)
+    );
+    const nationLeaderIdsWithScores = new Set(
+      leaderLaunches.filter((launch) => launch.leaderRole === 'lider_nacao').map((launch) => launch.leaderId)
+    );
 
     const allTribeLeaders = await prisma.person.findMany({
       where: {
@@ -114,9 +119,21 @@ export async function GET(req: Request) {
         tribe: { select: { name: true } },
       },
     });
-    // Considera líderes ativos OU líderes que possuem pontuação no período consultado
-    const tribeLeaders = allTribeLeaders.filter(
-      (leader) => leader.active || leaderIdsWithScores.has(leader.id)
+    const historicalTribeLeaders = await Promise.all(
+      Array.from(tribeLeaderIdsWithScores)
+        .filter((id) => !allTribeLeaders.some((leader) => leader.id === id))
+        .map((id) => prisma.person.findUnique({
+          where: { id },
+          include: {
+            nation: { select: { name: true, color: true } },
+            tribe: { select: { name: true } },
+          },
+        }))
+    );
+    // Preserva pontos do cargo registrado no lançamento, mesmo se o cargo atual mudou.
+    const tribeLeaders = [...allTribeLeaders, ...historicalTribeLeaders].filter(
+      (leader): leader is NonNullable<typeof leader> => leader !== null && leader.rallyId === rallyId &&
+        ((leader.active && leader.role === 'lider_tribo') || tribeLeaderIdsWithScores.has(leader.id))
     );
 
     const tribeLeaderScores = tribeLeaders.map((leader) => {
@@ -143,9 +160,21 @@ export async function GET(req: Request) {
         tribe: { select: { name: true } },
       },
     });
-    // Considera líderes de nação ativos OU que possuem pontuação no período consultado
-    const nationLeaders = allNationLeaders.filter(
-      (leader) => leader.active || leaderIdsWithScores.has(leader.id)
+    const historicalNationLeaders = await Promise.all(
+      Array.from(nationLeaderIdsWithScores)
+        .filter((id) => !allNationLeaders.some((leader) => leader.id === id))
+        .map((id) => prisma.person.findUnique({
+          where: { id },
+          include: {
+            nation: { select: { name: true, color: true } },
+            tribe: { select: { name: true } },
+          },
+        }))
+    );
+    // Preserva pontos do cargo registrado no lançamento, mesmo se o cargo atual mudou.
+    const nationLeaders = [...allNationLeaders, ...historicalNationLeaders].filter(
+      (leader): leader is NonNullable<typeof leader> => leader !== null && leader.rallyId === rallyId &&
+        ((leader.active && leader.role === 'lider_nacao') || nationLeaderIdsWithScores.has(leader.id))
     );
 
     const nationLeaderScores = nationLeaders.map((leader) => {

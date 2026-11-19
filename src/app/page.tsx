@@ -29,6 +29,7 @@ export default function HomePage() {
   const [session, setSession] = useState<'checking' | 'setup' | 'locked' | 'ready'>('checking');
   const [userRole, setUserRole] = useState<'ADMIN' | 'LEADER' | null>(null);
   const [selectedRole, setSelectedRole] = useState<'ADMIN' | 'LEADER'>('ADMIN');
+  const [leaderConfigured, setLeaderConfigured] = useState(false);
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
   const [authBusy, setAuthBusy] = useState(false);
@@ -58,6 +59,7 @@ export default function HomePage() {
       .then(async (res) => {
         if (!res.ok) throw new Error('Não foi possível verificar o acesso.');
         const data = await res.json();
+        setLeaderConfigured(data.leaderConfigured === true);
         if (!data.configured) {
           setSession('setup');
         } else if (data.authenticated) {
@@ -129,7 +131,7 @@ export default function HomePage() {
       setTribes(tribesData.tribes || []);
 
       // 3. Pessoas
-      const peopleRes = await fetch('/api/people');
+      const peopleRes = await fetch('/api/people?status=all');
       if (!peopleRes.ok) throw new Error('Falha ao carregar os integrantes.');
       const peopleData = await peopleRes.json();
       setPeople(peopleData.people || []);
@@ -236,10 +238,11 @@ export default function HomePage() {
                   <button
                     type="button"
                     onClick={() => { setSelectedRole('LEADER'); setAuthError(''); }}
+                    disabled={!leaderConfigured}
                     className={`flex flex-col items-center justify-center py-2.5 px-3 rounded-xl min-h-[52px] transition-all ${
                       selectedRole === 'LEADER'
                         ? 'bg-sky-500/15 border-2 border-sky-500 text-sky-800 shadow-sm'
-                        : 'border border-transparent text-slate-400 hover:text-slate-200 hover:bg-dark-900'
+                        : 'border border-transparent text-slate-400 hover:text-slate-200 hover:bg-dark-900 disabled:opacity-50 disabled:cursor-not-allowed'
                     }`}
                   >
                     <div className="flex items-center gap-1.5">
@@ -249,6 +252,11 @@ export default function HomePage() {
                     <span className="text-[10px] text-slate-400 mt-0.5">Membros/Desafios</span>
                   </button>
                 </div>
+                {!leaderConfigured && (
+                  <p className="mt-2 text-xs text-amber-200" role="status">
+                    Acesso Líder indisponível: falta configurar a senha no servidor.
+                  </p>
+                )}
               </div>
 
               {/* Campo de Senha */}
@@ -467,21 +475,25 @@ export default function HomePage() {
             <span className="text-[10px] mt-0.5">Rankings</span>
           </button>
 
-          {/* 3. Botão Central de Ação: Pontuar (Destaque Ergonômico no Polegar) */}
+          {/* 3. Ação principal conforme o perfil */}
           <button
-            onClick={() => { setIsScoreModalOpen(true); setIsMobileMenuOpen(false); }}
-            aria-label="Lançar pontuação no rally"
+            onClick={() => {
+              if (userRole === 'LEADER') setCurrentTab('people');
+              else setIsScoreModalOpen(true);
+              setIsMobileMenuOpen(false);
+            }}
+            aria-label={userRole === 'LEADER' ? 'Ver integrantes' : 'Lançar pontuação no rally'}
             className="flex flex-col items-center justify-center min-h-[48px] min-w-[56px] -mt-3.5 group"
           >
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform ${
               userRole === 'LEADER'
-                ? 'bg-gradient-to-tr from-dark-800 via-dark-700 to-dark-600 text-slate-300 border border-dark-600 shadow-dark-900/50'
+                ? 'bg-gradient-to-tr from-sky-700 via-sky-600 to-sky-500 text-white shadow-sky-500/30'
                 : 'bg-gradient-to-tr from-amber-600 via-amber-500 to-amber-400 text-slate-100 shadow-amber-500/30'
             }`}>
-              <PlusCircle className="w-6 h-6 stroke-[2.5]" />
+              {userRole === 'LEADER' ? <Users className="w-6 h-6 stroke-[2.5]" /> : <PlusCircle className="w-6 h-6 stroke-[2.5]" />}
             </div>
-            <span className={`text-[10px] font-black mt-1 ${userRole === 'LEADER' ? 'text-slate-400' : 'text-amber-700'}`}>
-              Pontuar
+            <span className={`text-[10px] font-black mt-1 ${userRole === 'LEADER' ? 'text-sky-700' : 'text-amber-700'}`}>
+              {userRole === 'LEADER' ? 'Integrantes' : 'Pontuar'}
             </span>
           </button>
 

@@ -225,6 +225,9 @@ export async function PATCH(req: Request) {
     if (!id) {
       return NextResponse.json({ error: 'ID do integrante é obrigatório' }, { status: 400 });
     }
+    if (active !== true && active !== false) {
+      return NextResponse.json({ error: 'Status do integrante deve ser verdadeiro ou falso' }, { status: 400 });
+    }
 
     const activeRally = await prisma.rally.findFirst({ where: { isActive: true } });
     if (!activeRally) return NextResponse.json({ error: 'Nenhum rally ativo encontrado' }, { status: 400 });
@@ -234,7 +237,7 @@ export async function PATCH(req: Request) {
 
     const updated = await prisma.person.update({
       where: { id },
-      data: { active: active !== undefined ? Boolean(active) : true },
+      data: { active },
       include: {
         nation: { select: { id: true, name: true, color: true } },
         tribe: { select: { id: true, name: true, code: true } },

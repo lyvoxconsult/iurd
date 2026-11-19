@@ -45,7 +45,7 @@ export default function LeadersView({
   const [launchSuccess, setLaunchSuccess] = useState<string | null>(null);
 
   const leaders = people.filter(
-    (p) => p.role === 'lider_tribo' || p.role === 'lider_nacao'
+    (p) => p.active !== false && (p.role === 'lider_tribo' || p.role === 'lider_nacao')
   );
 
   const filteredLeaders = leaders.filter((l) => {

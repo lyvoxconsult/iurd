@@ -63,35 +63,37 @@ export default function Header({
               <Trophy className="w-4 h-4 sm:w-7 sm:h-7 text-slate-100 font-bold" />
             </div>
             <div className="min-w-0">
-              <div className="flex min-w-0 items-center gap-1.5 sm:gap-2">
+              <div className="flex min-w-0 flex-col items-start gap-0.5 sm:flex-row sm:items-center sm:gap-2">
                 <span className="text-sm sm:text-xl font-black tracking-tight sm:tracking-wider text-slate-100 whitespace-nowrap">
                   IURD <span className="text-amber-700">Umarizal</span>
                 </span>
 
-                {/* Badge de Perfil (ADM ou Líder) */}
-                {userRole === 'ADMIN' && (
-                  <span className="px-2 py-0.5 text-[10px] font-black rounded-full bg-amber-500/20 text-amber-800 border border-amber-500/40 inline-flex items-center gap-1">
-                    <Shield className="w-2.5 h-2.5" />
-                    <span>ADM</span>
-                  </span>
-                )}
-                {userRole === 'LEADER' && (
-                  <span className="px-2 py-0.5 text-[10px] font-black rounded-full bg-sky-500/20 text-sky-800 border border-sky-500/40 inline-flex items-center gap-1">
-                    <Users className="w-2.5 h-2.5" />
-                    <span>LÍDER</span>
-                  </span>
-                )}
+                <div className="flex items-center gap-1.5 sm:contents">
+                  {/* Badge de Perfil (ADM ou Líder) */}
+                  {userRole === 'ADMIN' && (
+                    <span className="px-2 py-0.5 text-[10px] font-black rounded-full bg-amber-500/20 text-amber-800 border border-amber-500/40 inline-flex items-center gap-1">
+                      <Shield className="w-2.5 h-2.5" />
+                      <span>ADM</span>
+                    </span>
+                  )}
+                  {userRole === 'LEADER' && (
+                    <span className="px-2 py-0.5 text-[10px] font-black rounded-full bg-sky-500/20 text-sky-800 border border-sky-500/40 inline-flex items-center gap-1">
+                      <Users className="w-2.5 h-2.5" />
+                      <span>LÍDER</span>
+                    </span>
+                  )}
 
                 <span className="hidden sm:inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-500/10 text-amber-700 border border-amber-500/30 truncate max-w-[150px]">
                   {rallyName || 'Rally 2026'}
                 </span>
 
                 {/* Chip de semana no mobile */}
-                <span className={`sm:hidden text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
-                  isPartialWeek ? 'bg-amber-950/80 text-amber-800 border border-amber-600/40' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                }`}>
-                  {isSaturday ? 'Sábado' : isPartialWeek ? 'Parcial' : 'Fechada'}
-                </span>
+                  <span className={`sm:hidden text-[10px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                    isPartialWeek ? 'bg-amber-950/80 text-amber-800 border border-amber-600/40' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                  }`}>
+                    {isSaturday ? 'Sábado' : isPartialWeek ? 'Parcial' : 'Fechada'}
+                  </span>
+                </div>
               </div>
               <div className="hidden sm:block text-xs text-slate-400 mt-0.5 truncate">
                 {rallyName || 'Rally Umarizal'}
@@ -105,7 +107,7 @@ export default function Header({
             {userRole !== 'LEADER' && (
               <button
                 onClick={onOpenScoreModal}
-                className="flex min-h-9 sm:min-h-11 items-center gap-1.5 px-2.5 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-xs sm:text-sm shadow-md shadow-amber-500/20 transition-all active:scale-95"
+                className="hidden sm:flex min-h-11 items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-sm shadow-md shadow-amber-500/20 transition-all active:scale-95"
               >
                 <PlusCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
                 <span>Pontuar</span>
