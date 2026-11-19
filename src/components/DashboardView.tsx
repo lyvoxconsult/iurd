@@ -19,6 +19,7 @@ interface DashboardViewProps {
   accumulatedRankingsData: any;
   onOpenScoreModal: () => void;
   onNavigateToTab: (tab: string) => void;
+  userRole?: 'ADMIN' | 'LEADER' | null;
 }
 
 export default function DashboardView({
@@ -26,6 +27,7 @@ export default function DashboardView({
   accumulatedRankingsData,
   onOpenScoreModal,
   onNavigateToTab,
+  userRole = 'ADMIN',
 }: DashboardViewProps) {
   const currentWeekInfo = rankingsData?.currentWeekInfo;
   const isPartial = currentWeekInfo?.isPartial;
@@ -89,7 +91,9 @@ export default function DashboardView({
             <p className="mt-1 text-sm text-slate-300">A semana vai de segunda a domingo. Pontos lançados até o fim do domingo entram no mesmo resultado.</p>
           </div>
         </div>
-        <button onClick={onOpenScoreModal} className="min-h-11 ml-auto shrink-0 rounded-xl bg-amber-500 px-4 text-sm font-bold text-slate-100 hover:bg-amber-400 transition-colors">Lançar pontos</button>
+        {userRole !== 'LEADER' && (
+          <button onClick={onOpenScoreModal} className="min-h-11 ml-auto shrink-0 rounded-xl bg-amber-500 px-4 text-sm font-bold text-slate-100 hover:bg-amber-400 transition-colors">Lançar pontos</button>
+        )}
       </div>
 
       {/* PLACAR PRINCIPAL DAS 2 NAÇÕES */}
@@ -101,7 +105,7 @@ export default function DashboardView({
               <span>Placar Geral</span>
             </h2>
             <p className="text-[11px] sm:text-xs text-slate-400">
-              Disputa entre as nações do rali
+              Disputa entre as nações do Rally
             </p>
           </div>
           <button

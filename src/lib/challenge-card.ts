@@ -93,7 +93,7 @@ export function createChallengeImage(challenge: ChallengeCardData): File {
   ctx.fillText('IURD UMARIZAL', SIDE, 112);
   ctx.fillStyle = '#405d78';
   ctx.font = 'bold 28px Arial, sans-serif';
-  ctx.fillText('DESAFIO DO RALI', SIDE, 166);
+  ctx.fillText('DESAFIO DO RALLY', SIDE, 166);
   ctx.fillStyle = '#b9923f';
   ctx.fillRect(SIDE, 232, TEXT_WIDTH, 3);
 

@@ -20,12 +20,14 @@ interface LeadersViewProps {
   people: any[];
   onOpenScoreModalForLeader: (leaderId: string) => void;
   onRefresh: () => void;
+  userRole?: 'ADMIN' | 'LEADER' | null;
 }
 
 export default function LeadersView({
   people,
   onOpenScoreModalForLeader,
   onRefresh,
+  userRole,
 }: LeadersViewProps) {
   const [filterRole, setFilterRole] = useState<'all' | 'lider_tribo' | 'lider_nacao'>('all');
   const [search, setSearch] = useState('');
@@ -144,23 +146,25 @@ export default function LeadersView({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       
       {/* Cabeçalho */}
-      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="text-lg font-black text-slate-100 flex items-center space-x-2">
+          <h2 className="text-base sm:text-lg font-black text-slate-100 flex items-center space-x-2">
             <Crown className="w-5 h-5 text-amber-700" />
-            <span>Painel de Liderança do Rali</span>
+            <span>Painel de Liderança do Rally</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            Lançamento manual de pontos com motivo obrigatório e histórico individual
+            {userRole === 'LEADER'
+              ? 'Consulte os líderes cadastrados nas nações e seus históricos individuais de pontuação.'
+              : 'Lançamento manual de pontos com motivo obrigatório e histórico individual.'}
           </p>
         </div>
       </div>
 
       {/* Filtros e Busca */}
-      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-4 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3">
         <div className="relative w-full sm:w-72">
           <Search className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
           <input
@@ -168,20 +172,20 @@ export default function LeadersView({
             placeholder="Buscar líder..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-dark-950 border border-dark-700 rounded-xl pl-9 pr-3 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
+            className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl pl-9 pr-3 py-2 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500"
           />
         </div>
 
-        <div className="flex items-center space-x-2 w-full sm:w-auto">
+        <div className="grid grid-cols-3 sm:flex items-center gap-1.5 sm:space-x-2 w-full sm:w-auto">
           {[
-            { id: 'all', label: 'Todos os Líderes' },
-            { id: 'lider_nacao', label: 'Líderes de Nação' },
-            { id: 'lider_tribo', label: 'Líderes de Tribo' },
+            { id: 'all', label: 'Todos' },
+            { id: 'lider_nacao', label: 'Nação' },
+            { id: 'lider_tribo', label: 'Tribo' },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setFilterRole(tab.id as any)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
+              className={`min-h-10 px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-bold border transition-all text-center ${
                 filterRole === tab.id
                   ? 'bg-amber-500 text-slate-100 border-amber-500 shadow-md'
                   : 'bg-dark-950 text-slate-400 border-dark-800 hover:border-dark-700'
@@ -194,7 +198,7 @@ export default function LeadersView({
       </div>
 
       {/* Grid de Líderes */}
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {filteredLeaders.length === 0 ? (
           <div className="py-12 text-center text-slate-500 bg-dark-900 border border-dark-800 rounded-2xl">
             Nenhum líder cadastrado com os filtros informados.
@@ -207,22 +211,22 @@ export default function LeadersView({
             return (
               <div
                 key={leader.id}
-                className="bg-dark-900 border border-dark-800 rounded-2xl overflow-hidden shadow-xl transition-all"
+                className="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl transition-all"
               >
-                <div className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <div className="flex items-center space-x-3.5">
+                <div className="p-3.5 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+                  <div className="flex items-center space-x-3">
                     <div
-                      className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold flex-shrink-0 shadow-md ${
+                      className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center font-bold flex-shrink-0 shadow-md ${
                         isNation
                           ? 'bg-amber-500/20 text-amber-700 border border-amber-500/40'
                           : 'bg-sky-500/20 text-sky-700 border border-sky-500/40'
                       }`}
                     >
-                      {isNation ? <Award className="w-6 h-6" /> : <Crown className="w-6 h-6" />}
+                      {isNation ? <Award className="w-5 h-5 sm:w-6 sm:h-6" /> : <Crown className="w-5 h-5 sm:w-6 sm:h-6" />}
                     </div>
                     <div>
                       <div className="flex items-center space-x-2">
-                        <h3 className="text-base font-bold text-slate-100">{leader.name}</h3>
+                        <h3 className="text-sm sm:text-base font-bold text-slate-100">{leader.name}</h3>
                         <span
                           className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                             isNation
@@ -239,10 +243,10 @@ export default function LeadersView({
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-2 w-full sm:w-auto">
+                  <div className={`w-full sm:w-auto ${userRole === 'LEADER' ? '' : 'grid grid-cols-2 gap-2'}`}>
                     <button
                       onClick={() => fetchLeaderHistory(leader.id)}
-                      className="min-h-11 flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl bg-dark-950 hover:bg-dark-800 border border-dark-700 text-xs font-semibold text-slate-300 transition-all"
+                      className="w-full sm:w-auto min-h-11 flex items-center justify-center space-x-1.5 px-3 py-2 rounded-xl bg-dark-950 hover:bg-dark-800 border border-dark-700 text-xs font-semibold text-slate-300 transition-all"
                     >
                       <History className="w-3.5 h-3.5 text-amber-700" />
                       <span>Histórico</span>
@@ -253,13 +257,15 @@ export default function LeadersView({
                       )}
                     </button>
 
-                    <button
-                      onClick={() => handleOpenQuickLaunch(leader)}
-                      className="min-h-11 flex items-center justify-center space-x-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-xs shadow-md transition-all active:scale-95"
-                    >
-                      <PlusCircle className="w-3.5 h-3.5" />
-                      <span>Pontuar Líder</span>
-                    </button>
+                    {userRole !== 'LEADER' && (
+                      <button
+                        onClick={() => handleOpenQuickLaunch(leader)}
+                        className="min-h-11 flex items-center justify-center space-x-1.5 px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-xs shadow-md transition-all active:scale-95"
+                      >
+                        <PlusCircle className="w-3.5 h-3.5" />
+                        <span>Pontuar Líder</span>
+                      </button>
+                    )}
                   </div>
                 </div>
 

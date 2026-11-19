@@ -1,9 +1,15 @@
 export const SESSION_COOKIE = 'iurd_admin_session';
 const SESSION_SECONDS = 60 * 60 * 12;
 
+export type UserRole = 'ADMIN' | 'LEADER';
+
 export function authConfigured() {
   return !!process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD.length >= 8 &&
     !!process.env.SESSION_SECRET && process.env.SESSION_SECRET.length >= 32;
+}
+
+export function leaderAuthConfigured() {
+  return !!process.env.LEADER_PASSWORD && process.env.LEADER_PASSWORD.length >= 8;
 }
 
 function bytesToHex(bytes: Uint8Array) {
@@ -20,12 +26,14 @@ async function hmacKey() {
     { name: 'HMAC', hash: 'SHA-256' }, false, ['sign', 'verify']);
 }
 
-export async function verifyPassword(password: string) {
+export async function verifyRolePassword(role: UserRole, password: string) {
   if (!authConfigured()) return false;
+  const expectedPassword = role === 'ADMIN' ? process.env.ADMIN_PASSWORD : process.env.LEADER_PASSWORD;
+  if (!expectedPassword) return false;
   const encoder = new TextEncoder();
   const [given, expected] = await Promise.all([
     crypto.subtle.digest('SHA-256', encoder.encode(password)),
-    crypto.subtle.digest('SHA-256', encoder.encode(process.env.ADMIN_PASSWORD!)),
+    crypto.subtle.digest('SHA-256', encoder.encode(expectedPassword)),
   ]);
   const a = new Uint8Array(given);
   const b = new Uint8Array(expected);
@@ -34,21 +42,33 @@ export async function verifyPassword(password: string) {
   return difference === 0;
 }
 
-export async function createSession() {
+export async function verifyPassword(password: string) {
+  return verifyRolePassword('ADMIN', password);
+}
+
+export async function createSession(role: UserRole = 'ADMIN') {
   if (!authConfigured()) throw new Error('Autenticação não configurada');
   const expiry = Math.floor(Date.now() / 1000) + SESSION_SECONDS;
   const nonce = bytesToHex(crypto.getRandomValues(new Uint8Array(16)));
-  const payload = `${expiry}.${nonce}`;
+  const payload = `${expiry}.${nonce}.${role}`;
   const signature = await crypto.subtle.sign('HMAC', await hmacKey(), new TextEncoder().encode(payload));
-  return { token: `${payload}.${bytesToHex(new Uint8Array(signature))}`, maxAge: SESSION_SECONDS };
+  return { token: `${payload}.${bytesToHex(new Uint8Array(signature))}`, maxAge: SESSION_SECONDS, role };
+}
+
+export async function getSession(token: string | undefined): Promise<{ role: UserRole; expiry: number } | null> {
+  if (!authConfigured() || !token) return null;
+  // Tokens válidos devem conter explicitamente o perfil assinado (ADMIN ou LEADER).
+  // Tokens legados sem perfil são rejeitados para evitar promoção indevida a ADM.
+  const match = /^(\d{10})\.([0-9a-f]{32})\.(ADMIN|LEADER)\.([0-9a-f]{64})$/.exec(token);
+  if (!match || Number(match[1]) <= Math.floor(Date.now() / 1000)) return null;
+  const signature = hexToBytes(match[4]);
+  if (!signature) return null;
+  const valid = await crypto.subtle.verify('HMAC', await hmacKey(), signature,
+    new TextEncoder().encode(`${match[1]}.${match[2]}.${match[3]}`));
+  if (!valid) return null;
+  return { role: match[3] as UserRole, expiry: Number(match[1]) };
 }
 
 export async function isAuthenticated(token: string | undefined) {
-  if (!authConfigured() || !token) return false;
-  const match = /^(\d{10})\.([0-9a-f]{32})\.([0-9a-f]{64})$/.exec(token);
-  if (!match || Number(match[1]) <= Math.floor(Date.now() / 1000)) return false;
-  const signature = hexToBytes(match[3]);
-  if (!signature) return false;
-  return crypto.subtle.verify('HMAC', await hmacKey(), signature,
-    new TextEncoder().encode(`${match[1]}.${match[2]}`));
+  return (await getSession(token)) !== null;
 }

@@ -102,17 +102,22 @@ export async function GET(req: Request) {
     });
 
     // 4. Ranking de Líderes de Tribo
-    const tribeLeaders = await prisma.person.findMany({
+    const leaderIdsWithScores = new Set(leaderLaunches.map((l: any) => l.leaderId));
+
+    const allTribeLeaders = await prisma.person.findMany({
       where: {
         rallyId,
         role: 'lider_tribo',
-        active: true,
       },
       include: {
         nation: { select: { name: true, color: true } },
         tribe: { select: { name: true } },
       },
     });
+    // Considera líderes ativos OU líderes que possuem pontuação no período consultado
+    const tribeLeaders = allTribeLeaders.filter(
+      (leader) => leader.active || leaderIdsWithScores.has(leader.id)
+    );
 
     const tribeLeaderScores = tribeLeaders.map((leader) => {
       const points = leaderLaunches
@@ -128,17 +133,20 @@ export async function GET(req: Request) {
     const rankedTribeLeaders = applyRankingWithTies(tribeLeaderScores);
 
     // 5. Ranking de Líderes de Nação
-    const nationLeaders = await prisma.person.findMany({
+    const allNationLeaders = await prisma.person.findMany({
       where: {
         rallyId,
         role: 'lider_nacao',
-        active: true,
       },
       include: {
         nation: { select: { name: true, color: true } },
         tribe: { select: { name: true } },
       },
     });
+    // Considera líderes de nação ativos OU que possuem pontuação no período consultado
+    const nationLeaders = allNationLeaders.filter(
+      (leader) => leader.active || leaderIdsWithScores.has(leader.id)
+    );
 
     const nationLeaderScores = nationLeaders.map((leader) => {
       const points = leaderLaunches

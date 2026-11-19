@@ -18,11 +18,13 @@ import {
 interface HistoryViewProps {
   onRefresh: () => void;
   availableWeeks: any[];
+  userRole?: 'ADMIN' | 'LEADER' | null;
 }
 
 export default function HistoryView({
   onRefresh,
   availableWeeks,
+  userRole,
 }: HistoryViewProps) {
   const [historyItems, setHistoryItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -121,77 +123,80 @@ export default function HistoryView({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3.5 sm:space-y-6">
       
       {/* Cabeçalho */}
-      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
-          <h2 className="text-lg font-black text-slate-100 flex items-center space-x-2">
+          <h2 className="text-base sm:text-lg font-black text-slate-100 flex items-center space-x-2">
             <History className="w-5 h-5 text-amber-700" />
-            <span>Auditoria e Histórico de Pontuação</span>
+            <span>Auditoria e Histórico de Pontuação do Rally</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            Rastreabilidade completa, conferência por semana e correções auditadas sem deleção física
+            {userRole === 'LEADER'
+              ? 'Conferência detalhada e rastreabilidade dos lançamentos de desafios e líderes por semana.'
+              : 'Rastreabilidade completa, conferência por semana e correções auditadas sem deleção física.'}
           </p>
         </div>
       </div>
 
-      {/* Barra de Filtros */}
-      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-3">
-        
-        {/* Filtro por Tipo */}
-        <div className="flex items-center space-x-1 bg-dark-950 p-1 rounded-xl border border-dark-800">
-          {[
-            { id: 'all', label: 'Todos' },
-            { id: 'challenge', label: 'Desafios' },
-            { id: 'leader', label: 'Líderes' },
-          ].map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setFilterType(t.id as any)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                filterType === t.id
-                  ? 'bg-amber-500 text-slate-100 shadow-md'
-                  : 'text-slate-400 hover:text-slate-100'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+      {/* Barra de Filtros Compacta */}
+      <div className="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-xl space-y-2.5 sm:space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
+          {/* Filtro por Tipo */}
+          <div className="grid grid-cols-3 bg-dark-950 p-1 rounded-xl border border-dark-800">
+            {[
+              { id: 'all', label: 'Todos' },
+              { id: 'challenge', label: 'Desafios' },
+              { id: 'leader', label: 'Líderes' },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setFilterType(t.id as any)}
+                className={`py-1.5 rounded-lg text-xs font-bold transition-all text-center ${
+                  filterType === t.id
+                    ? 'bg-amber-500 text-slate-100 shadow-md'
+                    : 'text-slate-400 hover:text-slate-100'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
 
-        {/* Filtro por Status */}
-        <div className="flex items-center space-x-1 bg-dark-950 p-1 rounded-xl border border-dark-800">
-          {[
-            { id: 'all', label: 'Todos Status' },
-            { id: 'ACTIVE', label: 'Ativos' },
-            { id: 'VOIDED', label: 'Estornados' },
-          ].map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setFilterStatus(s.id as any)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
-                filterStatus === s.id
-                  ? 'bg-amber-500 text-slate-100 shadow-md'
-                  : 'text-slate-400 hover:text-slate-100'
-              }`}
-            >
-              {s.label}
-            </button>
-          ))}
+          {/* Filtro por Status */}
+          <div className="grid grid-cols-3 bg-dark-950 p-1 rounded-xl border border-dark-800">
+            {[
+              { id: 'all', label: 'Todos' },
+              { id: 'ACTIVE', label: 'Ativos' },
+              { id: 'VOIDED', label: 'Estornados' },
+            ].map((s) => (
+              <button
+                key={s.id}
+                onClick={() => setFilterStatus(s.id as any)}
+                className={`py-1.5 rounded-lg text-xs font-bold transition-all text-center ${
+                  filterStatus === s.id
+                    ? 'bg-amber-500 text-slate-100 shadow-md'
+                    : 'text-slate-400 hover:text-slate-100'
+                }`}
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Filtro por Semana */}
         {availableWeeks.length > 0 && (
-          <div className="flex items-center space-x-2">
-            <span className="text-xs font-semibold text-slate-400 flex items-center space-x-1">
+          <div className="flex items-center gap-2 pt-1 border-t border-dark-800/80">
+            <span className="text-xs font-semibold text-slate-400 flex items-center space-x-1 shrink-0">
               <Calendar className="w-3.5 h-3.5 text-amber-700" />
               <span>Semana:</span>
             </span>
             <select
               value={filterWeek}
               onChange={(e) => setFilterWeek(e.target.value)}
-              className="bg-dark-950 border border-dark-700 text-slate-200 text-xs rounded-xl px-3 py-2 font-medium focus:outline-none focus:border-amber-500"
+              className="w-full sm:w-auto bg-dark-950 border border-dark-700 text-slate-200 text-xs rounded-xl px-3 py-2 font-medium focus:outline-none focus:border-amber-500 min-h-10"
             >
               <option value="">Todas as Semanas</option>
               {availableWeeks.map((w: any) => (
@@ -206,7 +211,7 @@ export default function HistoryView({
       </div>
 
       {/* Lista de Histórico / Timeline */}
-      <div className="bg-dark-900 border border-dark-800 rounded-2xl p-5 shadow-xl space-y-3">
+      <div className="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-xl space-y-2.5 sm:space-y-3">
         {loading ? (
           <div className="py-12 text-center text-sm text-slate-400">
             Carregando histórico auditado...
@@ -320,10 +325,10 @@ export default function HistoryView({
                     +{item.points} pts
                   </span>
 
-                  {!isVoided && (
+                  {!isVoided && userRole !== 'LEADER' && (
                     <button
                       onClick={() => handleOpenVoidModal(item)}
-                      className="px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-800 text-xs font-semibold flex items-center space-x-1 transition-all"
+                      className="min-h-9 px-2.5 py-1.5 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-800 text-xs font-semibold flex items-center space-x-1 transition-all"
                       title="Estornar lançamento com justificativa"
                     >
                       <Ban className="w-3.5 h-3.5" />

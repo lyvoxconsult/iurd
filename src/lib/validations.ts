@@ -10,6 +10,7 @@ export const personSchema = z.object({
   tribeId: z.string().min(1, 'Selecione uma tribo'),
   category: CategoryEnum,
   role: RoleEnum,
+  active: z.boolean().optional(),
 });
 
 export const challengeSchema = z.object({

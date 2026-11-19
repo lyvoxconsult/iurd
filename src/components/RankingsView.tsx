@@ -79,7 +79,7 @@ export default function RankingsView({
             }`}
           >
             <Sparkles className="w-4 h-4" />
-            <span>Total Acumulado do Rali</span>
+            <span>Total Acumulado do Rally</span>
           </button>
         </div>
 
@@ -230,7 +230,7 @@ export default function RankingsView({
                             </span>
                           )}
                         </div>
-                        <span className="text-[10px] sm:text-xs text-slate-400 block truncate">Nação Oficial do Rali</span>
+                        <span className="text-[10px] sm:text-xs text-slate-400 block truncate">Nação Oficial do Rally</span>
                       </div>
                     </div>
 

@@ -24,12 +24,14 @@ interface ChallengesViewProps {
   challenges: Challenge[];
   onRefresh: () => void;
   onLaunchChallenge: (challengeId: string) => void;
+  userRole?: 'ADMIN' | 'LEADER' | null;
 }
 
 export default function ChallengesView({
   challenges,
   onRefresh,
   onLaunchChallenge,
+  userRole,
 }: ChallengesViewProps) {
   const [isCreating, setIsCreating] = useState(false);
   const [title, setTitle] = useState('');
@@ -42,7 +44,7 @@ export default function ChallengesView({
   const [shareNotice, setShareNotice] = useState<{ id: string; message: string; showFallback: boolean } | null>(null);
 
   const shareText = (challenge: Challenge) =>
-    `Desafio do rali: ${challenge.title} — ${challenge.defaultPoints} pontos${challenge.description ? `\n${challenge.description}` : ''}`;
+    `Desafio do Rally: ${challenge.title} — ${challenge.defaultPoints} pontos${challenge.description ? `\n${challenge.description}` : ''}`;
 
   const downloadImage = (challenge: Challenge, existingFile?: File) => {
     const file = existingFile || createChallengeImage({ title: challenge.title, description: challenge.description, points: challenge.defaultPoints });
@@ -75,11 +77,11 @@ export default function ChallengesView({
           setShareNotice({ id: challenge.id, message: 'Imagem enviada para o aplicativo escolhido.', showFallback: false });
         } catch (error) {
           if (error instanceof DOMException && error.name === 'AbortError') return;
-          setShareNotice({ id: challenge.id, message: 'Não foi possível compartilhar. Baixe a imagem e anexe-a no WhatsApp.', showFallback: true });
+          setShareNotice({ id: challenge.id, message: 'Não foi possível compartilhar diretamente. Baixe a imagem e envie-a no WhatsApp.', showFallback: true });
         }
       } else {
         downloadImage(challenge, file);
-        setShareNotice({ id: challenge.id, message: 'Imagem baixada. Abra o WhatsApp e anexe o PNG à conversa.', showFallback: true });
+        setShareNotice({ id: challenge.id, message: 'Imagem baixada. Abra o WhatsApp e envie o cartão gerado.', showFallback: true });
       }
     } catch (error) {
       setShareNotice({ id: challenge.id, message: error instanceof Error ? error.message : 'Não foi possível gerar a imagem.', showFallback: false });
@@ -90,6 +92,10 @@ export default function ChallengesView({
 
   const handleCreateChallenge = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (userRole === 'LEADER') {
+      setErrorMsg('Apenas administradores podem criar desafios.');
+      return;
+    }
     setErrorMsg(null);
     setSuccessMsg(null);
 
@@ -98,7 +104,7 @@ export default function ChallengesView({
       return;
     }
     if (!defaultPoints || Number(defaultPoints) <= 0) {
-      setErrorMsg('Os pontos devem ser um número inteiro positivo');
+      setErrorMsg('Informe uma quantidade de pontos positiva');
       return;
     }
 
@@ -115,51 +121,54 @@ export default function ChallengesView({
       });
 
       const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || 'Erro ao criar desafio');
-      }
+      if (!res.ok) throw new Error(data.error || 'Erro ao criar desafio');
 
-      setSuccessMsg('Desafio salvo sem pontuação. Compartilhe a imagem agora e use Pontuar quando alguém concluir.');
+      setSuccessMsg('Desafio criado com sucesso! Agora você pode compartilhar ou pontuar.');
       setTitle('');
       setDescription('');
       setDefaultPoints(10);
       setIsCreating(false);
       onRefresh();
-    } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Erro inesperado');
+    } catch (err: any) {
+      setErrorMsg(err.message || 'Erro inesperado');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
+    <div className="space-y-3.5 sm:space-y-6">
       
       {/* Cabeçalho */}
-      <div className="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+      <div className="bg-dark-900 border border-dark-800 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <div>
           <h2 className="text-base sm:text-lg font-black text-slate-100 flex items-center space-x-2">
             <Flame className="w-5 h-5 text-amber-700" />
-            <span>Desafios e Missões do Rali</span>
+            <span>Desafios e Missões do Rally</span>
           </h2>
           <p className="text-xs text-slate-400 mt-0.5">
-            Crie o desafio, compartilhe a imagem e pontue depois quando ele for concluído.
+            {userRole === 'LEADER'
+              ? 'Visualize os desafios do Rally e gere imagens oficiais para compartilhar com a sua equipe.'
+              : 'Crie o desafio, compartilhe a imagem e pontue depois quando ele for concluído.'}
           </p>
         </div>
 
-        <button
-          onClick={() => setIsCreating(!isCreating)}
-          className="min-h-11 w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
-        >
-          <Plus className="w-4 h-4" />
-          <span>{isCreating ? 'Fechar Formulário' : 'Criar Novo Desafio'}</span>
-        </button>
+        {/* Botão de Criação exclusivo para ADM */}
+        {userRole !== 'LEADER' && (
+          <button
+            onClick={() => setIsCreating(!isCreating)}
+            className="min-h-11 w-full sm:w-auto flex items-center justify-center space-x-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-sm shadow-lg shadow-amber-500/20 transition-all active:scale-95"
+          >
+            <Plus className="w-4 h-4" />
+            <span>{isCreating ? 'Fechar Formulário' : 'Criar Novo Desafio'}</span>
+          </button>
+        )}
       </div>
 
       {successMsg && <p role="status" className="rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs sm:text-sm text-emerald-800">{successMsg}</p>}
 
-      {/* Formulário de Criação (Toggle) */}
-      {isCreating && (
+      {/* Formulário de Criação (Apenas ADM) */}
+      {isCreating && userRole !== 'LEADER' && (
         <div className="bg-dark-900 border border-amber-600/40 rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-2xl space-y-3.5 sm:space-y-4 gold-glow">
           <div className="flex items-center space-x-2 pb-2 border-b border-dark-800">
             <Sparkles className="w-4 h-4 text-amber-700" />
@@ -241,72 +250,89 @@ export default function ChallengesView({
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {challenges.length === 0 ? (
           <div className="col-span-full py-12 text-center text-slate-500 bg-dark-900 border border-dark-800 rounded-2xl">
-            Nenhum desafio cadastrado. Crie um desafio para começar.
+            Nenhum desafio cadastrado no Rally.
           </div>
         ) : (
           challenges.map((challenge) => (
             <div
               key={challenge.id}
-              className="bg-dark-900 border border-dark-800 hover:border-amber-600/40 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col justify-between transition-all group"
+              className="bg-dark-900 border border-dark-800 hover:border-amber-600/40 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 shadow-xl flex flex-col justify-between transition-all group"
             >
               <div>
-                <div className="flex items-center justify-between mb-2.5">
-                  <span className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-700 flex items-center justify-center border border-amber-500/20 group-hover:scale-110 transition-transform">
-                    <Flame className="w-4 h-4" />
-                  </span>
-                  <span className="text-base font-black text-amber-700">
-                    {challenge.defaultPoints} <span className="text-xs text-slate-400">pts</span>
-                  </span>
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center space-x-1.5 px-2 py-0.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-800 text-xs font-black">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-700" />
+                    <span>+{challenge.defaultPoints} pts</span>
+                  </div>
                 </div>
 
-                <h3 className="text-base font-bold text-slate-100 mb-1">
+                <h3 className="text-sm sm:text-base font-bold text-slate-100 mb-1">
                   {challenge.title}
                 </h3>
-                <p className="text-xs text-slate-400 line-clamp-3 mb-4">
+                <p className="text-xs text-slate-400 line-clamp-3 mb-3 sm:mb-4">
                   {challenge.description || 'Sem descrição cadastrada.'}
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-dark-800/80 space-y-3">
+              <div className="pt-2.5 sm:pt-3 border-t border-dark-800/80 space-y-2.5">
                 <span className="text-[11px] text-slate-400 font-medium">
-                  {challenge._count?.scoreLaunches || 0} lançamentos
+                  {challenge._count?.scoreLaunches || 0} lançamento(s)
                 </span>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => handleShareChallenge(challenge)}
-                    disabled={sharingId === challenge.id}
-                    className="min-h-11 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-100 text-xs sm:text-sm font-bold transition-all disabled:opacity-60"
-                    aria-label={`Compartilhar imagem do desafio ${challenge.title}`}
-                  >
-                    <Share2 className="w-4 h-4 shrink-0" />
-                    <span>{sharingId === challenge.id ? 'Abrindo...' : 'Compartilhar'}</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onLaunchChallenge(challenge.id)}
-                    className="min-h-11 flex items-center justify-center gap-1.5 px-2 py-2 rounded-lg bg-dark-950 hover:bg-amber-500 hover:text-slate-100 text-amber-700 border border-amber-500/30 text-xs sm:text-sm font-bold transition-all"
-                    aria-label={`Pontuar o desafio ${challenge.title}`}
-                  >
-                    <span>Pontuar</span>
-                    <ArrowRight className="w-4 h-4 shrink-0" />
-                  </button>
-                </div>
+
+                {userRole === 'LEADER' ? (
+                  /* Modo Líder: Botão único de Compartilhar em destaque total */
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => handleShareChallenge(challenge)}
+                      disabled={sharingId === challenge.id}
+                      className="w-full min-h-11 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-xs sm:text-sm shadow-md transition-all active:scale-[0.98] disabled:opacity-60"
+                      aria-label={`Compartilhar imagem do desafio ${challenge.title}`}
+                    >
+                      <Share2 className="w-4 h-4 shrink-0" />
+                      <span>{sharingId === challenge.id ? 'Gerando cartão...' : 'Compartilhar Desafio'}</span>
+                    </button>
+                  </div>
+                ) : (
+                  /* Modo ADM: Grid com Compartilhar e Pontuar */
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleShareChallenge(challenge)}
+                      disabled={sharingId === challenge.id}
+                      className="min-h-11 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-100 text-xs sm:text-sm font-bold transition-all disabled:opacity-60"
+                      aria-label={`Compartilhar imagem do desafio ${challenge.title}`}
+                    >
+                      <Share2 className="w-4 h-4 shrink-0" />
+                      <span>{sharingId === challenge.id ? 'Abrindo...' : 'Compartilhar'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onLaunchChallenge(challenge.id)}
+                      className="min-h-11 flex items-center justify-center gap-1.5 px-2 py-2 rounded-xl bg-dark-950 hover:bg-amber-500 hover:text-slate-100 text-amber-700 border border-amber-500/30 text-xs sm:text-sm font-bold transition-all"
+                      aria-label={`Pontuar o desafio ${challenge.title}`}
+                    >
+                      <span>Pontuar</span>
+                      <ArrowRight className="w-4 h-4 shrink-0" />
+                    </button>
+                  </div>
+                )}
+
                 {shareNotice && shareNotice.id === challenge.id && (
-                  <div role="status" className="space-y-2 text-xs text-slate-300">
+                  <div role="status" className="space-y-1.5 text-xs text-slate-300 bg-dark-950/80 p-2.5 rounded-xl border border-dark-800">
                     <p>{shareNotice.message}</p>
                     {shareNotice.showFallback && (
-                      <div className="flex flex-wrap gap-3">
+                      <div className="flex flex-wrap gap-3 pt-1">
                         <button type="button" onClick={() => {
                           try {
                             downloadImage(challenge);
                           } catch (error) {
                             setShareNotice({ id: challenge.id, message: error instanceof Error ? error.message : 'Não foi possível baixar a imagem.', showFallback: false });
                           }
-                        }} className="min-h-11 inline-flex items-center gap-1 text-amber-800 underline underline-offset-2">
-                          <Download className="w-4 h-4" /> Baixar imagem
+                        }} className="min-h-9 inline-flex items-center gap-1 text-amber-800 underline underline-offset-2 font-semibold">
+                          <Download className="w-3.5 h-3.5" /> Baixar imagem
                         </button>
-                        <a href={`https://wa.me/?text=${encodeURIComponent(shareText(challenge))}`} target="_blank" rel="noopener noreferrer" className="min-h-11 inline-flex items-center text-amber-800 underline underline-offset-2">
+                        <a href={`https://wa.me/?text=${encodeURIComponent(shareText(challenge))}`} target="_blank" rel="noopener noreferrer" className="min-h-9 inline-flex items-center text-amber-800 underline underline-offset-2 font-semibold">
                           Abrir WhatsApp
                         </a>
                       </div>

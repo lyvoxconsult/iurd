@@ -1,8 +1,8 @@
-# IURD Umarizal • Sistema de Gestão e Pontuação do Rali
+# IURD Umarizal • Sistema de Gestão e Pontuação do Rally
 
-Sistema web responsivo para gestão do rali da igreja IURD Umarizal.
+Sistema web responsivo para gestão do rally da igreja IURD Umarizal.
 
-> **Hospedagem:** a aplicação usa Firestore pelo Firebase Admin SDK no servidor e está preparada para a Vercel. As regras do Firestore bloqueiam acesso direto pelo cliente; as APIs exigem sessão administrativa.
+> **Hospedagem:** a aplicação usa Firestore pelo Firebase Admin SDK no servidor e está preparada para a Vercel. As regras do Firestore bloqueiam acesso direto pelo cliente; as APIs exigem sessão autenticada com perfis segregados de ADM ou Líder.
 
 ---
 
@@ -16,6 +16,31 @@ Sistema web responsivo para gestão do rali da igreja IURD Umarizal.
 - **Categorias de Integrantes**: Jovem, Membro, Obreiro, Colaborador.
 - **Funções de Integrantes**: Participante, Líder de Tribo, Líder de Nação.
 - **Vínculo Estrito**: Uma tribo pertence a exatamente uma nação. No cadastro ou edição, o sistema impede selecionar uma tribo de outra nação tanto no front-end quanto no servidor.
+- **Remoção Auditada (Soft Delete)**: Integrantes removidos recebem `active: false`. Lançamentos e pontuações do passado permanecem 100% íntegros. Integrantes inativos podem ser reativados a qualquer momento pelo ADM ou Líder.
+
+### 2. Perfis de Acesso e Segurança (RBAC)
+O sistema possui dois perfis distintos de acesso com senhas segregadas:
+- **ADM (Acesso Total)**:
+  - Cria, edita e encerra o Rally.
+  - Cria e edita desafios e lança pontuações.
+  - Estorna pontuações com registro de motivo.
+  - Edita nações e tribos.
+  - Cadastra, edita, remove e reativa integrantes.
+- **Líder (Membros e Desafios)**:
+  - Visualiza placares, rankings, histórico, líderes e estrutura do Rally.
+  - Cadastra, edita, remove e reativa integrantes.
+  - Gera e compartilha cards visuais de desafios com a equipe (WhatsApp/Download PNG).
+  - Bloqueado pelo servidor para criar desafios, lançar pontos, estornar ou alterar nações/tribos/rally.
+
+| Rota / Recurso | Método HTTP | Acesso ADM | Acesso Líder |
+| :--- | :--- | :--- | :--- |
+| `/api/people` | GET, POST, PUT, PATCH, DELETE | Permitido | Permitido |
+| `/api/challenges` | GET | Permitido | Permitido |
+| `/api/challenges` | POST, PUT, DELETE | Permitido | **Bloqueado (403)** |
+| `/api/scores/*` | POST (pontuar/estornar) | Permitido | **Bloqueado (403)** |
+| `/api/rally` | POST, PUT | Permitido | **Bloqueado (403)** |
+| `/api/nations`, `/api/tribes` | POST, PUT, DELETE | Permitido | **Bloqueado (403)** |
+| Demais rotas de consulta | GET | Permitido | Permitido |
 
 ### 2. Semanas e Fuso Horário
 - **Fuso Horário Canônico**: `America/Sao_Paulo`.
@@ -83,8 +108,8 @@ Sistema web responsivo para gestão do rali da igreja IURD Umarizal.
 npm install
 ```
 
-### 3. Acesso administrativo
-Copie `.env.example` para `.env` e defina `ADMIN_PASSWORD` (ao menos 8 caracteres), `SESSION_SECRET` (ao menos 32 caracteres aleatórios) e as credenciais do Firebase Admin. Em desenvolvimento, `GOOGLE_APPLICATION_CREDENTIALS` pode apontar para um arquivo de credencial fora do repositório. O sistema bloqueia o acesso às APIs enquanto a autenticação não estiver configurada. O arquivo `.env` não deve ser versionado nem compartilhado.
+### 3. Acesso administrativo e senhas
+Copie `.env.example` para `.env` e defina `ADMIN_PASSWORD` (ao menos 8 caracteres), `LEADER_PASSWORD` (senha do perfil Líder), `SESSION_SECRET` (ao menos 32 caracteres aleatórios) e as credenciais do Firebase Admin. Em desenvolvimento, `GOOGLE_APPLICATION_CREDENTIALS` pode apontar para um arquivo de credencial fora do repositório. O sistema bloqueia o acesso às APIs enquanto a autenticação não estiver configurada. O arquivo `.env` não deve ser versionado nem compartilhado.
 
 Para testar em celular ou tablet, use a URL HTTPS da Vercel. `localhost` serve apenas para desenvolvimento no próprio computador.
 

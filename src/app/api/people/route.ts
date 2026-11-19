@@ -11,6 +11,7 @@ export async function GET(req: Request) {
     const category = searchParams.get('category');
     const role = searchParams.get('role');
     const search = searchParams.get('search');
+    const statusParam = searchParams.get('status'); // 'active' | 'inactive' | 'all'
     const activeOnly = searchParams.get('activeOnly') !== 'false';
 
     let rallyId: string | undefined = rallyIdParam || undefined;
@@ -26,7 +27,15 @@ export async function GET(req: Request) {
     if (tribeId) where.tribeId = tribeId;
     if (category) where.category = category;
     if (role) where.role = role;
-    if (activeOnly) where.active = true;
+
+    if (statusParam === 'inactive') {
+      where.active = false;
+    } else if (statusParam === 'all' || !activeOnly) {
+      // Sem filtro de active (retorna todos)
+    } else {
+      where.active = true;
+    }
+
     if (search) {
       where.name = { contains: search };
     }
@@ -54,7 +63,7 @@ export async function POST(req: Request) {
 
     const activeRally = await prisma.rally.findFirst({ where: { isActive: true } });
     if (!activeRally) {
-      return NextResponse.json({ error: 'Nenhum rali ativo encontrado' }, { status: 400 });
+      return NextResponse.json({ error: 'Nenhum rally ativo encontrado' }, { status: 400 });
     }
 
     // Regra Crítica: A tribo selecionada DEVE pertencer à nação indicada
@@ -81,7 +90,7 @@ export async function POST(req: Request) {
         tribeId: validated.tribeId,
         category: validated.category,
         role: validated.role,
-        active: true,
+        active: validated.active !== undefined ? validated.active : true,
       },
       include: {
         nation: { select: { id: true, name: true, color: true } },
@@ -110,9 +119,9 @@ export async function PUT(req: Request) {
 
     const validated = personSchema.parse(data);
     const activeRally = await prisma.rally.findFirst({ where: { isActive: true } });
-    if (!activeRally) return NextResponse.json({ error: 'Nenhum rali ativo encontrado' }, { status: 400 });
+    if (!activeRally) return NextResponse.json({ error: 'Nenhum rally ativo encontrado' }, { status: 400 });
     const person = await prisma.person.findFirst({ where: { id, rallyId: activeRally.id } });
-    if (!person) return NextResponse.json({ error: 'Integrante não encontrado no rali ativo' }, { status: 404 });
+    if (!person) return NextResponse.json({ error: 'Integrante não encontrado no rally ativo' }, { status: 404 });
 
     // Validação estrita do vínculo tribo e nação
     const tribe = await prisma.tribe.findFirst({
@@ -130,15 +139,20 @@ export async function PUT(req: Request) {
       );
     }
 
+    const updateData: any = {
+      name: validated.name,
+      nationId: validated.nationId,
+      tribeId: validated.tribeId,
+      category: validated.category,
+      role: validated.role,
+    };
+    if (validated.active !== undefined) {
+      updateData.active = validated.active;
+    }
+
     const updated = await prisma.person.update({
       where: { id },
-      data: {
-        name: validated.name,
-        nationId: validated.nationId,
-        tribeId: validated.tribeId,
-        category: validated.category,
-        role: validated.role,
-      },
+      data: updateData,
       include: {
         nation: { select: { id: true, name: true, color: true } },
         tribe: { select: { id: true, name: true, code: true } },
@@ -151,6 +165,92 @@ export async function PUT(req: Request) {
     return NextResponse.json(
       { error: error.errors?.[0]?.message || error.message || 'Erro ao atualizar integrante' },
       { status: 400 }
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    let id = searchParams.get('id');
+    if (!id) {
+      try {
+        const body = await req.json();
+        id = body?.id;
+      } catch {
+        // ignore
+      }
+    }
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID do integrante é obrigatório' }, { status: 400 });
+    }
+
+    const activeRally = await prisma.rally.findFirst({ where: { isActive: true } });
+    if (!activeRally) return NextResponse.json({ error: 'Nenhum rally ativo encontrado' }, { status: 400 });
+
+    const person = await prisma.person.findFirst({ where: { id, rallyId: activeRally.id } });
+    if (!person) return NextResponse.json({ error: 'Integrante não encontrado no rally ativo' }, { status: 404 });
+
+    // Remoção lógica (Soft Delete): define active: false para retirar das listas ativas
+    // Preserva integralmente lançamentos históricos, snapshots e pontuações
+    const updated = await prisma.person.update({
+      where: { id },
+      data: { active: false },
+      include: {
+        nation: { select: { id: true, name: true, color: true } },
+        tribe: { select: { id: true, name: true, code: true } },
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: 'Integrante removido da lista ativa com sucesso. O histórico de pontuações permanece preservado.',
+      person: updated,
+    });
+  } catch (error: any) {
+    console.error('Erro ao desativar integrante:', error);
+    return NextResponse.json(
+      { error: error.message || 'Erro ao remover integrante' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const body = await req.json();
+    const { id, active } = body;
+
+    if (!id) {
+      return NextResponse.json({ error: 'ID do integrante é obrigatório' }, { status: 400 });
+    }
+
+    const activeRally = await prisma.rally.findFirst({ where: { isActive: true } });
+    if (!activeRally) return NextResponse.json({ error: 'Nenhum rally ativo encontrado' }, { status: 400 });
+
+    const person = await prisma.person.findFirst({ where: { id, rallyId: activeRally.id } });
+    if (!person) return NextResponse.json({ error: 'Integrante não encontrado no rally ativo' }, { status: 404 });
+
+    const updated = await prisma.person.update({
+      where: { id },
+      data: { active: active !== undefined ? Boolean(active) : true },
+      include: {
+        nation: { select: { id: true, name: true, color: true } },
+        tribe: { select: { id: true, name: true, code: true } },
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: updated.active ? 'Integrante reativado com sucesso!' : 'Integrante desativado com sucesso.',
+      person: updated,
+    });
+  } catch (error: any) {
+    console.error('Erro ao atualizar status do integrante:', error);
+    return NextResponse.json(
+      { error: error.message || 'Erro ao atualizar status' },
+      { status: 500 }
     );
   }
 }

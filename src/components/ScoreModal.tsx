@@ -12,6 +12,7 @@ interface ScoreModalProps {
   nations: any[];
   tribes: any[];
   people: any[];
+  userRole?: 'ADMIN' | 'LEADER' | null;
   initialChallengeTitle?: string;
   initialChallengeId?: string;
   initialLeaderId?: string;
@@ -25,6 +26,7 @@ export default function ScoreModal({
   nations,
   tribes,
   people,
+  userRole,
   initialChallengeTitle = '',
   initialChallengeId = '',
   initialLeaderId = '',
@@ -113,14 +115,15 @@ export default function ScoreModal({
       setTargetId(nations[0].id);
     } else if (type === 'tribe' && tribes.length > 0) {
       setTargetId(tribes[0].id);
-    } else if (type === 'person' && people.length > 0) {
-      setTargetId(people[0].id);
+    } else if (type === 'person' && activePeople.length > 0) {
+      setTargetId(activePeople[0].id);
     } else {
       setTargetId('');
     }
   };
 
-  const leadersOnly = people.filter(
+  const activePeople = people.filter((p) => p.active !== false);
+  const leadersOnly = activePeople.filter(
     (p) => p.role === 'lider_tribo' || p.role === 'lider_nacao'
   );
 
@@ -265,6 +268,13 @@ export default function ScoreModal({
         </div>
 
         {/* Abas do Modal */}
+        {userRole === 'LEADER' && (
+          <div className="mt-2.5 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 text-xs flex items-center space-x-2">
+            <Info className="w-4 h-4 text-amber-700 shrink-0" />
+            <span>Modo Consulta: Lançamento de pontos exclusivo para administradores (ADM).</span>
+          </div>
+        )}
+
         <div className="grid grid-cols-2 gap-1.5 sm:gap-2 mt-3 sm:mt-4 p-1 bg-dark-950 rounded-xl border border-dark-800">
           <button
             type="button"
@@ -279,7 +289,7 @@ export default function ScoreModal({
             }`}
           >
             <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            <span>Desafio do Rali</span>
+            <span>Desafio do Rally</span>
           </button>
           <button
             type="button"
@@ -413,7 +423,7 @@ export default function ScoreModal({
                     className="w-full min-h-11 bg-dark-950 border border-dark-700 rounded-xl px-3 py-2 text-base sm:text-sm text-slate-100 focus:outline-none focus:border-amber-500"
                     required
                   >
-                    {people.map((p) => (
+                    {activePeople.map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.name} — {p.tribe?.name} ({p.nation?.name})
                       </option>
@@ -498,10 +508,10 @@ export default function ScoreModal({
             <div className="sticky bottom-0 bg-dark-900/95 backdrop-blur-sm pt-3 pb-1 -mx-1 px-1 border-t border-dark-800/60 mt-3">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || userRole === 'LEADER'}
                 className="w-full min-h-12 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
               >
-                {loading ? 'Registrando...' : 'Confirmar Lançamento de Desafio'}
+                {userRole === 'LEADER' ? 'Lançamento exclusivo para ADM' : loading ? 'Registrando...' : 'Confirmar Lançamento de Desafio'}
               </button>
             </div>
           </form>
@@ -594,10 +604,10 @@ export default function ScoreModal({
             <div className="sticky bottom-0 bg-dark-900/95 backdrop-blur-sm pt-3 pb-1 -mx-1 px-1 border-t border-dark-800/60 mt-3">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || userRole === 'LEADER'}
                 className="w-full min-h-12 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-100 font-bold text-sm shadow-lg shadow-amber-500/20 disabled:opacity-50 transition-all active:scale-[0.98]"
               >
-                {loading ? 'Registrando...' : 'Confirmar Pontos do Líder'}
+                {userRole === 'LEADER' ? 'Lançamento exclusivo para ADM' : loading ? 'Registrando...' : 'Confirmar Pontos do Líder'}
               </button>
             </div>
           </form>
