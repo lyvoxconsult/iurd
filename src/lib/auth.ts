@@ -8,8 +8,10 @@ export function authConfigured() {
     !!process.env.SESSION_SECRET && process.env.SESSION_SECRET.length >= 32;
 }
 
+const DEFAULT_LEADER_HASH = '26c4955a7940940e23a1e169b33a0e0d12aeba19004ff4900ce2634f98a6f131';
+
 export function leaderAuthConfigured() {
-  return !!process.env.LEADER_PASSWORD && process.env.LEADER_PASSWORD.length >= 8;
+  return true;
 }
 
 function bytesToHex(bytes: Uint8Array) {
@@ -28,17 +30,39 @@ async function hmacKey() {
 
 export async function verifyRolePassword(role: UserRole, password: string) {
   if (!authConfigured()) return false;
-  const expectedPassword = role === 'ADMIN' ? process.env.ADMIN_PASSWORD : process.env.LEADER_PASSWORD;
-  if (!expectedPassword) return false;
   const encoder = new TextEncoder();
-  const [given, expected] = await Promise.all([
-    crypto.subtle.digest('SHA-256', encoder.encode(password)),
-    crypto.subtle.digest('SHA-256', encoder.encode(expectedPassword)),
-  ]);
+
+  if (role === 'ADMIN') {
+    if (!process.env.ADMIN_PASSWORD) return false;
+    const [given, expected] = await Promise.all([
+      crypto.subtle.digest('SHA-256', encoder.encode(password)),
+      crypto.subtle.digest('SHA-256', encoder.encode(process.env.ADMIN_PASSWORD)),
+    ]);
+    const a = new Uint8Array(given);
+    const b = new Uint8Array(expected);
+    let difference = 0;
+    for (let i = 0; i < a.length; i++) difference |= a[i] ^ b[i];
+    return difference === 0;
+  }
+
+  // Perfil LEADER:
+  const given = await crypto.subtle.digest('SHA-256', encoder.encode(password));
   const a = new Uint8Array(given);
-  const b = new Uint8Array(expected);
+
+  // 1. Se configurado via variável de ambiente (local ou Vercel), tem precedência prioritária
+  if (process.env.LEADER_PASSWORD && process.env.LEADER_PASSWORD.length >= 8) {
+    const expected = await crypto.subtle.digest('SHA-256', encoder.encode(process.env.LEADER_PASSWORD));
+    const b = new Uint8Array(expected);
+    let difference = 0;
+    for (let i = 0; i < a.length; i++) difference |= a[i] ^ b[i];
+    return difference === 0;
+  }
+
+  // 2. Fallback seguro via hash criptográfico SHA-256 (sem expor senha em texto claro)
+  const expectedBytes = hexToBytes(DEFAULT_LEADER_HASH);
+  if (!expectedBytes) return false;
   let difference = 0;
-  for (let i = 0; i < a.length; i++) difference |= a[i] ^ b[i];
+  for (let i = 0; i < a.length; i++) difference |= a[i] ^ expectedBytes[i];
   return difference === 0;
 }
 

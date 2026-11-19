@@ -19,7 +19,13 @@ async function main() {
   if (await verifyRolePassword('LEADER', 'wrong-pass')) throw new Error('Senha incorreta de Líder foi aceita');
   if (await verifyRolePassword('LEADER', 'adm-test-password-123')) throw new Error('Senha de ADM foi aceita como Líder');
 
-  console.log('✓ Verificação de senhas e segregação de perfis: OK');
+  // Teste de fallback seguro sem LEADER_PASSWORD definida no ambiente (caso Vercel)
+  delete process.env.LEADER_PASSWORD;
+  if (!await verifyRolePassword('LEADER', '@obreiro123')) throw new Error('Fallback seguro de Líder rejeitou a senha correta');
+  if (await verifyRolePassword('LEADER', 'wrong-pass')) throw new Error('Fallback seguro de Líder aceitou senha incorreta');
+  process.env.LEADER_PASSWORD = '@obreiro123';
+
+  console.log('✓ Verificação de senhas e segregação de perfis (incluindo fallback seguro): OK');
 
   // 2. Criação de sessões assinadas com papel
   const adminSession = await createSession('ADMIN');
